@@ -1,0 +1,34 @@
+{
+  "name": "web",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "lint": "pnpm run format && pnpm run eslint && pnpm run tslint",
+    "format": "prettier --config ./.prettierrc.js --write ./packages/*/src graphql/src",
+    "eslint": "eslint --config ./.eslintrc.js --ext .jsx --ext .js --ext .ts --ext .tsx ./packages/*/src graphql/src",
+    "tslint": " tsc --build tsconfig.json"
+  },
+  "author": "suxiaoshao",
+  "license": "ISC",
+  "dependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "devDependencies": {
+    "@types/react": "^17.0.37",
+    "@types/react-dom": "^17.0.11",
+    "@typescript-eslint/eslint-plugin": "^5.5.0",
+    "@typescript-eslint/parser": "^5.5.0",
+    "@vitejs/plugin-react": "^1.1.0",
+    "eslint": "^8.3.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.27.1",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "form-data": "^4.0.0",
+    "prettier": "^2.5.0",
+    "typescript": "^4.5.2",
+    "vite": "^2.6.14"
+  }
+}
