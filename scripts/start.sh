@@ -1,8 +1,8 @@
 # 删除旧集群
 kind delete cluster --name mini-oss;
 
-# # 创建新集群
-# kind create cluster --config=./kubernetes/config.yaml;
+# 创建新集群
+kind create cluster --config=./kubernetes/config.yaml;
 
 # # 配置 apisix ingress
 # ./scripts/dev_hlem_update.sh
