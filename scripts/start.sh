@@ -16,5 +16,5 @@ kind create cluster --config=./kubernetes/config.yaml;
 
 # kubectl get service --namespace ingress-apisix
 
-# # novel 项目配置更新
-# ./scripts/dev_novel_update.sh
+# mini-oss 项目配置更新
+./scripts/update.sh

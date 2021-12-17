@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alpine-deployment
+  namespace: mini-oss
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alpine-pod
+  template:
+    metadata:
+      labels:
+        app: alpine-pod
+    spec:
+      containers:
+        - name: alpine
+          image: registry.docker-cn.com/alpine:latest
+          command:
+            [
+              "/bin/sh",
+              "-c",
+              "touch /tmp/hello.txt;while true;do /bin/echo $(date +%T) >> /tmp/hello.txt; sleep 3; done;",
+            ]
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: "1"
