@@ -3,4 +3,5 @@
 members = [
     "graphql",
     "proto",
+    "packages/auth"
 ]

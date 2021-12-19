@@ -25,14 +25,14 @@ spec:
               memory: 500Mi
               cpu: "1"
           volumeMounts:
-          - name: mongo-volume
-            mountPath: /data/db
+            - name: mongo-volume
+              mountPath: /data/db
       volumes:
         - name: mongo-volume
           hostPath:
             path: /data/db/mongo
             type: DirectoryOrCreate
-            
+
 ---
 apiVersion: v1
 kind: Service

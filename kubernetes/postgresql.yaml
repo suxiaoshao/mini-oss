@@ -15,28 +15,28 @@ spec:
     spec:
       containers:
         - name: postgre
-          image: postgres:latest
+          image: suxiaoshao/postgres:latest
           ports: # 设置容器暴露的端口列表
             - name: postgre-port
               containerPort: 5432
               protocol: TCP
           env:
-          - name: POSTGRES_PASSWORD
-            value: sushao
-          - name: POSTGRES_USER
-            value: sushao
+            - name: POSTGRES_PASSWORD
+              value: sushao
+            - name: POSTGRES_USER
+              value: sushao
           resources:
             limits:
               memory: 500Mi
               cpu: "1"
           volumeMounts:
-          - name: postgre-volume
-            mountPath: /var/lib/postgresql/data
+            - name: postgre-volume
+              mountPath: /var/lib/postgresql/data
       volumes:
-      - name: postgre-volume
-        hostPath:
-          path: /data/db/postgresql
-          type: DirectoryOrCreate
+        - name: postgre-volume
+          hostPath:
+            path: /data/db/postgresql
+            type: DirectoryOrCreate
 ---
 apiVersion: v1
 kind: Service
