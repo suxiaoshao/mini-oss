@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: alpine
-          image: registry.docker-cn.com/alpine:latest
+          image: suxiaoshao/test:0.0.1
           command:
             [
               "/bin/sh",
