@@ -1,6 +1,6 @@
 docker build -t suxiaoshao/postgres -f ./docker/postgres.Dockerfile .;
-docker tag suxiaoshao/postgres suxiaoshao/postgres:latest;
-docker push suxiaoshao/postgres:latest;
+docker tag suxiaoshao/postgres suxiaoshao/postgres:0.0.2;
+docker push suxiaoshao/postgres:0.0.2;
 
 docker build -t suxiaoshao/graphql -f ./docker/graphql.Dockerfile .;
 docker tag suxiaoshao/graphql suxiaoshao/graphql:latest;

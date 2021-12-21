@@ -1,7 +1,9 @@
+mod validation;
 use tonic::{transport::Server, Request, Response, Status};
 
 use proto::login_server::{Login, LoginServer};
 use proto::{LoginReply, LoginRequest};
+use validation::Claims;
 
 #[derive(Default)]
 pub struct MyGreeter {}
@@ -15,24 +17,18 @@ impl Login for MyGreeter {
         let request = request.into_inner();
         let name = request.name;
         let password = request.password;
-        if let (Ok(n), Ok(p)) = (
-            std::env::var("manager_name"),
-            std::env::var("manager_password"),
-        ) {
-            if name == n && password == p {}
-            todo!()
-        } else {
-            Err(Status::new(
-                tonic::Code::FailedPrecondition,
-                "管理员配置缺失",
-            ))
-        }
+        let token = Claims::user_token(name, password)?;
+        Ok(Response::new(LoginReply { auth: token }))
     }
     async fn manager_login(
         &self,
         request: Request<LoginRequest>,
     ) -> Result<Response<LoginReply>, Status> {
-        todo!()
+        let request = request.into_inner();
+        let name = request.name;
+        let password = request.password;
+        let token = Claims::manager_token(name, password)?;
+        Ok(Response::new(LoginReply { auth: token }))
     }
 }
 

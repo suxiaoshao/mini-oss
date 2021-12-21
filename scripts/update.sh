@@ -9,3 +9,6 @@ kubectl apply -f ./kubernetes/mongodb.yaml
 
 # 配置 postgresql 
 kubectl apply -f ./kubernetes/postgresql.yaml
+
+# 配置 auth
+kubectl apply -f ./kubernetes/auth.yaml
