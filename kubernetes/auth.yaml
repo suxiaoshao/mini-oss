@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: auth
-          image: suxiaoshao/auth:latest
+          image: suxiaoshao/auth:0.0.2
           ports: # 设置容器暴露的端口列表
             - name: auth-port
               containerPort: 80
@@ -24,6 +24,10 @@ spec:
             limits:
               memory: 500Mi
               cpu: "1"
+      volumes: # 引用configmap
+        - name: config
+          configMap:
+            name: configmap
 ---
 apiVersion: v1
 kind: Service

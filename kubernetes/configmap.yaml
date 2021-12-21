@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap
+  namespace: mini-oss
+data:
+  info: |
+    postgres:postgres://sushao:sushao@localhost/mini_oss
+    manager_name:sushao
+    mananger_password:sushao
+    secret:sushao

@@ -1,9 +1,15 @@
+mod database;
+mod utils;
 mod validation;
+
 use tonic::{transport::Server, Request, Response, Status};
 
 use proto::login_server::{Login, LoginServer};
 use proto::{LoginReply, LoginRequest};
 use validation::Claims;
+
+#[macro_use]
+extern crate lazy_static;
 
 #[derive(Default)]
 pub struct MyGreeter {}
@@ -17,7 +23,7 @@ impl Login for MyGreeter {
         let request = request.into_inner();
         let name = request.name;
         let password = request.password;
-        let token = Claims::user_token(name, password)?;
+        let token = Claims::user_token(name, password).await?;
         Ok(Response::new(LoginReply { auth: token }))
     }
     async fn manager_login(

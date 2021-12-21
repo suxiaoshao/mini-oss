@@ -1,6 +1,12 @@
 use jsonwebtoken::{encode, EncodingKey, Header};
+use pbkdf2::{
+    password_hash::{PasswordHash, PasswordVerifier},
+    Pbkdf2,
+};
 use serde::{Deserialize, Serialize};
 use tonic::{Code, Status};
+
+use crate::database::User;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
@@ -13,6 +19,7 @@ pub struct Claims {
 }
 
 impl Claims {
+    /// 管理员 token
     pub fn manager_token(name: String, password: String) -> Result<String, Status> {
         if let (Ok(n), Ok(p)) = (
             std::env::var("manager_name"),
@@ -22,7 +29,7 @@ impl Claims {
                 let claims = Claims::new(name, password);
                 claims.to_token()
             } else {
-                todo!()
+                Err(Status::new(Code::InvalidArgument, "账号密码错误"))
             }
         } else {
             Err(Status::new(
@@ -31,9 +38,25 @@ impl Claims {
             ))
         }
     }
-    pub fn user_token(name: String, password: String) -> Result<String, Status> {
-        todo!()
+    /// 用户生成 token
+    pub async fn user_token(name: String, password: String) -> Result<String, Status> {
+        let user = User::find_one(&name)
+            .await
+            .ok_or_else(|| Status::new(Code::NotFound, "没有此用户"))?;
+        // Verify password against PHC string
+        let parsed_hash = PasswordHash::new(&user.password)
+            .map_err(|_| Status::new(Code::Internal, "密码解析错误"))?;
+        if Pbkdf2
+            .verify_password(password.as_bytes(), &parsed_hash)
+            .is_ok()
+        {
+            let claims = Claims::new(name, password);
+            claims.to_token()
+        } else {
+            Err(Status::new(Code::InvalidArgument, "账号密码错误"))
+        }
     }
+    /// 新建
     fn new(name: String, password: String) -> Self {
         Self {
             name,
