@@ -15,11 +15,13 @@ impl ErrorExtensions for MyError {
         self.extend_with(|err, e| match err {
             MyError::Status(status) => {
                 e.set("code", status.code() as i32);
-                e.set("message", status.message())
+                e.set("message", status.message());
+                e.set("source", format!("{:#?}", status));
             }
-            MyError::TransportError(_) => {
+            MyError::TransportError(status) => {
                 e.set("code", 17);
-                e.set("message", "网络链接错误")
+                e.set("message", "网络链接错误");
+                e.set("source", format!("{:#?}", status))
             }
         })
     }

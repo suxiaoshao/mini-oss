@@ -30,7 +30,7 @@ impl MutationRoot {
 }
 #[tokio::test]
 async fn test() {
-    let mut client = LoginClient::connect("http://localhost:8080").await.unwrap();
+    let mut client = LoginClient::connect("http://localhost:80").await.unwrap();
     let request = tonic::Request::new(LoginRequest {
         name: "sushao".to_string(),
         password: "sushao".to_string(),
