@@ -5,13 +5,16 @@ kind delete cluster --name mini-oss;
 kind create cluster --config=./kubernetes/config.yaml;
 
 # 配置 apisix ingress
-./scripts/dev_hlem_update.sh
+helm repo add apisix https://charts.apiseven.com
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
 kubectl create ns ingress-apisix
+
 helm install apisix apisix/apisix \
   --set gateway.type=NodePort \
   --set gateway.http.nodePort=30002 \
   --set ingress-controller.enabled=true \
-  --namespace ingress-apisix
+  --namespace ingress-apisix \
   --set ingress-controller.config.apisix.serviceNamespace=ingress-apisix 
 
 kubectl get service --namespace ingress-apisix

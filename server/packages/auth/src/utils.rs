@@ -10,7 +10,7 @@ pub fn to_hash(password: &str) -> Result<String, Status> {
     // Hash password to PHC string ($pbkdf2-sha256$...)
     let password_hash = Pbkdf2
         .hash_password(password.as_bytes(), &salt)
-        .map_err(|_| Status::new(tonic::Code::Internal, "密码解析错误"))?
+        .map_err(|_| Status::internal("密码解析错误"))?
         .to_string();
     Ok(password_hash)
 }

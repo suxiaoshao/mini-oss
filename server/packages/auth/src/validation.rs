@@ -4,7 +4,7 @@ use pbkdf2::{
     Pbkdf2,
 };
 use serde::{Deserialize, Serialize};
-use tonic::{Code, Status};
+use tonic::Status;
 
 use crate::database::User;
 
@@ -29,23 +29,20 @@ impl Claims {
                 let claims = Claims::new(name, password);
                 claims.to_token()
             } else {
-                Err(Status::new(Code::InvalidArgument, "账号密码错误"))
+                Err(Status::invalid_argument("账号密码错误"))
             }
         } else {
-            Err(Status::new(
-                tonic::Code::FailedPrecondition,
-                "管理员配置缺失",
-            ))
+            Err(Status::failed_precondition("管理员配置缺失"))
         }
     }
     /// 用户生成 token
     pub async fn user_token(name: String, password: String) -> Result<String, Status> {
         let user = User::find_one(&name)
             .await
-            .ok_or_else(|| Status::new(Code::NotFound, "没有此用户"))?;
+            .ok_or_else(|| Status::not_found("没有此用户"))?;
         // Verify password against PHC string
-        let parsed_hash = PasswordHash::new(&user.password)
-            .map_err(|_| Status::new(Code::Internal, "密码解析错误"))?;
+        let parsed_hash =
+            PasswordHash::new(&user.password).map_err(|_| Status::internal("密码解析错误"))?;
         if Pbkdf2
             .verify_password(password.as_bytes(), &parsed_hash)
             .is_ok()
@@ -53,7 +50,7 @@ impl Claims {
             let claims = Claims::new(name, password);
             claims.to_token()
         } else {
-            Err(Status::new(Code::InvalidArgument, "账号密码错误"))
+            Err(Status::invalid_argument("账号密码错误"))
         }
     }
     /// 新建
@@ -71,12 +68,9 @@ impl Claims {
                 self,
                 &EncodingKey::from_secret(key.as_bytes()),
             )
-            .map_err(|_| -> Status { Status::new(Code::Internal, "令牌生成错误") })
+            .map_err(|_| -> Status { Status::internal("令牌生成错误") })
         } else {
-            Err(Status::new(
-                tonic::Code::FailedPrecondition,
-                "管理员配置缺失",
-            ))
+            Err(Status::failed_precondition("管理员配置缺失"))
         }
     }
 }

@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: graphql
-          image: suxiaoshao/graphql:0.0.1
+          image: suxiaoshao/graphql:0.0.3
           ports: # 设置容器暴露的端口列表
             - name: graphql-port
               containerPort: 80
@@ -48,7 +48,7 @@ spec:
   # it's apisix.
   ingressClassName: apisix
   rules:
-    - host: api.mini-oss.top
+    - host: localhost
       http:
         paths:
           - backend:

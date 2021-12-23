@@ -4,8 +4,8 @@ mod validation;
 
 use tonic::{transport::Server, Request, Response, Status};
 
-use proto::login_server::{Login, LoginServer};
-use proto::{LoginReply, LoginRequest};
+use proto::auth::login_server::{Login, LoginServer};
+use proto::auth::{LoginReply, LoginRequest};
 use validation::Claims;
 
 #[macro_use]
@@ -30,6 +30,7 @@ impl Login for MyGreeter {
         &self,
         request: Request<LoginRequest>,
     ) -> Result<Response<LoginReply>, Status> {
+        println!("manager_login log:{:#?}", request);
         let request = request.into_inner();
         let name = request.name;
         let password = request.password;

@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: auth
-          image: suxiaoshao/auth:0.0.2
+          image: suxiaoshao/auth:0.0.3
           ports: # 设置容器暴露的端口列表
             - name: auth-port
               containerPort: 80

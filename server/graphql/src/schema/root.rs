@@ -1,12 +1,23 @@
 use async_graphql::*;
+use proto::auth::{login_client::LoginClient, LoginRequest};
 
 pub struct QueryRoot;
 
 #[Object]
 impl QueryRoot {
-    /// Returns the sum of a and b
-    async fn add(&self, a: i32, b: i32) -> i32 {
-        a + b
+    /// 管理员登陆
+    async fn manager_login(&self, name: String, password: String) -> FieldResult<String> {
+        let mut client = LoginClient::connect("http://auth-service:80").await?;
+        let request = tonic::Request::new(LoginRequest { name, password });
+        let res = client.manager_login(request).await?;
+        Ok(res.get_ref().auth.to_string())
+    }
+    /// 用户登陆
+    async fn user_login(&self, name: String, password: String) -> FieldResult<String> {
+        let mut client = LoginClient::connect("http://auth-service:80").await?;
+        let request = tonic::Request::new(LoginRequest { name, password });
+        let res = client.user_login(request).await?;
+        Ok(res.get_ref().auth.to_string())
     }
 }
 pub struct MutationRoot;
@@ -16,4 +27,14 @@ impl MutationRoot {
     async fn delete(&self, a: i32) -> i32 {
         a
     }
+}
+#[tokio::test]
+async fn test() {
+    let mut client = LoginClient::connect("http://localhost:8080").await.unwrap();
+    let request = tonic::Request::new(LoginRequest {
+        name: "sushao".to_string(),
+        password: "sushao".to_string(),
+    });
+    let res = client.manager_login(request).await.unwrap();
+    println!("{}", res.get_ref().auth.to_string());
 }
