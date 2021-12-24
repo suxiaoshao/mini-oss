@@ -12,5 +12,4 @@ proto={path="../../proto"}
 jsonwebtoken = "7.2.0"
 serde = { version = "1.0.132", features = ["derive"] }
 sqlx = { version = "0.5.9", features = [ "runtime-tokio-rustls","postgres","time" ] }
-lazy_static = "1.4.0"
 pbkdf2 = "0.10.0"

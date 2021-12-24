@@ -16,3 +16,12 @@ pub fn get_local_ip() -> Option<String> {
         Err(_) => None,
     }
 }
+#[cfg(test)]
+mod test {
+    use crate::utils::get_local_ip::get_local_ip;
+
+    #[test]
+    fn test_local_ip() {
+        println!("{}", get_local_ip().unwrap())
+    }
+}

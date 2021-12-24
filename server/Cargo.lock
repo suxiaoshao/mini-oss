@@ -172,7 +172,6 @@ name = "auth"
 version = "0.1.0"
 dependencies = [
  "jsonwebtoken",
- "lazy_static",
  "pbkdf2",
  "proto",
  "serde",

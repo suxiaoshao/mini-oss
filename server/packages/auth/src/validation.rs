@@ -4,6 +4,7 @@ use pbkdf2::{
     Pbkdf2,
 };
 use serde::{Deserialize, Serialize};
+use sqlx::{Pool, Postgres};
 use tonic::Status;
 
 use crate::database::User;
@@ -36,8 +37,12 @@ impl Claims {
         }
     }
     /// 用户生成 token
-    pub async fn user_token(name: String, password: String) -> Result<String, Status> {
-        let user = User::find_one(&name)
+    pub async fn user_token(
+        name: String,
+        password: String,
+        pool: &Pool<Postgres>,
+    ) -> Result<String, Status> {
+        let user = User::find_one(&name, pool)
             .await
             .ok_or_else(|| Status::not_found("没有此用户"))?;
         // Verify password against PHC string
