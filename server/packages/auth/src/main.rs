@@ -30,7 +30,6 @@ impl Login for MyGreeter {
         &self,
         request: Request<LoginRequest>,
     ) -> Result<Response<LoginReply>, Status> {
-        println!("manager_login log:{:#?}", request);
         let request = request.into_inner();
         let name = request.name;
         let password = request.password;

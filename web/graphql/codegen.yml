@@ -1,7 +1,7 @@
-schema: http://localhost:8000/
+schema: http://localhost:30002/
 documents:
-  - './src/**/*.graphql'
-  - './src/**/*.gql'
+  - "./src/**/*.graphql"
+  - "./src/**/*.gql"
 generates:
   ./src/types.ts:
     plugins:

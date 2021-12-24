@@ -26,48 +26,55 @@ export type MutationRootDeleteArgs = {
 
 export type QueryRoot = {
   __typename?: 'QueryRoot';
-  /** Returns the sum of a and b */
-  add: Scalars['Int'];
+  /** 管理员登陆 */
+  managerLogin: Scalars['String'];
+  /** 用户登陆 */
+  userLogin: Scalars['String'];
 };
 
-export type QueryRootAddArgs = {
-  a: Scalars['Int'];
-  b: Scalars['Int'];
+export type QueryRootManagerLoginArgs = {
+  name: Scalars['String'];
+  password: Scalars['String'];
 };
 
-export type AddQueryVariables = Exact<{ [key: string]: never }>;
+export type QueryRootUserLoginArgs = {
+  name: Scalars['String'];
+  password: Scalars['String'];
+};
 
-export type AddQuery = { __typename?: 'QueryRoot'; add: number };
+export type MyAddQueryVariables = Exact<{ [key: string]: never }>;
 
-export const AddDocument = gql`
-  query add {
-    add(a: 1, b: 2)
+export type MyAddQuery = { __typename?: 'QueryRoot'; userLogin: string };
+
+export const MyAddDocument = gql`
+  query myAdd {
+    userLogin(name: "sushao", password: "sushao")
   }
 `;
 
 /**
- * __useAddQuery__
+ * __useMyAddQuery__
  *
- * To run a query within a React component, call `useAddQuery` and pass it any options that fit your needs.
- * When your component renders, `useAddQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useMyAddQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMyAddQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useAddQuery({
+ * const { data, loading, error } = useMyAddQuery({
  *   variables: {
  *   },
  * });
  */
-export function useAddQuery(baseOptions?: Apollo.QueryHookOptions<AddQuery, AddQueryVariables>) {
+export function useMyAddQuery(baseOptions?: Apollo.QueryHookOptions<MyAddQuery, MyAddQueryVariables>) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<AddQuery, AddQueryVariables>(AddDocument, options);
+  return Apollo.useQuery<MyAddQuery, MyAddQueryVariables>(MyAddDocument, options);
 }
-export function useAddLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AddQuery, AddQueryVariables>) {
+export function useMyAddLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MyAddQuery, MyAddQueryVariables>) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<AddQuery, AddQueryVariables>(AddDocument, options);
+  return Apollo.useLazyQuery<MyAddQuery, MyAddQueryVariables>(MyAddDocument, options);
 }
-export type AddQueryHookResult = ReturnType<typeof useAddQuery>;
-export type AddLazyQueryHookResult = ReturnType<typeof useAddLazyQuery>;
-export type AddQueryResult = Apollo.QueryResult<AddQuery, AddQueryVariables>;
+export type MyAddQueryHookResult = ReturnType<typeof useMyAddQuery>;
+export type MyAddLazyQueryHookResult = ReturnType<typeof useMyAddLazyQuery>;
+export type MyAddQueryResult = Apollo.QueryResult<MyAddQuery, MyAddQueryVariables>;

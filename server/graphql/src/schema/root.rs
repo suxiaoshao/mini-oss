@@ -1,3 +1,4 @@
+use crate::my_result;
 use async_graphql::*;
 use proto::auth::{login_client::LoginClient, LoginRequest};
 
@@ -7,16 +8,16 @@ pub struct QueryRoot;
 impl QueryRoot {
     /// 管理员登陆
     async fn manager_login(&self, name: String, password: String) -> FieldResult<String> {
-        let mut client = LoginClient::connect("http://auth-service:80").await?;
+        let mut client = my_result!(LoginClient::connect("http://auth-service:80"));
         let request = tonic::Request::new(LoginRequest { name, password });
-        let res = client.manager_login(request).await?;
+        let res = my_result!(client.manager_login(request));
         Ok(res.get_ref().auth.to_string())
     }
     /// 用户登陆
     async fn user_login(&self, name: String, password: String) -> FieldResult<String> {
-        let mut client = LoginClient::connect("http://auth-service:80").await?;
+        let mut client = my_result!(LoginClient::connect("http://auth-service:80"));
         let request = tonic::Request::new(LoginRequest { name, password });
-        let res = client.user_login(request).await?;
+        let res = my_result!(client.user_login(request));
         Ok(res.get_ref().auth.to_string())
     }
 }

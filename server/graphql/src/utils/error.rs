@@ -1,4 +1,4 @@
-use async_graphql::{ErrorExtensions, FieldError};
+use async_graphql::{ErrorExtensionValues, ErrorExtensions, FieldError};
 use thiserror::Error;
 use tonic::Status;
 #[derive(Debug, Error)]
@@ -12,27 +12,53 @@ pub enum MyError {
 impl ErrorExtensions for MyError {
     // lets define our base extensions
     fn extend(&self) -> FieldError {
-        self.extend_with(|err, e| match err {
+        match self {
             MyError::Status(status) => {
-                e.set("code", status.code() as i32);
-                e.set("message", status.message());
-                e.set("source", format!("{:#?}", status));
+                let mut extensions = ErrorExtensionValues::default();
+                extensions.set("code", status.code() as i32);
+                extensions.set("source", format!("{:#?}", status));
+                FieldError {
+                    message: status.message().to_string(),
+                    source: None,
+                    extensions: Some(extensions),
+                }
             }
-            MyError::TransportError(status) => {
-                e.set("code", 17);
-                e.set("message", "网络链接错误");
-                e.set("source", format!("{:#?}", status))
+            MyError::TransportError(err) => {
+                let mut extensions = ErrorExtensionValues::default();
+                extensions.set("code", 17);
+                extensions.set("source", format!("{:#?}", err));
+                FieldError {
+                    message: "服务器内部链接错误".to_string(),
+                    source: None,
+                    extensions: Some(extensions),
+                }
             }
-        })
+        }
     }
 }
-impl From<Status> for MyError {
-    fn from(status: Status) -> Self {
-        Self::Status(status)
+pub trait ToMyResult<T> {
+    fn to_my_result(self) -> Result<T, MyError>;
+}
+impl<M> ToMyResult<M> for Result<M, Status> {
+    fn to_my_result(self) -> Result<M, MyError> {
+        match self {
+            Ok(o) => Ok(o),
+            Err(err) => Err(MyError::Status(err)),
+        }
     }
 }
-impl From<tonic::transport::Error> for MyError {
-    fn from(error: tonic::transport::Error) -> Self {
-        Self::TransportError(error)
+impl<M> ToMyResult<M> for Result<M, tonic::transport::Error> {
+    fn to_my_result(self) -> Result<M, MyError> {
+        match self {
+            Ok(o) => Ok(o),
+            Err(err) => Err(MyError::TransportError(err)),
+        }
     }
+}
+#[macro_export]
+macro_rules! my_result {
+    ($expression:expr) => {{
+        use crate::utils::error::ToMyResult;
+        $expression.await.to_my_result().extend()?
+    }};
 }
