@@ -1,26 +1,20 @@
+use crate::validation::Claims;
 use proto::auth::{login_server::Login, LoginReply, LoginRequest};
-use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
+use sqlx::{Pool, Postgres};
 use tonic::{Request, Response, Status};
 
-use crate::validation::Claims;
-
-pub struct MyGreeter {
+pub struct LoginGreeter {
     pool: Pool<Postgres>,
 }
 
-impl MyGreeter {
-    pub async fn default() -> Self {
-        let pool = PgPoolOptions::new()
-            .max_connections(5)
-            .connect(&std::env::var("postgres").unwrap())
-            .await
-            .unwrap();
+impl LoginGreeter {
+    pub fn new(pool: sqlx::Pool<sqlx::Postgres>) -> LoginGreeter {
         Self { pool }
     }
 }
 
 #[tonic::async_trait]
-impl Login for MyGreeter {
+impl Login for LoginGreeter {
     async fn user_login(
         &self,
         request: Request<LoginRequest>,

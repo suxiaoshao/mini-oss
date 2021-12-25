@@ -3,15 +3,33 @@ syntax = "proto3";
 package auth;
 
 service Login {
+  // 用户登陆
   rpc UserLogin (LoginRequest) returns (LoginReply) {}
+  // 管理员登陆
   rpc ManagerLogin (LoginRequest) returns (LoginReply) {}
 }
 
+service Check {
+  // 验证用户登陆
+  rpc CheckUser(CheckRequest) returns(CheckReply){}
+  // 验证管理员登陆
+  rpc CheckManager(CheckRequest) returns(CheckReply){}
+}
+
 message LoginRequest {
+  // 账号
   string name = 1;
+  // 密码
   string password = 2;
 }
 
 message LoginReply {
   string auth = 1;
+}
+
+message CheckRequest{
+  string auth = 1;
+}
+
+message CheckReply{
 }
