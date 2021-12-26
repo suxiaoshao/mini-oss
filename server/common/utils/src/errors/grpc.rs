@@ -38,6 +38,6 @@ impl ToStatus for jsonwebtoken::errors::Error {
 }
 impl ToStatus for sqlx::error::Error {
     fn to_status(self) -> Status {
-        Status::internal("数据库错误")
+        Status::internal(format!("数据库错误:{}", self.to_string()))
     }
 }

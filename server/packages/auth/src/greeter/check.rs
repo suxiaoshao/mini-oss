@@ -1,4 +1,4 @@
-use proto::auth::{check_server::Check, CheckReply, CheckRequest};
+use proto::auth::{check_server::Check, CheckRequest, Empty};
 use sqlx::{Pool, Postgres};
 use tonic::{Request, Response, Status};
 
@@ -19,17 +19,14 @@ impl Check for CheckGreeter {
     async fn check_manager(
         &self,
         request: Request<CheckRequest>,
-    ) -> Result<Response<CheckReply>, Status> {
+    ) -> Result<Response<Empty>, Status> {
         let auth = request.into_inner().auth;
         Claims::check_manager(auth)?;
-        Ok(Response::new(CheckReply {}))
+        Ok(Response::new(Empty {}))
     }
-    async fn check_user(
-        &self,
-        request: Request<CheckRequest>,
-    ) -> Result<Response<CheckReply>, Status> {
+    async fn check_user(&self, request: Request<CheckRequest>) -> Result<Response<Empty>, Status> {
         let auth = request.into_inner().auth;
         Claims::check_user(auth, &self.pool).await?;
-        Ok(Response::new(CheckReply {}))
+        Ok(Response::new(Empty {}))
     }
 }
