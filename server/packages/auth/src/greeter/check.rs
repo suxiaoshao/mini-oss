@@ -1,6 +1,9 @@
-use proto::auth::{check_server::Check, CheckRequest, Empty};
-use sqlx::{Pool, Postgres};
-use tonic::{Request, Response, Status};
+use database::{Pool, Postgres};
+use proto::{
+    async_trait,
+    auth::{check_server::Check, CheckRequest, Empty},
+    Request, Response, Status,
+};
 
 use crate::validation::Claims;
 
@@ -9,12 +12,12 @@ pub struct CheckGreeter {
 }
 
 impl CheckGreeter {
-    pub fn new(pool: sqlx::Pool<sqlx::Postgres>) -> CheckGreeter {
+    pub fn new(pool: Pool<Postgres>) -> CheckGreeter {
         Self { pool }
     }
 }
 
-#[tonic::async_trait]
+#[async_trait]
 impl Check for CheckGreeter {
     async fn check_manager(
         &self,

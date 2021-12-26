@@ -7,9 +7,7 @@ edition = "2021"
 
 [dependencies]
 tokio = { version = "1.15.0", features = ["rt-multi-thread", "time", "fs", "macros", "net"] }
-tonic = "0.6.2"
 proto={path="../../common/proto"}
-serde = { version = "1.0.132", features = ["derive"] }
-sqlx = { version = "0.5.9", features = [ "runtime-tokio-rustls","postgres","time" ] }
+database={path="../../common/database"}
 pbkdf2 = "0.10.0"
 utils={path="../../common/utils"}

@@ -1,16 +1,16 @@
 use std::env::var;
 
+use database::{users::User, Pool, Postgres};
 use jsonwebtoken::{encode, EncodingKey, Header};
 use pbkdf2::{
     password_hash::{PasswordHash, PasswordVerifier},
     Pbkdf2,
 };
+use proto::Status;
 use serde::{Deserialize, Serialize};
-use sqlx::{Pool, Postgres};
-use tonic::Status;
 use utils::errors::grpc::ToStatusResult;
 
-use crate::{database::User, utils::jwt_decode};
+use crate::utils::jwt_decode;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
@@ -63,7 +63,7 @@ impl Claims {
     ) -> Result<String, Status> {
         let user = User::find_one(&name, pool)
             .await
-            .ok_or_else(|| Status::not_found("没有此用户"))?;
+            .map_err(|_| Status::not_found("没有此用户"))?;
         // Verify password against PHC string
         let parsed_hash = PasswordHash::new(&user.password).to_status()?;
         if Pbkdf2
@@ -91,7 +91,7 @@ impl Claims {
         let chaim = jwt_decode::<Self>(&auth)?;
         let user = User::find_one(&chaim.name, pool)
             .await
-            .ok_or_else(|| Status::not_found("没有此用户"))?;
+            .map_err(|_| Status::not_found("没有此用户"))?;
         // Verify password against PHC string
         let parsed_hash = PasswordHash::new(&user.password).to_status()?;
         if Pbkdf2

@@ -178,13 +178,12 @@ dependencies = [
 name = "auth"
 version = "0.1.0"
 dependencies = [
+ "database",
  "jsonwebtoken",
  "pbkdf2",
  "proto",
  "serde",
- "sqlx",
  "tokio",
- "tonic",
  "utils",
 ]
 
@@ -479,6 +478,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "database"
+version = "0.1.0"
+dependencies = [
+ "proto",
+ "sqlx",
+ "tonic",
+ "utils",
+]
+
+[[package]]
 name = "digest"
 version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -705,7 +714,6 @@ dependencies = [
  "proto",
  "thiserror",
  "tokio",
- "tonic",
  "utils",
 ]
 
@@ -2364,12 +2372,10 @@ dependencies = [
 name = "user_manage"
 version = "0.1.0"
 dependencies = [
+ "database",
  "pbkdf2",
  "proto",
- "serde",
- "sqlx",
  "tokio",
- "tonic",
  "utils",
 ]
 

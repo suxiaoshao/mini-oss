@@ -1,5 +1,8 @@
 use async_graphql::*;
-use proto::auth::{login_client::LoginClient, LoginRequest};
+use proto::{
+    auth::{login_client::LoginClient, LoginRequest},
+    Request,
+};
 use utils::errors::graphql::ToFieldResult;
 
 pub struct QueryRoot;
@@ -11,7 +14,7 @@ impl QueryRoot {
         let mut client = LoginClient::connect("http://auth-service:80")
             .await
             .to_field()?;
-        let request = tonic::Request::new(LoginRequest { name, password });
+        let request = Request::new(LoginRequest { name, password });
         let res = client.manager_login(request).await.to_field()?;
         Ok(res.get_ref().auth.to_string())
     }
@@ -20,7 +23,7 @@ impl QueryRoot {
         let mut client = LoginClient::connect("http://auth-service:80")
             .await
             .to_field()?;
-        let request = tonic::Request::new(LoginRequest { name, password });
+        let request = Request::new(LoginRequest { name, password });
         let res = client.user_login(request).await.to_field()?;
         Ok(res.get_ref().auth.to_string())
     }
@@ -36,7 +39,7 @@ impl MutationRoot {
 #[tokio::test]
 async fn test() {
     let mut client = LoginClient::connect("http://localhost:80").await.unwrap();
-    let request = tonic::Request::new(LoginRequest {
+    let request = Request::new(LoginRequest {
         name: "sushao".to_string(),
         password: "sushao".to_string(),
     });

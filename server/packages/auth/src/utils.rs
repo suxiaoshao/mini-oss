@@ -2,8 +2,8 @@ use std::env::var;
 
 use jsonwebtoken::{decode, DecodingKey, Validation};
 
+use proto::Status;
 use serde::de::DeserializeOwned;
-use tonic::Status;
 use utils::errors::grpc::ToStatusResult;
 
 /// token 解码

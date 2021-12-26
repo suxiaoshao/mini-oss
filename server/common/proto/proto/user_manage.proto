@@ -27,8 +27,6 @@ message UserCreateInfo {
 message UserInfo {
   // 账号
   string name = 1;
-  // 密码
-  string password = 2;
   // 描述
   optional string description = 3;
   // 创建时间

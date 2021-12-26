@@ -1,10 +1,8 @@
-use proto::user_manage::manage_server::ManageServer;
-use sqlx::postgres::PgPoolOptions;
-use tonic::transport::Server;
+use database::PgPoolOptions;
+use proto::{user_manage::manage_server::ManageServer, Server};
 
 use crate::greeter::UserManageGreeter;
 
-mod database;
 mod greeter;
 mod utils;
 #[tokio::main]

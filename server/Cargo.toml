@@ -4,6 +4,7 @@ members = [
     "packages/graphql",
     "common/proto",
     "common/utils",
+    "common/database",
     "packages/auth",
     "packages/user_manage"
 ]

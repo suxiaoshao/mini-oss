@@ -1,12 +1,13 @@
-mod database;
 mod greeter;
 mod utils;
 mod validation;
 
 use crate::greeter::{check::CheckGreeter, login::LoginGreeter};
-use proto::auth::{check_server::CheckServer, login_server::LoginServer};
-use sqlx::postgres::PgPoolOptions;
-use tonic::transport::Server;
+use database::PgPoolOptions;
+use proto::{
+    auth::{check_server::CheckServer, login_server::LoginServer},
+    Server,
+};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {

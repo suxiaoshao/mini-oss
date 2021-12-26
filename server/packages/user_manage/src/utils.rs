@@ -1,5 +1,7 @@
-use proto::auth::{check_client::CheckClient, CheckRequest};
-use tonic::{Request, Status};
+use proto::{
+    auth::{check_client::CheckClient, CheckRequest},
+    Request, Status,
+};
 
 /// 验证管理员身份
 pub async fn check_manager(auth: &str) -> Result<(), Status> {

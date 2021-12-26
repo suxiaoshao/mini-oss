@@ -1,19 +1,22 @@
 use crate::validation::Claims;
-use proto::auth::{login_server::Login, LoginReply, LoginRequest};
-use sqlx::{Pool, Postgres};
-use tonic::{Request, Response, Status};
+use database::{Pool, Postgres};
+use proto::{
+    async_trait,
+    auth::{login_server::Login, LoginReply, LoginRequest},
+    Request, Response, Status,
+};
 
 pub struct LoginGreeter {
     pool: Pool<Postgres>,
 }
 
 impl LoginGreeter {
-    pub fn new(pool: sqlx::Pool<sqlx::Postgres>) -> LoginGreeter {
+    pub fn new(pool: Pool<Postgres>) -> LoginGreeter {
         Self { pool }
     }
 }
 
-#[tonic::async_trait]
+#[async_trait]
 impl Login for LoginGreeter {
     async fn user_login(
         &self,
@@ -41,7 +44,7 @@ impl Login for LoginGreeter {
 async fn manager_login() {
     use proto::auth::login_client::LoginClient;
     let mut client = LoginClient::connect("http://localhost:80").await.unwrap();
-    let request = tonic::Request::new(LoginRequest {
+    let request = Request::new(LoginRequest {
         name: "sushao".to_string(),
         password: "sushao".to_string(),
     });

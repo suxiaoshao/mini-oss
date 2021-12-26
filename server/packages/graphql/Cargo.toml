@@ -12,5 +12,4 @@ axum = { version = "0.4.3", features = ["headers"] }
 async-graphql-axum = "3.0.18"
 proto={path="../../common/proto"}
 thiserror = "1.0.30"
-tonic = "0.6.2"
 utils={path="../../common/utils"}
