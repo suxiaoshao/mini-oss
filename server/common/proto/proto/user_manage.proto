@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package user_manage;
+
+service Manage {
+  // 用户登陆
+  rpc UserCreate (UserCreateInfo) returns (UserInfo) {}
+  // 管理员登陆
+  rpc UserUpdate (UserUpdateInfo) returns (UserInfo) {}
+  // 管理员登陆
+  rpc UserDelete (UserDeleteInfo) returns (Empty) {}
+}
+
+
+message UserCreateInfo {
+  // 账号
+  string name = 1;
+  // 密码
+  string password = 2;
+  // 描述
+  string description = 3;
+  // 身份验证
+  string auth = 4;
+}
+
+message UserInfo {
+  // 账号
+  string name = 1;
+  // 密码
+  string password = 2;
+  // 描述
+  string description = 3;
+  // 创建时间
+  int64 createTime = 4;
+  // 创建时间
+  int64 updateTime = 5;
+}
+
+message UserUpdateInfo {
+  // 账号
+  string name = 1;
+  // 描述
+  string description = 3;
+  // 身份验证
+  string auth = 2;
+}
+
+message UserDeleteInfo {
+  // 账号
+  string name = 1;
+  // 身份验证
+  string auth = 2;
+}
+message Empty{
+
+}

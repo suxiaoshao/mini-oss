@@ -1,5 +1,5 @@
 [package]
-name = "auth"
+name = "user_manage"
 version = "0.1.0"
 edition = "2021"
 
@@ -9,7 +9,6 @@ edition = "2021"
 tokio = { version = "1.15.0", features = ["rt-multi-thread", "time", "fs", "macros", "net"] }
 tonic = "0.6.2"
 proto={path="../../common/proto"}
-jsonwebtoken = "7.2.0"
 serde = { version = "1.0.132", features = ["derive"] }
 sqlx = { version = "0.5.9", features = [ "runtime-tokio-rustls","postgres","time" ] }
 pbkdf2 = "0.10.0"

@@ -1,7 +1,9 @@
 [workspace]
 
 members = [
-    "graphql",
-    "proto",
-    "packages/auth"
+    "packages/graphql",
+    "common/proto",
+    "common/utils",
+    "packages/auth",
+    "packages/user_manage"
 ]
