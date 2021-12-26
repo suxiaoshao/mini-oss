@@ -178,6 +178,7 @@ dependencies = [
  "sqlx",
  "tokio",
  "tonic",
+ "utils",
 ]
 
 [[package]]
@@ -2352,6 +2353,7 @@ dependencies = [
  "sqlx",
  "tokio",
  "tonic",
+ "utils",
 ]
 
 [[package]]

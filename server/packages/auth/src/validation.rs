@@ -1,3 +1,5 @@
+use std::env::var;
+
 use jsonwebtoken::{encode, EncodingKey, Header};
 use pbkdf2::{
     password_hash::{PasswordHash, PasswordVerifier},
@@ -6,11 +8,9 @@ use pbkdf2::{
 use serde::{Deserialize, Serialize};
 use sqlx::{Pool, Postgres};
 use tonic::Status;
+use utils::errors::grpc::ToStatusResult;
 
-use crate::{
-    database::User,
-    utils::{jwt_decode, var},
-};
+use crate::{database::User, utils::jwt_decode};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
@@ -33,21 +33,21 @@ impl Claims {
     }
     /// 生成 token
     fn to_token(&self) -> Result<String, Status> {
-        let key = var("secret")?;
+        let key = var("secret").to_status()?;
         encode(
             &Header::default(),
             self,
             &EncodingKey::from_secret(key.as_bytes()),
         )
-        .map_err(|_| -> Status { Status::internal("令牌生成错误") })
+        .to_status()
     }
 }
 
 impl Claims {
     /// 管理员 token
     pub fn manager_token(name: String, password: String) -> Result<String, Status> {
-        let n = var("manager_name")?;
-        let p = var("manager_password")?;
+        let n = var("manager_name").to_status()?;
+        let p = var("manager_password").to_status()?;
         if name == n && password == p {
             let claims = Claims::new(name, password);
             claims.to_token()
@@ -65,8 +65,7 @@ impl Claims {
             .await
             .ok_or_else(|| Status::not_found("没有此用户"))?;
         // Verify password against PHC string
-        let parsed_hash =
-            PasswordHash::new(&user.password).map_err(|_| Status::internal("密码解析错误"))?;
+        let parsed_hash = PasswordHash::new(&user.password).to_status()?;
         if Pbkdf2
             .verify_password(password.as_bytes(), &parsed_hash)
             .is_ok()
@@ -79,8 +78,8 @@ impl Claims {
     }
     /// 验证管理员
     pub fn check_manager(auth: String) -> Result<(), Status> {
-        let n = var("manager_name")?;
-        let p = var("manager_password")?;
+        let n = var("manager_name").to_status()?;
+        let p = var("manager_password").to_status()?;
         let chaim = jwt_decode::<Self>(&auth)?;
         if chaim.name != n || chaim.password != p {
             return Err(Status::invalid_argument("身份令牌错误"));
@@ -94,8 +93,7 @@ impl Claims {
             .await
             .ok_or_else(|| Status::not_found("没有此用户"))?;
         // Verify password against PHC string
-        let parsed_hash =
-            PasswordHash::new(&user.password).map_err(|_| Status::internal("密码解析错误"))?;
+        let parsed_hash = PasswordHash::new(&user.password).to_status()?;
         if Pbkdf2
             .verify_password(chaim.password.as_bytes(), &parsed_hash)
             .is_err()
