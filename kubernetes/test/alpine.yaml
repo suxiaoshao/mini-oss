@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: alpine
-          image: suxiaoshao/test:0.0.1
+          image: suxiaoshao/test:latest
           command:
             [
               "/bin/sh",

@@ -1,9 +1,12 @@
 use async_graphql::*;
 use proto::{
     auth::{login_client::LoginClient, LoginRequest},
+    user_manage::{manage_client::ManageClient, UserCreateInfo, UserDeleteInfo, UserUpdateInfo},
     Request,
 };
 use utils::errors::graphql::ToFieldResult;
+
+use super::user_info::UserInfo;
 
 pub struct QueryRoot;
 
@@ -32,8 +35,52 @@ pub struct MutationRoot;
 
 #[Object]
 impl MutationRoot {
-    async fn delete(&self, a: i32) -> i32 {
-        a
+    /// 用户创建
+    async fn manage_user_create(
+        &self,
+        name: String,
+        password: String,
+        auth: String,
+        description: Option<String>,
+    ) -> FieldResult<UserInfo> {
+        let mut client = ManageClient::connect("http://user-mng-service:80")
+            .await
+            .to_field()?;
+        let request = Request::new(UserCreateInfo {
+            name,
+            password,
+            auth,
+            description,
+        });
+        let res = client.user_create(request).await.to_field()?;
+        Ok(UserInfo::from(res.into_inner()))
+    }
+    /// 用户更新
+    async fn manage_user_update(
+        &self,
+        name: String,
+        auth: String,
+        description: Option<String>,
+    ) -> FieldResult<UserInfo> {
+        let mut client = ManageClient::connect("http://user-mng-service:80")
+            .await
+            .to_field()?;
+        let request = Request::new(UserUpdateInfo {
+            name,
+            auth,
+            description,
+        });
+        let res = client.user_update(request).await.to_field()?;
+        Ok(UserInfo::from(res.into_inner()))
+    }
+    /// 用户更新
+    async fn manage_user_delete(&self, name: String, auth: String) -> FieldResult<bool> {
+        let mut client = ManageClient::connect("http://user-mng-service:80")
+            .await
+            .to_field()?;
+        let request = Request::new(UserDeleteInfo { name, auth });
+        client.user_delete(request).await.to_field()?;
+        Ok(true)
     }
 }
 #[tokio::test]

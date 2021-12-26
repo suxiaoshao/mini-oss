@@ -1,7 +1,12 @@
+use pbkdf2::{
+    password_hash::{rand_core::OsRng, PasswordHasher, SaltString},
+    Pbkdf2,
+};
 use proto::{
     auth::{check_client::CheckClient, CheckRequest},
     Request, Status,
 };
+use utils::errors::grpc::ToStatusResult;
 
 /// 验证管理员身份
 pub async fn check_manager(auth: &str) -> Result<(), Status> {
@@ -13,4 +18,15 @@ pub async fn check_manager(auth: &str) -> Result<(), Status> {
     });
     client.check_manager(check_request).await?;
     Ok(())
+}
+/// 密码加盐
+pub fn to_hash(password: &str) -> Result<String, Status> {
+    let salt = SaltString::generate(&mut OsRng);
+
+    // Hash password to PHC string ($pbkdf2-sha256$...)
+    let password_hash = Pbkdf2
+        .hash_password(password.as_bytes(), &salt)
+        .to_status()?
+        .to_string();
+    Ok(password_hash)
 }

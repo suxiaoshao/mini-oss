@@ -8,7 +8,7 @@ use proto::{
     Request, Response, Status,
 };
 
-use crate::utils::check_manager;
+use crate::utils::{check_manager, to_hash};
 
 pub struct UserManageGreeter {
     pool: Pool<Postgres>,
@@ -29,7 +29,7 @@ impl Manage for UserManageGreeter {
         check_manager(&request.get_ref().auth).await?;
         let user = User::create(
             &request.get_ref().name,
-            &request.get_ref().password,
+            &to_hash(&request.get_ref().password)?,
             &request.get_ref().description,
             &self.pool,
         )
@@ -42,7 +42,13 @@ impl Manage for UserManageGreeter {
     ) -> Result<Response<UserInfo>, Status> {
         // 验证管理员身份
         check_manager(&request.get_ref().auth).await?;
-        todo!()
+        let user = User::update(
+            &request.get_ref().name,
+            &request.get_ref().description,
+            &self.pool,
+        )
+        .await?;
+        Ok(Response::new(user.into()))
     }
     async fn user_delete(
         &self,
@@ -50,6 +56,7 @@ impl Manage for UserManageGreeter {
     ) -> Result<Response<Empty>, Status> {
         // 验证管理员身份
         check_manager(&request.get_ref().auth).await?;
-        todo!()
+        User::delete(&request.get_ref().name, &self.pool).await?;
+        Ok(Response::new(Empty {}))
     }
 }

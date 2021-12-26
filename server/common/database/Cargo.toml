@@ -10,3 +10,6 @@ sqlx = { version = "0.5.9", features = [ "runtime-tokio-rustls","postgres","time
 tonic = "0.6.2"
 proto={path="../proto"}
 utils={path="../utils"}
+[dev-dependencies]
+tokio = { version = "1.15.0", features = ["macros", "rt-multi-thread"] }
+
