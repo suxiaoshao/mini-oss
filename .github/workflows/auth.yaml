@@ -1,14 +1,14 @@
-name: graphql-docker-build
+name: auth-docker-build
 on:
   push:
     branches:
       - main
     paths:
-      - docker/graphql.Dockerfile
-      - server/packages/graphql
+      - docker/auth.Dockerfile
+      - server/packages/auth
       - server/common
       - server/.cargo
-      - .github/workflows/graphql.yaml
+      - .github/workflows/auth.yaml
       - .github/action/docker-build
 jobs:
   build:
@@ -30,7 +30,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: suxiaoshao/graphql:latest
-          file: ./docker/graphql.Dockerfile
+          tags: suxiaoshao/auth:latest
+          file: ./docker/auth.Dockerfile
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}

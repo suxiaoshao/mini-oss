@@ -1,15 +1,7 @@
-name: graphql-docker-build
+name: rust-update-docker-build
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - docker/graphql.Dockerfile
-      - server/packages/graphql
-      - server/common
-      - server/.cargo
-      - .github/workflows/graphql.yaml
-      - .github/action/docker-build
+  schedule:
+    - cron: "15 0 */2 * *"
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,7 +22,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: suxiaoshao/graphql:latest
-          file: ./docker/graphql.Dockerfile
+          tags: suxiaoshao/rust:latest
+          file: ./docker/rust.Dockerfile
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
