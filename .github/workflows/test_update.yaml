@@ -24,5 +24,3 @@ jobs:
           push: true
           tags: suxiaoshao/test:latest
           file: ./docker/test.Dockerfile
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}

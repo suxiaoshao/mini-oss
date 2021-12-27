@@ -32,5 +32,3 @@ jobs:
           push: true
           tags: suxiaoshao/graphql:latest
           file: ./docker/graphql.Dockerfile
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}

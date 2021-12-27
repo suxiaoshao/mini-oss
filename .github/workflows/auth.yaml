@@ -32,5 +32,3 @@ jobs:
           push: true
           tags: suxiaoshao/auth:latest
           file: ./docker/auth.Dockerfile
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
