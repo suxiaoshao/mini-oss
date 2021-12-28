@@ -48,7 +48,7 @@ spec:
   # it's apisix.
   ingressClassName: apisix
   rules:
-    - host: localhost
+    - host: api.mini-oss.top
       http:
         paths:
           - backend:

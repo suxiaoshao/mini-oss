@@ -1,4 +1,4 @@
-schema: http://localhost:30002/
+schema: http://api.mini-oss.top:30002
 documents:
   - "./src/**/*.graphql"
   - "./src/**/*.gql"

@@ -6,7 +6,7 @@ on:
     paths:
       - docker/rust.Dockerfile
       - .github/workflows/rust.yaml
-      - .github/action/docker-build
+
 jobs:
   build:
     runs-on: ubuntu-latest

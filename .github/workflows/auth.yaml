@@ -9,7 +9,7 @@ on:
       - server/common
       - server/.cargo
       - .github/workflows/auth.yaml
-      - .github/action/docker-build
+
 jobs:
   build:
     runs-on: ubuntu-latest

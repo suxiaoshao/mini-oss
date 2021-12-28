@@ -1,0 +1,8 @@
+# 用户登陆
+query userLogin($name: String!, $password: String!) {
+  userLogin(name: $name, password: $password)
+}
+# 管理员登陆
+query managerLogin($name: String!, $password: String!) {
+  managerLogin(name: $name, password: $password)
+}

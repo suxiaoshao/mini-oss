@@ -17,11 +17,30 @@ export type Scalars = {
 
 export type MutationRoot = {
   __typename?: 'MutationRoot';
-  delete: Scalars['Int'];
+  /** 用户创建 */
+  manageUserCreate: UserInfo;
+  /** 用户更新 */
+  manageUserDelete: Scalars['Boolean'];
+  /** 用户更新 */
+  manageUserUpdate: UserInfo;
 };
 
-export type MutationRootDeleteArgs = {
-  a: Scalars['Int'];
+export type MutationRootManageUserCreateArgs = {
+  auth: Scalars['String'];
+  description?: InputMaybe<Scalars['String']>;
+  name: Scalars['String'];
+  password: Scalars['String'];
+};
+
+export type MutationRootManageUserDeleteArgs = {
+  auth: Scalars['String'];
+  name: Scalars['String'];
+};
+
+export type MutationRootManageUserUpdateArgs = {
+  auth: Scalars['String'];
+  description?: InputMaybe<Scalars['String']>;
+  name: Scalars['String'];
 };
 
 export type QueryRoot = {
@@ -42,39 +61,103 @@ export type QueryRootUserLoginArgs = {
   password: Scalars['String'];
 };
 
-export type MyAddQueryVariables = Exact<{ [key: string]: never }>;
+export type UserInfo = {
+  __typename?: 'UserInfo';
+  /** 创建时间 */
+  createTime: Scalars['Int'];
+  /** 描述 */
+  description?: Maybe<Scalars['String']>;
+  /** 名字 */
+  name: Scalars['String'];
+  /** 更新时间 */
+  updateTime: Scalars['Int'];
+};
 
-export type MyAddQuery = { __typename?: 'QueryRoot'; userLogin: string };
+export type UserLoginQueryVariables = Exact<{
+  name: Scalars['String'];
+  password: Scalars['String'];
+}>;
 
-export const MyAddDocument = gql`
-  query myAdd {
-    userLogin(name: "sushao", password: "sushao")
+export type UserLoginQuery = { __typename?: 'QueryRoot'; userLogin: string };
+
+export type ManagerLoginQueryVariables = Exact<{
+  name: Scalars['String'];
+  password: Scalars['String'];
+}>;
+
+export type ManagerLoginQuery = { __typename?: 'QueryRoot'; managerLogin: string };
+
+export const UserLoginDocument = gql`
+  query userLogin($name: String!, $password: String!) {
+    userLogin(name: $name, password: $password)
   }
 `;
 
 /**
- * __useMyAddQuery__
+ * __useUserLoginQuery__
  *
- * To run a query within a React component, call `useMyAddQuery` and pass it any options that fit your needs.
- * When your component renders, `useMyAddQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useUserLoginQuery` and pass it any options that fit your needs.
+ * When your component renders, `useUserLoginQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useMyAddQuery({
+ * const { data, loading, error } = useUserLoginQuery({
  *   variables: {
+ *      name: // value for 'name'
+ *      password: // value for 'password'
  *   },
  * });
  */
-export function useMyAddQuery(baseOptions?: Apollo.QueryHookOptions<MyAddQuery, MyAddQueryVariables>) {
+export function useUserLoginQuery(baseOptions: Apollo.QueryHookOptions<UserLoginQuery, UserLoginQueryVariables>) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<MyAddQuery, MyAddQueryVariables>(MyAddDocument, options);
+  return Apollo.useQuery<UserLoginQuery, UserLoginQueryVariables>(UserLoginDocument, options);
 }
-export function useMyAddLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MyAddQuery, MyAddQueryVariables>) {
+export function useUserLoginLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<UserLoginQuery, UserLoginQueryVariables>,
+) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<MyAddQuery, MyAddQueryVariables>(MyAddDocument, options);
+  return Apollo.useLazyQuery<UserLoginQuery, UserLoginQueryVariables>(UserLoginDocument, options);
 }
-export type MyAddQueryHookResult = ReturnType<typeof useMyAddQuery>;
-export type MyAddLazyQueryHookResult = ReturnType<typeof useMyAddLazyQuery>;
-export type MyAddQueryResult = Apollo.QueryResult<MyAddQuery, MyAddQueryVariables>;
+export type UserLoginQueryHookResult = ReturnType<typeof useUserLoginQuery>;
+export type UserLoginLazyQueryHookResult = ReturnType<typeof useUserLoginLazyQuery>;
+export type UserLoginQueryResult = Apollo.QueryResult<UserLoginQuery, UserLoginQueryVariables>;
+export const ManagerLoginDocument = gql`
+  query managerLogin($name: String!, $password: String!) {
+    managerLogin(name: $name, password: $password)
+  }
+`;
+
+/**
+ * __useManagerLoginQuery__
+ *
+ * To run a query within a React component, call `useManagerLoginQuery` and pass it any options that fit your needs.
+ * When your component renders, `useManagerLoginQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useManagerLoginQuery({
+ *   variables: {
+ *      name: // value for 'name'
+ *      password: // value for 'password'
+ *   },
+ * });
+ */
+export function useManagerLoginQuery(
+  baseOptions: Apollo.QueryHookOptions<ManagerLoginQuery, ManagerLoginQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<ManagerLoginQuery, ManagerLoginQueryVariables>(ManagerLoginDocument, options);
+}
+export function useManagerLoginLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<ManagerLoginQuery, ManagerLoginQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<ManagerLoginQuery, ManagerLoginQueryVariables>(ManagerLoginDocument, options);
+}
+export type ManagerLoginQueryHookResult = ReturnType<typeof useManagerLoginQuery>;
+export type ManagerLoginLazyQueryHookResult = ReturnType<typeof useManagerLoginLazyQuery>;
+export type ManagerLoginQueryResult = Apollo.QueryResult<ManagerLoginQuery, ManagerLoginQueryVariables>;
