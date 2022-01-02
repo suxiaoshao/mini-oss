@@ -13,3 +13,6 @@ kubectl apply -f ./kubernetes/user_manage.yaml
 
 # 配置 graphql
 kubectl apply -f ./kubernetes/graphql.yaml
+
+# 配置 前端
+kubectl apply -f ./kubernetes/web.yaml
