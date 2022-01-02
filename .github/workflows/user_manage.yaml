@@ -5,9 +5,9 @@ on:
       - main
     paths:
       - docker/user_manage.Dockerfile
-      - server/packages/user_manage
-      - server/common
-      - server/.cargo
+      - server/packages/user_manage/**
+      - server/common/**
+      - server/.cargo/**
       - .github/workflows/user_manage.yaml
 
 jobs:

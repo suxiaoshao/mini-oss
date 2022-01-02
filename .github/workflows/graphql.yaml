@@ -5,9 +5,9 @@ on:
       - main
     paths:
       - docker/graphql.Dockerfile
-      - server/packages/graphql
-      - server/common
-      - server/.cargo
+      - server/packages/graphql/**
+      - server/common/**
+      - server/.cargo/**
       - .github/workflows/graphql.yaml
 
 jobs:

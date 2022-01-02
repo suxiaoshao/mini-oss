@@ -5,7 +5,7 @@ on:
       - main
     paths:
       - docker/web.Dockerfile
-      - web
+      - web/**
       - .github/workflows/web.yaml
 
 jobs:
