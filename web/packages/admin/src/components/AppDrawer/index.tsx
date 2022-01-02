@@ -1,11 +1,9 @@
 import { Home } from '@mui/icons-material';
 import { Box, Drawer, List } from '@mui/material';
+import { Outlet } from 'react-router-dom';
 import ListItemRoute from './ListItemRoute';
 
-export interface AppDrawerProps {
-  children?: React.ReactChild;
-}
-export default function AppDrawer({ children }: AppDrawerProps): JSX.Element {
+export default function AppDrawer(): JSX.Element {
   const width = 250;
   return (
     <Box sx={{ display: 'flex', flexDirection: 'row', height: '100%' }}>
@@ -22,7 +20,9 @@ export default function AppDrawer({ children }: AppDrawerProps): JSX.Element {
         </List>
       </Drawer>
 
-      <Box sx={{ flex: '1 1 0', maxWidth: `calc(100% - ${width}px)` }}>{children}</Box>
+      <Box sx={{ flex: '1 1 0', maxWidth: `calc(100% - ${width}px)` }}>
+        <Outlet />
+      </Box>
     </Box>
   );
 }

@@ -1,17 +1,21 @@
 import { BrowserRouter } from 'react-router-dom';
 import CustomTheme from '../../../common/src/CustomTheme';
-import AppDrawer from './components/AppDrawer';
 import AppRouter from './components/AppRouter';
+import { Provider } from 'react-redux';
+import { store } from './app/store';
+import { ApolloProvider, client } from 'graphql';
 
 function App(): JSX.Element {
   return (
-    <CustomTheme>
-      <BrowserRouter>
-        <AppDrawer>
-          <AppRouter />
-        </AppDrawer>
-      </BrowserRouter>
-    </CustomTheme>
+    <Provider store={store}>
+      <ApolloProvider client={client}>
+        <CustomTheme>
+          <BrowserRouter>
+            <AppRouter />
+          </BrowserRouter>
+        </CustomTheme>
+      </ApolloProvider>
+    </Provider>
   );
 }
 
