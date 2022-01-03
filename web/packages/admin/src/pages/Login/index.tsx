@@ -65,7 +65,12 @@ export default function Login(): JSX.Element {
           helperText={errors.password && '不能为空'}
           sx={{ marginTop: (theme) => theme.spacing(2), width: '100%' }}
         />
-        <Button size="large" variant="contained" type="submit" sx={{ marginTop: (theme) => theme.spacing(2) }}>
+        <Button
+          size="large"
+          variant="contained"
+          type="submit"
+          sx={{ marginTop: (theme) => theme.spacing(2), width: '100%' }}
+        >
           登陆
         </Button>
       </Box>

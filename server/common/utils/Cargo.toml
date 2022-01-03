@@ -8,6 +8,6 @@ edition = "2021"
 [dependencies]
 tonic = "0.6.2"
 jsonwebtoken = "7.2.0"
-sqlx = { version = "0.5.9", features = [ "runtime-tokio-rustls" ] }
+sqlx = { version = "0.5.10", features = [ "runtime-tokio-rustls" ] }
 pbkdf2 = "0.10.0"
-async-graphql = "3.0.18"
+async-graphql = "3.0.19"
