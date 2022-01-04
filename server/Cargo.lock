@@ -715,6 +715,7 @@ dependencies = [
  "proto",
  "thiserror",
  "tokio",
+ "tower-http",
  "utils",
 ]
 

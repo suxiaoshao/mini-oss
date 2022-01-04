@@ -13,3 +13,4 @@ async-graphql-axum = "3.0.19"
 proto={path="../../common/proto"}
 thiserror = "1.0.30"
 utils={path="../../common/utils"}
+tower-http = {version="0.2.0",features=["cors"]}

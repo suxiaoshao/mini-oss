@@ -11,6 +11,7 @@ use axum::{AddExtensionLayer, Router, Server};
 use schema::RootSchema;
 
 use crate::schema::root::{MutationRoot, QueryRoot};
+use crate::utils::cors::get_cors;
 use crate::utils::get_local_ip::get_local_ip;
 
 async fn graphql_handler(
@@ -28,11 +29,14 @@ async fn graphql_playground() -> impl IntoResponse {
 
 #[tokio::main]
 async fn main() {
+    // 设置跨域
+    let cors = get_cors();
     let schema = Schema::build(QueryRoot, MutationRoot, EmptySubscription).finish();
 
     let app = Router::new()
         .route("/", get(graphql_playground).post(graphql_handler))
-        .layer(AddExtensionLayer::new(schema));
+        .layer(AddExtensionLayer::new(schema))
+        .layer(cors);
     let ip = get_local_ip().unwrap();
 
     println!("Playground: http://{}:80", &ip);
