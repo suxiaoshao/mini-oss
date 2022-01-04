@@ -10,7 +10,7 @@ export interface CustomThemeProps {
   children?: React.ReactChild;
 }
 
-export default function CustomTheme({ children }: CustomThemeProps): JSX.Element {
+export function CustomTheme({ children }: CustomThemeProps): JSX.Element {
   const isDark = useMediaQuery('(prefers-color-scheme: dark)');
 
   const theme = React.useMemo(() => {

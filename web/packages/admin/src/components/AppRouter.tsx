@@ -12,6 +12,8 @@ export default function AppRouter(): JSX.Element {
   useEffect(() => {
     if (auth === null) {
       navigate('/login');
+    } else {
+      navigate('/');
     }
   }, [auth, navigate]);
   return (
