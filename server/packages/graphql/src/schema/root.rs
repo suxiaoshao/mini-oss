@@ -1,12 +1,15 @@
 use async_graphql::*;
 use proto::{
     auth::{login_client::LoginClient, LoginRequest},
-    user_manage::{manage_client::ManageClient, UserCreateInfo, UserDeleteInfo, UserUpdateInfo},
+    user_manage::{
+        user_manage_client::UserManageClient, user_message_client::UserMessageClient,
+        CreateUserRequest, DeleteUserRequest, GetUserRequest, ListRequest, UpdateUserRequest,
+    },
     Request,
 };
 use utils::errors::graphql::ToFieldResult;
 
-use super::user_info::UserInfo;
+use super::user_info::{UserInfo, UserList};
 
 pub struct QueryRoot;
 
@@ -30,6 +33,28 @@ impl QueryRoot {
         let res = client.user_login(request).await.to_field()?;
         Ok(res.get_ref().auth.to_string())
     }
+    /// 用户列表
+    async fn user_list(&self, limit: u32, offset: u32, auth: String) -> FieldResult<UserList> {
+        let mut client = UserMessageClient::connect("http://user-mng-service:80")
+            .await
+            .to_field()?;
+        let request = Request::new(ListRequest {
+            limit,
+            offset,
+            auth,
+        });
+        let reply = client.list_user(request).await?;
+        Ok(UserList::from(reply.into_inner()))
+    }
+    /// 用户信息
+    async fn user_info(&self, name: String, auth: String) -> FieldResult<UserInfo> {
+        let mut client = UserMessageClient::connect("http://user-mng-service:80")
+            .await
+            .to_field()?;
+        let request = Request::new(GetUserRequest { name, auth });
+        let reply = client.get_user(request).await?;
+        Ok(UserInfo::from(reply.into_inner()))
+    }
 }
 pub struct MutationRoot;
 
@@ -43,16 +68,16 @@ impl MutationRoot {
         auth: String,
         description: Option<String>,
     ) -> FieldResult<UserInfo> {
-        let mut client = ManageClient::connect("http://user-mng-service:80")
+        let mut client = UserManageClient::connect("http://user-mng-service:80")
             .await
             .to_field()?;
-        let request = Request::new(UserCreateInfo {
+        let request = Request::new(CreateUserRequest {
             name,
             password,
             auth,
             description,
         });
-        let res = client.user_create(request).await.to_field()?;
+        let res = client.create_user(request).await.to_field()?;
         Ok(UserInfo::from(res.into_inner()))
     }
     /// 用户更新
@@ -62,24 +87,24 @@ impl MutationRoot {
         auth: String,
         description: Option<String>,
     ) -> FieldResult<UserInfo> {
-        let mut client = ManageClient::connect("http://user-mng-service:80")
+        let mut client = UserManageClient::connect("http://user-mng-service:80")
             .await
             .to_field()?;
-        let request = Request::new(UserUpdateInfo {
+        let request = Request::new(UpdateUserRequest {
             name,
             auth,
             description,
         });
-        let res = client.user_update(request).await.to_field()?;
+        let res = client.update_user(request).await.to_field()?;
         Ok(UserInfo::from(res.into_inner()))
     }
     /// 用户更新
     async fn manage_user_delete(&self, name: String, auth: String) -> FieldResult<bool> {
-        let mut client = ManageClient::connect("http://user-mng-service:80")
+        let mut client = UserManageClient::connect("http://user-mng-service:80")
             .await
             .to_field()?;
-        let request = Request::new(UserDeleteInfo { name, auth });
-        client.user_delete(request).await.to_field()?;
+        let request = Request::new(DeleteUserRequest { name, auth });
+        client.delete_user(request).await.to_field()?;
         Ok(true)
     }
 }

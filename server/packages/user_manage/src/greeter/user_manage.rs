@@ -3,7 +3,8 @@ use proto::{
     async_trait,
     auth::Empty,
     user_manage::{
-        manage_server::Manage, UserCreateInfo, UserDeleteInfo, UserInfo, UserUpdateInfo,
+        user_manage_server::UserManage, CreateUserRequest, DeleteUserRequest, UpdateUserRequest,
+        UserInfo,
     },
     Request, Response, Status,
 };
@@ -20,10 +21,10 @@ impl UserManageGreeter {
     }
 }
 #[async_trait]
-impl Manage for UserManageGreeter {
-    async fn user_create(
+impl UserManage for UserManageGreeter {
+    async fn create_user(
         &self,
-        request: Request<UserCreateInfo>,
+        request: Request<CreateUserRequest>,
     ) -> Result<Response<UserInfo>, Status> {
         // 验证管理员身份
         check_manager(&request.get_ref().auth).await?;
@@ -36,9 +37,9 @@ impl Manage for UserManageGreeter {
         .await?;
         Ok(Response::new(user.into()))
     }
-    async fn user_update(
+    async fn update_user(
         &self,
-        request: Request<UserUpdateInfo>,
+        request: Request<UpdateUserRequest>,
     ) -> Result<Response<UserInfo>, Status> {
         // 验证管理员身份
         check_manager(&request.get_ref().auth).await?;
@@ -50,9 +51,9 @@ impl Manage for UserManageGreeter {
         .await?;
         Ok(Response::new(user.into()))
     }
-    async fn user_delete(
+    async fn delete_user(
         &self,
-        request: Request<UserDeleteInfo>,
+        request: Request<DeleteUserRequest>,
     ) -> Result<Response<Empty>, Status> {
         // 验证管理员身份
         check_manager(&request.get_ref().auth).await?;

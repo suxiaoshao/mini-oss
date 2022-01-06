@@ -1,4 +1,5 @@
 use async_graphql::SimpleObject;
+use proto::user_manage::ListUserReply;
 
 #[derive(SimpleObject)]
 pub struct UserInfo {
@@ -24,6 +25,22 @@ impl From<proto::user_manage::UserInfo> for UserInfo {
             create_time,
             update_time,
             description,
+        }
+    }
+}
+#[derive(SimpleObject)]
+pub struct UserList {
+    /// 总数
+    pub total: u32,
+    /// 数据
+    pub data: Vec<UserInfo>,
+}
+
+impl From<ListUserReply> for UserList {
+    fn from(list_user: ListUserReply) -> Self {
+        Self {
+            total: list_user.total,
+            data: list_user.data.into_iter().map(|x| x.into()).collect(),
         }
     }
 }

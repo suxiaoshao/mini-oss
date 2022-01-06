@@ -5,6 +5,7 @@ use tonic::Status;
 
 use proto::user_manage::UserInfo;
 use utils::errors::grpc::ToStatusResult;
+
 #[derive(Debug)]
 pub struct User {
     /// 名字
@@ -83,26 +84,31 @@ impl User {
     }
     /// 获取第一项
     pub async fn find_one(name: &str, pool: &Pool<Postgres>) -> Result<Self, Status> {
-        let (name, password, create_time, update_time, description): (
-            String,
-            String,
-            PrimitiveDateTime,
-            PrimitiveDateTime,
-            Option<String>,
-        ) = sqlx::query_as(
+        let user: RowUser = sqlx::query_as(
             "select name,password,create_time,update_time,description from users where name = $1",
         )
         .bind(name)
         .fetch_one(pool)
         .await
         .to_status()?;
-        Ok(Self {
-            name,
-            password,
-            create_time,
-            update_time,
-            description,
-        })
+        Ok(user.into())
+    }
+    /// 获取列表
+    pub async fn find_many(
+        limit: u32,
+        offset: u32,
+        pool: &Pool<Postgres>,
+    ) -> Result<Vec<Self>, Status> {
+        let users:Vec<RowUser> =sqlx::query_as("select name,password,create_time,update_time,description from users offset $1 limit $2").bind(offset).bind(limit).fetch_all(pool).await.to_status()?;
+        Ok(users.into_iter().map(|x| x.into()).collect())
+    }
+    /// 获取总数
+    pub async fn count(pool: &Pool<Postgres>) -> Result<u32, Status> {
+        let (count,): (u32,) = sqlx::query_as("select count(name) from users")
+            .fetch_one(pool)
+            .await
+            .to_status()?;
+        Ok(count)
     }
 }
 impl Into<UserInfo> for User {
@@ -121,6 +127,25 @@ impl Into<UserInfo> for User {
             description,
             create_time,
             update_time,
+        }
+    }
+}
+
+type RowUser = (
+    String,
+    String,
+    PrimitiveDateTime,
+    PrimitiveDateTime,
+    Option<String>,
+);
+impl From<RowUser> for User {
+    fn from((name, password, create_time, update_time, description): RowUser) -> Self {
+        Self {
+            name,
+            password,
+            create_time,
+            update_time,
+            description,
         }
     }
 }
