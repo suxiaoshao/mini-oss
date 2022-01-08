@@ -61,7 +61,7 @@ message ListUserReply{
   // 数据
   repeated UserInfo data=1;
   // 总数
-  uint32 total =2;
+  int64 total =2;
 }
 
 message GetUserRequest{

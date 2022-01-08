@@ -103,8 +103,8 @@ impl User {
         Ok(users.into_iter().map(|x| x.into()).collect())
     }
     /// 获取总数
-    pub async fn count(pool: &Pool<Postgres>) -> Result<u32, Status> {
-        let (count,): (u32,) = sqlx::query_as("select count(name) from users")
+    pub async fn count(pool: &Pool<Postgres>) -> Result<i64, Status> {
+        let (count,): (i64,) = sqlx::query_as("select count(name) from users")
             .fetch_one(pool)
             .await
             .to_status()?;
@@ -162,7 +162,8 @@ mod test {
             .connect("postgres://sushao:sushao@localhost:5432/mini_oss")
             .await
             .unwrap();
-        let a = User::find_one("suaho", &pool).await.unwrap();
-        println!("{:?}", a);
+        let a = User::find_many(10, 0, &pool).await.unwrap();
+        let count = User::count(&pool).await.unwrap();
+        println!("{:?} {}", a, count);
     }
 }

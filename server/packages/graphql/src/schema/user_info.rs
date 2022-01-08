@@ -31,7 +31,7 @@ impl From<proto::user_manage::UserInfo> for UserInfo {
 #[derive(SimpleObject)]
 pub struct UserList {
     /// 总数
-    pub total: u32,
+    pub total: i64,
     /// 数据
     pub data: Vec<UserInfo>,
 }
