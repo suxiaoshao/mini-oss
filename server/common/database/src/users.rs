@@ -120,8 +120,8 @@ impl Into<UserInfo> for User {
             description,
             ..
         } = self;
-        let create_time = create_time.assume_utc().unix_timestamp();
-        let update_time = update_time.assume_utc().unix_timestamp();
+        let create_time = (create_time.assume_utc().unix_timestamp_nanos() / 1000000) as i64;
+        let update_time = (update_time.assume_utc().unix_timestamp_nanos() / 1000000) as i64;
         UserInfo {
             name,
             description,
