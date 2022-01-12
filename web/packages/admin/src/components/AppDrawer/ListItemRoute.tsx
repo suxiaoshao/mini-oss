@@ -15,7 +15,7 @@ export default function ListItemRoute({ matchPaths, toPath, text, icon }: ListIt
     <ListItemButton
       selected={matchPaths.includes(pathname)}
       onClick={() => {
-        navigate(toPath, { replace: true });
+        navigate(toPath);
       }}
     >
       <ListItemIcon>{icon}</ListItemIcon>

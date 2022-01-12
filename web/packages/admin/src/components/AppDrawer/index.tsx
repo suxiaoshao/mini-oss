@@ -1,10 +1,13 @@
-import { Home } from '@mui/icons-material';
-import { Box, Drawer, List } from '@mui/material';
+import { Home, Logout, SupervisedUserCircle } from '@mui/icons-material';
+import { Box, Divider, Drawer, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import { Outlet } from 'react-router-dom';
+import { useAppDispatch } from '../../app/hooks';
+import { logout } from '../../features/auth/authSlice';
 import ListItemRoute from './ListItemRoute';
 
 export default function AppDrawer(): JSX.Element {
   const width = 250;
+  const dispatch = useAppDispatch();
   return (
     <Box sx={{ display: 'flex', flexDirection: 'row', height: '100%' }}>
       <Drawer
@@ -17,6 +20,20 @@ export default function AppDrawer(): JSX.Element {
       >
         <List sx={{ width }}>
           <ListItemRoute toPath="/" matchPaths={['/', '']} text="首页" icon={<Home />} />
+          <ListItemRoute toPath="/users" matchPaths={['/users']} text="用户管理" icon={<SupervisedUserCircle />} />
+        </List>
+        <Divider />
+        <List sx={{ width }}>
+          <ListItemButton
+            onClick={() => {
+              dispatch(logout());
+            }}
+          >
+            <ListItemIcon>
+              <Logout />
+            </ListItemIcon>
+            <ListItemText>登出</ListItemText>
+          </ListItemButton>
         </List>
       </Drawer>
 
