@@ -111,6 +111,7 @@ impl User {
         Ok(count)
     }
 }
+#[allow(clippy::from_over_into)]
 impl Into<UserInfo> for User {
     fn into(self) -> UserInfo {
         let User {
