@@ -82,7 +82,7 @@ impl Claims {
         let p = var("manager_password").to_status()?;
         let chaim = jwt_decode::<Self>(&auth)?;
         if chaim.name != n || chaim.password != p {
-            return Err(Status::invalid_argument("身份令牌错误"));
+            return Err(Status::unauthenticated("身份令牌错误"));
         };
         Ok(())
     }
@@ -98,7 +98,7 @@ impl Claims {
             .verify_password(chaim.password.as_bytes(), &parsed_hash)
             .is_err()
         {
-            return Err(Status::invalid_argument("账号密码错误"));
+            return Err(Status::unauthenticated("账号密码错误"));
         }
         Ok(())
     }

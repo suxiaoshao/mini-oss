@@ -17,9 +17,9 @@ pub fn jwt_decode<T: DeserializeOwned>(token: &str) -> Result<T, Status> {
         Ok(e) => Ok(e.claims),
         Err(e) => Err(match e.kind() {
             jsonwebtoken::errors::ErrorKind::ExpiredSignature => {
-                Status::deadline_exceeded("身份已超时")
+                Status::unauthenticated("身份已超时")
             }
-            _ => Status::invalid_argument("身份令牌错误"),
+            _ => Status::unauthenticated("身份令牌错误"),
         }),
     }
 }
