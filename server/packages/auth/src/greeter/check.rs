@@ -1,7 +1,7 @@
 use database::{Pool, Postgres};
 use proto::{
     async_trait,
-    auth::{check_server::Check, CheckRequest, Empty},
+    auth::{check_server::Check, CheckReply, CheckRequest, Empty},
     Request, Response, Status,
 };
 
@@ -27,9 +27,12 @@ impl Check for CheckGreeter {
         Claims::check_manager(auth)?;
         Ok(Response::new(Empty {}))
     }
-    async fn check_user(&self, request: Request<CheckRequest>) -> Result<Response<Empty>, Status> {
+    async fn check_user(
+        &self,
+        request: Request<CheckRequest>,
+    ) -> Result<Response<CheckReply>, Status> {
         let auth = request.into_inner().auth;
-        Claims::check_user(auth, &self.pool).await?;
-        Ok(Response::new(Empty {}))
+        let name = Claims::check_user(auth, &self.pool).await?;
+        Ok(Response::new(CheckReply { name }))
     }
 }

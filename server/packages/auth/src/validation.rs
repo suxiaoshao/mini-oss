@@ -87,7 +87,7 @@ impl Claims {
         Ok(())
     }
     /// 验证用户
-    pub async fn check_user(auth: String, pool: &Pool<Postgres>) -> Result<(), Status> {
+    pub async fn check_user(auth: String, pool: &Pool<Postgres>) -> Result<String, Status> {
         let chaim = jwt_decode::<Self>(&auth)?;
         let user = User::find_one(&chaim.name, pool)
             .await
@@ -100,6 +100,6 @@ impl Claims {
         {
             return Err(Status::unauthenticated("账号密码错误"));
         }
-        Ok(())
+        Ok(user.name)
     }
 }

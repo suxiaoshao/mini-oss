@@ -102,6 +102,14 @@ importers:
       common: link:../../common
       graphql: link:../../graphql
 
+  packages/user:
+    specifiers:
+      common: workspace:common
+      graphql: workspace:graphql
+    dependencies:
+      common: link:../../common
+      graphql: link:../../graphql
+
 packages:
 
   /concat-map/0.0.1:

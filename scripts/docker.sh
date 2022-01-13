@@ -10,8 +10,8 @@ docker push suxiaoshao/graphql:latest;
 docker build -t suxiaoshao/auth:latest -f ./docker/auth.Dockerfile .;
 docker push suxiaoshao/auth:latest;
 
-docker build -t suxiaoshao/user_manage:latest -f ./docker/user_manage.Dockerfile .;
-docker push suxiaoshao/user_manage:latest;
+docker build -t suxiaoshao/user:latest -f ./docker/user.Dockerfile .;
+docker push suxiaoshao/user:latest;
 
 docker build -t suxiaoshao/test:latest -f ./docker/test.Dockerfile .;
 docker push suxiaoshao/test:latest;

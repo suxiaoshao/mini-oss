@@ -11,7 +11,7 @@ service Login {
 
 service Check {
   // 验证用户登陆
-  rpc CheckUser(CheckRequest) returns(Empty){}
+  rpc CheckUser(CheckRequest) returns(CheckReply){}
   // 验证管理员登陆
   rpc CheckManager(CheckRequest) returns(Empty){}
 }
@@ -30,6 +30,11 @@ message LoginReply {
 message CheckRequest{
   string auth = 1;
 }
+
+message CheckReply{
+  string name=1;
+}
+
 message Empty{
 
 }

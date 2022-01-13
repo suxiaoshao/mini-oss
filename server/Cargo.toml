@@ -6,5 +6,5 @@ members = [
     "common/utils",
     "common/database",
     "packages/auth",
-    "packages/user_manage"
+    "packages/user"
 ]
