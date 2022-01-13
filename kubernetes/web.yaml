@@ -58,3 +58,13 @@ spec:
                   number: 80
             path: /
             pathType: Prefix
+    - host: mini-oss.top
+      http:
+        paths:
+          - backend:
+              service:
+                name: web-service
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix

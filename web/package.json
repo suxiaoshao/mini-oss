@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "lint": "pnpm run format && pnpm run eslint && pnpm run tslint",
-    "format": "prettier --config ./.prettierrc.js --write ./packages/*/src graphql/src",
-    "eslint": "eslint --config ./.eslintrc.js --ext .jsx --ext .js --ext .ts --ext .tsx ./packages/*/src graphql/src",
-    "tslint": " tsc --build tsconfig.json"
+    "format": "prettier --config ./.prettierrc.js --write ./packages/*/src graphql/src common/src",
+    "eslint": "eslint --config ./.eslintrc.js --ext .jsx --ext .js --ext .ts --ext .tsx ./packages/*/src graphql/src common/src",
+    "tslint": "tsc --build tsconfig.json",
+    "build": "pnpm run build --filter {packages}"
   },
   "author": "suxiaoshao",
   "license": "ISC",
