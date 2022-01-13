@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use crate::validation::Claims;
 use database::{Pool, Postgres};
 use proto::{
@@ -7,11 +9,11 @@ use proto::{
 };
 
 pub struct LoginGreeter {
-    pool: Pool<Postgres>,
+    pool: Arc<Pool<Postgres>>,
 }
 
 impl LoginGreeter {
-    pub fn new(pool: Pool<Postgres>) -> LoginGreeter {
+    pub fn new(pool: Arc<Pool<Postgres>>) -> Self {
         Self { pool }
     }
 }

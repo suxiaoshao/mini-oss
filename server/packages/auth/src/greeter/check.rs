@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use database::{Pool, Postgres};
 use proto::{
     async_trait,
@@ -8,11 +10,11 @@ use proto::{
 use crate::validation::Claims;
 
 pub struct CheckGreeter {
-    pool: Pool<Postgres>,
+    pool: Arc<Pool<Postgres>>,
 }
 
 impl CheckGreeter {
-    pub fn new(pool: Pool<Postgres>) -> CheckGreeter {
+    pub fn new(pool: Arc<Pool<Postgres>>) -> Self {
         Self { pool }
     }
 }

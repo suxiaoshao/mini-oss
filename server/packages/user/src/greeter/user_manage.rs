@@ -1,8 +1,10 @@
+use std::sync::Arc;
+
 use database::{users::User, Pool, Postgres};
 use proto::{
     async_trait,
     auth::Empty,
-    user_manage::{
+    user::{
         user_manage_server::UserManage, CreateUserRequest, DeleteUserRequest, UpdateUserRequest,
         UserInfo,
     },
@@ -12,11 +14,11 @@ use proto::{
 use crate::utils::{check_manager, to_hash};
 
 pub struct UserManageGreeter {
-    pool: Pool<Postgres>,
+    pool: Arc<Pool<Postgres>>,
 }
 
 impl UserManageGreeter {
-    pub fn new(pool: Pool<Postgres>) -> Self {
+    pub fn new(pool: Arc<Pool<Postgres>>) -> Self {
         Self { pool }
     }
 }

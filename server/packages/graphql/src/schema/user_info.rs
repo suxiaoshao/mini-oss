@@ -1,5 +1,5 @@
 use async_graphql::SimpleObject;
-use proto::user_manage::ListUserReply;
+use proto::user::ListUserReply;
 
 #[derive(SimpleObject)]
 pub struct UserInfo {
@@ -12,9 +12,9 @@ pub struct UserInfo {
     /// 描述
     pub description: Option<String>,
 }
-impl From<proto::user_manage::UserInfo> for UserInfo {
-    fn from(user: proto::user_manage::UserInfo) -> Self {
-        let proto::user_manage::UserInfo {
+impl From<proto::user::UserInfo> for UserInfo {
+    fn from(user: proto::user::UserInfo) -> Self {
+        let proto::user::UserInfo {
             name,
             create_time,
             update_time,

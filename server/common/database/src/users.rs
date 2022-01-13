@@ -3,7 +3,7 @@ use std::time::SystemTime;
 use sqlx::{types::time::PrimitiveDateTime, Pool, Postgres};
 use tonic::Status;
 
-use proto::user_manage::UserInfo;
+use proto::user::UserInfo;
 use utils::errors::grpc::ToStatusResult;
 
 #[derive(Debug)]
@@ -63,6 +63,28 @@ impl User {
         let time = PrimitiveDateTime::from(SystemTime::now());
         sqlx::query("update users set description = $1, update_time = $2 where name = $3")
             .bind(description)
+            .bind(time)
+            .bind(name)
+            .execute(pool)
+            .await
+            .to_status()?;
+        Self::find_one(name, pool).await
+    }
+    /// 修改密码
+    pub async fn update_password(
+        name: &str,
+        old_password: &str,
+        new_password: &str,
+        pool: &Pool<Postgres>,
+    ) -> Result<Self, Status> {
+        let user = Self::find_one(name, pool).await?;
+        if user.password != old_password {
+            return Err(Status::invalid_argument("旧密码错误"));
+        }
+        // 获取现在时间
+        let time = PrimitiveDateTime::from(SystemTime::now());
+        sqlx::query("update users set password = $1, update_time = $2 where name = $3")
+            .bind(new_password)
             .bind(time)
             .bind(name)
             .execute(pool)
