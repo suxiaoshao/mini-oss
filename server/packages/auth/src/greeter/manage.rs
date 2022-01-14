@@ -7,7 +7,7 @@ use pbkdf2::{
 };
 use proto::{
     async_trait,
-    auth::{manage_server::Manage, Empty, UpdatePasswordRequest},
+    auth::{manage_server::Manage, Empty, LoginReply, UpdatePasswordRequest},
     Request, Response, Status,
 };
 use utils::errors::grpc::ToStatusResult;
@@ -28,7 +28,7 @@ impl Manage for ManageGreeter {
     async fn update_password(
         &self,
         request: Request<UpdatePasswordRequest>,
-    ) -> Result<Response<Empty>, Status> {
+    ) -> Result<Response<LoginReply>, Status> {
         let UpdatePasswordRequest {
             old_password,
             new_password,
@@ -46,6 +46,7 @@ impl Manage for ManageGreeter {
             return Err(Status::invalid_argument("旧密码错误"));
         }
         User::update_password(&name, &new_password, &self.pool).await?;
-        Ok(Response::new(Empty {}))
+        let token = Claims::user_token(name, new_password, &self.pool).await?;
+        Ok(Response::new(LoginReply { auth: token }))
     }
 }

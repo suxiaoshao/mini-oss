@@ -41,7 +41,7 @@ message Empty{
 
 service Manage{
   // 修改密码
-  rpc UpdatePassword(UpdatePasswordRequest) returns (Empty){}
+  rpc UpdatePassword(UpdatePasswordRequest) returns (LoginReply){}
 }
 
 message UpdatePasswordRequest{

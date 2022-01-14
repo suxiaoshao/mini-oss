@@ -1,7 +1,8 @@
 use async_graphql::{FieldResult, Object};
 use proto::{
     auth::{
-        login_client::LoginClient, manage_client::ManageClient, LoginRequest, UpdatePasswordRequest,
+        login_client::LoginClient, manage_client::ManageClient, LoginReply, LoginRequest,
+        UpdatePasswordRequest,
     },
     user::{
         self_manage_client::SelfManageClient, user_manage_client::UserManageClient,
@@ -125,7 +126,7 @@ impl MutationRoot {
         auth: String,
         new_password: String,
         old_password: String,
-    ) -> FieldResult<bool> {
+    ) -> FieldResult<String> {
         let mut client = ManageClient::connect("http://auth-service:80")
             .await
             .to_field()?;
@@ -134,8 +135,12 @@ impl MutationRoot {
             new_password,
             old_password,
         });
-        client.update_password(request).await.to_field()?;
-        Ok(true)
+        let LoginReply { auth } = client
+            .update_password(request)
+            .await
+            .to_field()?
+            .into_inner();
+        Ok(auth)
     }
     /// 用户更新密码
     async fn update_info(
