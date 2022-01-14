@@ -178,9 +178,7 @@ dependencies = [
 name = "auth"
 version = "0.1.0"
 dependencies = [
- "jsonwebtoken",
  "proto",
- "serde",
  "tokio",
  "utils",
 ]

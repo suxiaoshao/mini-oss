@@ -125,7 +125,7 @@ impl MutationRoot {
         new_password: String,
         old_password: String,
     ) -> FieldResult<String> {
-        let mut client = SelfManageClient::connect("http://auth-service:80")
+        let mut client = SelfManageClient::connect("http://user-service:80")
             .await
             .to_field()?;
         let request = Request::new(UpdatePasswordRequest {
@@ -140,7 +140,7 @@ impl MutationRoot {
             .into_inner();
         Ok(auth)
     }
-    /// 用户更新密码
+    /// 用户更新信息
     async fn update_info(
         &self,
         auth: String,
