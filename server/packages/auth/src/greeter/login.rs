@@ -1,11 +1,12 @@
-use std::sync::Arc;
-
-use crate::validation::Claims;
-use database::{Pool, Postgres};
 use proto::{
     async_trait,
     auth::{login_server::Login, LoginReply, LoginRequest},
     Request, Response, Status,
+};
+use std::sync::Arc;
+use utils::{
+    database::{Pool, Postgres},
+    validation::claims::Claims,
 };
 
 pub struct LoginGreeter {

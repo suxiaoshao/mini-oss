@@ -1,16 +1,14 @@
 use std::env::var;
 
-use database::{users::User, Pool, Postgres};
 use jsonwebtoken::{encode, EncodingKey, Header};
-use pbkdf2::{
-    password_hash::{PasswordHash, PasswordVerifier},
-    Pbkdf2,
-};
+
 use proto::Status;
 use serde::{Deserialize, Serialize};
-use utils::errors::grpc::ToStatusResult;
+use sqlx::{Pool, Postgres};
 
-use crate::utils::jwt_decode;
+use crate::{database::users::User, errors::grpc::ToStatusResult};
+
+use super::{hash::validate_hash, jwt_decode::jwt_decode};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
@@ -41,6 +39,10 @@ impl Claims {
         )
         .to_status()
     }
+    // 新建并生成token
+    pub fn new_token(name: String, password: String) -> Result<String, Status> {
+        Self::new(name, password).to_token()
+    }
 }
 
 impl Claims {
@@ -49,8 +51,7 @@ impl Claims {
         let n = var("manager_name").to_status()?;
         let p = var("manager_password").to_status()?;
         if name == n && password == p {
-            let claims = Claims::new(name, password);
-            claims.to_token()
+            Claims::new_token(name, password)
         } else {
             Err(Status::invalid_argument("账号密码错误"))
         }
@@ -65,13 +66,8 @@ impl Claims {
             .await
             .map_err(|_| Status::not_found("没有此用户"))?;
         // Verify password against PHC string
-        let parsed_hash = PasswordHash::new(&user.password).to_status()?;
-        if Pbkdf2
-            .verify_password(password.as_bytes(), &parsed_hash)
-            .is_ok()
-        {
-            let claims = Claims::new(name, password);
-            claims.to_token()
+        if validate_hash(&password, &user.password).is_ok() {
+            Claims::new_token(name, password)
         } else {
             Err(Status::invalid_argument("账号密码错误"))
         }
@@ -87,19 +83,15 @@ impl Claims {
         Ok(())
     }
     /// 验证用户
-    pub async fn check_user(auth: String, pool: &Pool<Postgres>) -> Result<String, Status> {
+    pub async fn check_user(auth: String, pool: &Pool<Postgres>) -> Result<User, Status> {
         let chaim = jwt_decode::<Self>(&auth)?;
         let user = User::find_one(&chaim.name, pool)
             .await
             .map_err(|_| Status::not_found("没有此用户"))?;
         // Verify password against PHC string
-        let parsed_hash = PasswordHash::new(&user.password).to_status()?;
-        if Pbkdf2
-            .verify_password(chaim.password.as_bytes(), &parsed_hash)
-            .is_err()
-        {
+        if validate_hash(&chaim.password, &user.password).is_err() {
             return Err(Status::unauthenticated("账号密码错误"));
         }
-        Ok(user.name)
+        Ok(user)
     }
 }

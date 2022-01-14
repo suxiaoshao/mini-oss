@@ -1,17 +1,15 @@
+use ::utils::errors::graphql::ToFieldResult;
 use async_graphql::{FieldResult, Object};
 use proto::{
-    auth::{
-        login_client::LoginClient, manage_client::ManageClient, LoginReply, LoginRequest,
-        UpdatePasswordRequest,
-    },
+    auth::{login_client::LoginClient, LoginReply, LoginRequest},
     user::{
         self_manage_client::SelfManageClient, user_manage_client::UserManageClient,
         user_message_client::UserMessageClient, CreateUserRequest, DeleteUserRequest,
-        GetUserInfoRequest, GetUserRequest, ListRequest, UpdateUserInfoRequest, UpdateUserRequest,
+        GetUserInfoRequest, GetUserRequest, ListRequest, UpdatePasswordRequest,
+        UpdateUserInfoRequest, UpdateUserRequest,
     },
     Request,
 };
-use utils::errors::graphql::ToFieldResult;
 
 use super::user_info::{UserInfo, UserList};
 
@@ -127,7 +125,7 @@ impl MutationRoot {
         new_password: String,
         old_password: String,
     ) -> FieldResult<String> {
-        let mut client = ManageClient::connect("http://auth-service:80")
+        let mut client = SelfManageClient::connect("http://auth-service:80")
             .await
             .to_field()?;
         let request = Request::new(UpdatePasswordRequest {

@@ -89,6 +89,8 @@ service SelfManage{
   rpc UpdateUserInfo(UpdateUserInfoRequest) returns (UserInfo){}
   // 获取自身信息
   rpc GetUserInfo(GetUserInfoRequest) returns (UserInfo){}
+  // 修改密码
+  rpc UpdatePassword(UpdatePasswordRequest) returns (auth.LoginReply){}
 }
 
 message GetUserInfoRequest{
@@ -100,4 +102,12 @@ message UpdateUserInfoRequest{
   optional string description = 1;
   // 身份验证
   string auth = 2;
+}
+message UpdatePasswordRequest{
+  // 旧密码
+  string oldPassword=1;
+  // 新密码
+  string newPassword=2;
+  // 身份验证
+  string auth = 3;
 }

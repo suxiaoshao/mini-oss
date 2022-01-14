@@ -1,6 +1,5 @@
 use std::sync::Arc;
 
-use database::{users::User, Pool, Postgres};
 use proto::{
     async_trait,
     user::{
@@ -8,6 +7,7 @@ use proto::{
     },
     Request, Response, Status,
 };
+use utils::database::{users::User, Pool, Postgres};
 
 use crate::utils::check_manager;
 

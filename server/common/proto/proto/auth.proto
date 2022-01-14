@@ -38,17 +38,3 @@ message CheckReply{
 message Empty{
 
 }
-
-service Manage{
-  // 修改密码
-  rpc UpdatePassword(UpdatePasswordRequest) returns (LoginReply){}
-}
-
-message UpdatePasswordRequest{
-  // 旧密码
-  string oldPassword=1;
-  // 新密码
-  string newPassword=2;
-  // 身份验证
-  string auth = 3;
-}

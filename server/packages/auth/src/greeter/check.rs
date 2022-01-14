@@ -1,13 +1,14 @@
 use std::sync::Arc;
 
-use database::{Pool, Postgres};
 use proto::{
     async_trait,
     auth::{check_server::Check, CheckReply, CheckRequest, Empty},
     Request, Response, Status,
 };
-
-use crate::validation::Claims;
+use utils::{
+    database::{users::User, Pool, Postgres},
+    validation::claims::Claims,
+};
 
 pub struct CheckGreeter {
     pool: Arc<Pool<Postgres>>,
@@ -34,7 +35,7 @@ impl Check for CheckGreeter {
         request: Request<CheckRequest>,
     ) -> Result<Response<CheckReply>, Status> {
         let auth = request.into_inner().auth;
-        let name = Claims::check_user(auth, &self.pool).await?;
+        let User { name, .. } = Claims::check_user(auth, &self.pool).await?;
         Ok(Response::new(CheckReply { name }))
     }
 }

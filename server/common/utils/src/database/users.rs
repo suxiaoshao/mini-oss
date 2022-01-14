@@ -4,7 +4,8 @@ use sqlx::{types::time::PrimitiveDateTime, Pool, Postgres};
 use tonic::Status;
 
 use proto::user::UserInfo;
-use utils::errors::grpc::ToStatusResult;
+
+use crate::errors::grpc::ToStatusResult;
 
 #[derive(Debug)]
 pub struct User {

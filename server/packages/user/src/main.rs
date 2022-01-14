@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use database::PgPoolOptions;
+use ::utils::database::PgPoolOptions;
 use proto::{
     user::{
         self_manage_server::SelfManageServer, user_manage_server::UserManageServer,

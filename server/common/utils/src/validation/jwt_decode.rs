@@ -1,10 +1,10 @@
 use std::env::var;
 
 use jsonwebtoken::{decode, DecodingKey, Validation};
-
 use proto::Status;
 use serde::de::DeserializeOwned;
-use utils::errors::grpc::ToStatusResult;
+
+use crate::errors::grpc::ToStatusResult;
 
 /// token 解码
 pub fn jwt_decode<T: DeserializeOwned>(token: &str) -> Result<T, Status> {

@@ -1,6 +1,5 @@
 use std::sync::Arc;
 
-use database::{users::User, Pool, Postgres};
 use proto::{
     async_trait,
     auth::Empty,
@@ -10,8 +9,12 @@ use proto::{
     },
     Request, Response, Status,
 };
+use utils::{
+    database::{users::User, Pool, Postgres},
+    validation::hash::to_hash,
+};
 
-use crate::utils::{check_manager, to_hash};
+use crate::utils::check_manager;
 
 pub struct UserManageGreeter {
     pool: Arc<Pool<Postgres>>,

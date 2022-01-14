@@ -178,9 +178,7 @@ dependencies = [
 name = "auth"
 version = "0.1.0"
 dependencies = [
- "database",
  "jsonwebtoken",
- "pbkdf2",
  "proto",
  "serde",
  "tokio",
@@ -478,17 +476,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "database"
-version = "0.1.0"
-dependencies = [
- "proto",
- "sqlx",
- "tokio",
- "tonic",
- "utils",
-]
-
-[[package]]
 name = "digest"
 version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -713,7 +700,6 @@ dependencies = [
  "async-graphql-axum",
  "axum",
  "proto",
- "thiserror",
  "tokio",
  "tower-http",
  "utils",
@@ -2380,8 +2366,6 @@ dependencies = [
 name = "user"
 version = "0.1.0"
 dependencies = [
- "database",
- "pbkdf2",
  "proto",
  "tokio",
  "utils",
@@ -2400,7 +2384,10 @@ dependencies = [
  "async-graphql",
  "jsonwebtoken",
  "pbkdf2",
+ "proto",
+ "serde",
  "sqlx",
+ "tokio",
  "tonic",
 ]
 
