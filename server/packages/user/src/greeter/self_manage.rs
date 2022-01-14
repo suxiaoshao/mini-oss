@@ -3,11 +3,7 @@ use std::sync::Arc;
 use database::{users::User, Pool, Postgres};
 use proto::{
     async_trait,
-    auth::Empty,
-    user::{
-        self_manage_server::SelfManage, GetUserInfoRequest, UpdatePasswordRequest,
-        UpdateUserInfoRequest, UserInfo,
-    },
+    user::{self_manage_server::SelfManage, GetUserInfoRequest, UpdateUserInfoRequest, UserInfo},
     Request, Response, Status,
 };
 
@@ -24,21 +20,6 @@ impl SelfManageGreeter {
 }
 #[async_trait]
 impl SelfManage for SelfManageGreeter {
-    async fn update_password(
-        &self,
-        request: Request<UpdatePasswordRequest>,
-    ) -> Result<Response<Empty>, Status> {
-        // 验证管理员身份
-        let name = check_user(&request.get_ref().auth).await?;
-        User::update_password(
-            &name,
-            &request.get_ref().old_password,
-            &request.get_ref().new_password,
-            &self.pool,
-        )
-        .await?;
-        Ok(Response::new(Empty {}))
-    }
     async fn update_user_info(
         &self,
         request: Request<UpdateUserInfoRequest>,

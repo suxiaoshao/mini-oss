@@ -73,14 +73,9 @@ impl User {
     /// 修改密码
     pub async fn update_password(
         name: &str,
-        old_password: &str,
         new_password: &str,
         pool: &Pool<Postgres>,
     ) -> Result<Self, Status> {
-        let user = Self::find_one(name, pool).await?;
-        if user.password != old_password {
-            return Err(Status::invalid_argument("旧密码错误"));
-        }
         // 获取现在时间
         let time = PrimitiveDateTime::from(SystemTime::now());
         sqlx::query("update users set password = $1, update_time = $2 where name = $3")
