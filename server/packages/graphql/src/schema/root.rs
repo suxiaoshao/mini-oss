@@ -158,5 +158,5 @@ async fn test() {
         password: "sushao".to_string(),
     });
     let res = client.manager_login(request).await.unwrap();
-    println!("{}", res.get_ref().auth.to_string());
+    println!("{}", res.get_ref().auth);
 }

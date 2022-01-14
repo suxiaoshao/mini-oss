@@ -48,18 +48,8 @@ spec:
   # it's apisix.
   ingressClassName: apisix
   rules:
-    - host: admin.mini-oss.top
-      http:
-        paths:
-          - backend:
-              service:
-                name: web-service
-                port:
-                  number: 80
-            path: /
-            pathType: Prefix
     - host: mini-oss.top
-      http:
+      http: &http_rules
         paths:
           - backend:
               service:
@@ -68,3 +58,5 @@ spec:
                   number: 80
             path: /
             pathType: Prefix
+    - host: admin.mini-oss.top
+      http: *http_rules

@@ -1,6 +1,9 @@
 # 配置命名空间
 kubectl apply -f ./kubernetes/namespace.yaml
 
+# 配置 前端
+kubectl apply -f ./kubernetes/web.yaml
+
 # 配置 configmap
 
 kubectl apply -f ./kubernetes/configmap.yaml
@@ -13,6 +16,3 @@ kubectl apply -f ./kubernetes/user.yaml
 
 # 配置 graphql
 kubectl apply -f ./kubernetes/graphql.yaml
-
-# 配置 前端
-kubectl apply -f ./kubernetes/web.yaml

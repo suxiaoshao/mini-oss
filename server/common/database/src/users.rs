@@ -187,6 +187,6 @@ mod test {
             .unwrap();
         let a = User::find_many(10, 0, &pool).await.unwrap();
         let count = User::count(&pool).await.unwrap();
-        println!("{:?} {}", a, count);
+        println!("{a:?} {count}");
     }
 }

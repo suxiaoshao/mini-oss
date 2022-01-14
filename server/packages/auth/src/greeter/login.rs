@@ -51,5 +51,5 @@ async fn manager_login() {
         password: "sushao".to_string(),
     });
     let res = client.user_login(request).await.unwrap();
-    println!("{}", res.get_ref().auth.to_string());
+    println!("{}", res.get_ref().auth);
 }

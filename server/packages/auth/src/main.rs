@@ -24,7 +24,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let login_greeter = LoginGreeter::new(Arc::clone(&pool));
     let check_greeter = CheckGreeter::new(Arc::clone(&pool));
 
-    println!("GreeterServer listening on {}", addr);
+    println!("GreeterServer listening on {addr}");
 
     Server::builder()
         .add_service(LoginServer::new(login_greeter))

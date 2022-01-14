@@ -41,7 +41,7 @@ async fn main() {
 
     // 打印 ip
     let ip = get_local_ip().unwrap();
-    println!("Playground: http://{}:80", &ip);
+    println!("Playground: http://{ip}:80");
 
     Server::bind(&"0.0.0.0:80".parse().unwrap())
         .serve(app.into_make_service())

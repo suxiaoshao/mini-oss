@@ -32,7 +32,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let user_manage_greeter = UserManageGreeter::new(Arc::clone(&pool));
     let self_manage_greeter = SelfManageGreeter::new(Arc::clone(&pool));
     let user_message_greeter = UserMessageGreeter::new(Arc::clone(&pool));
-    println!("GreeterServer listening on {}", addr);
+    println!("GreeterServer listening on {addr}");
 
     Server::builder()
         .add_service(UserManageServer::new(user_manage_greeter))

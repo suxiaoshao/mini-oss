@@ -24,7 +24,7 @@ impl ToField for Status {
     fn to_field(self) -> FieldError {
         let mut extensions = ErrorExtensionValues::default();
         extensions.set("code", self.code() as i32);
-        extensions.set("source", format!("{:#?}", self));
+        extensions.set("source", format!("{self:#?}"));
         FieldError {
             message: self.message().to_string(),
             source: Some(Arc::new(self)),
@@ -36,7 +36,7 @@ impl ToField for tonic::transport::Error {
     fn to_field(self) -> FieldError {
         let mut extensions = ErrorExtensionValues::default();
         extensions.set("code", 17);
-        extensions.set("source", format!("{:#?}", self));
+        extensions.set("source", format!("{self:#?}"));
         FieldError {
             message: "服务器内部链接错误".to_string(),
             source: Some(Arc::new(self)),
