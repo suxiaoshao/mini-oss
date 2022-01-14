@@ -49,6 +49,7 @@ export default function UpdateUserAction({
           <DialogTitle>修改用户信息</DialogTitle>
           <DialogContent>
             <TextField
+              variant="standard"
               sx={{ marginTop: (theme) => theme.spacing(1) }}
               fullWidth
               label="描述"

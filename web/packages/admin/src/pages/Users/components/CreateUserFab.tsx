@@ -42,6 +42,7 @@ export default function CreateUserFab({ refetch }: CreateUserFabProps): JSX.Elem
           <DialogTitle>新建用户</DialogTitle>
           <DialogContent>
             <TextField
+              variant="standard"
               required
               sx={{ marginTop: (theme) => theme.spacing(1) }}
               fullWidth
@@ -49,6 +50,7 @@ export default function CreateUserFab({ refetch }: CreateUserFabProps): JSX.Elem
               {...register('name', { required: true })}
             />
             <TextField
+              variant="standard"
               required
               type={'password'}
               sx={{ marginTop: (theme) => theme.spacing(1) }}
@@ -57,6 +59,7 @@ export default function CreateUserFab({ refetch }: CreateUserFabProps): JSX.Elem
               {...register('password', { required: true })}
             />
             <TextField
+              variant="standard"
               sx={{ marginTop: (theme) => theme.spacing(1) }}
               fullWidth
               label="描述"

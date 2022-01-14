@@ -37,7 +37,7 @@ export function SnackbarProvider({ children }: { children: ReactChild }): JSX.El
             ref.current?.closeSnackbar(key);
           }}
         >
-          <Close />
+          <Close sx={{ color: '#fff' }} />
         </IconButton>
       )}
       variant="error"

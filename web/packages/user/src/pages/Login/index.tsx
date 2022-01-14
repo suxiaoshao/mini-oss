@@ -46,7 +46,7 @@ export default function Login(): JSX.Element {
       >
         <Avatar src={logo} sx={{ m: 1 }} />
         <Typography component="h1" variant="h5">
-          管理员登陆
+          登陆
         </Typography>
         {/* register your input into the hook by invoking the "register" function */}
         <TextField

@@ -1,0 +1,16 @@
+query selfUserInfo($auth: String!) {
+  selfUserInfo(auth: $auth) {
+    name
+    createTime
+    updateTime
+    description
+  }
+}
+mutation updateInfo($auth: String!, $description: String) {
+  updateInfo(auth: $auth, description: $description) {
+    name
+  }
+}
+mutation updatePassword($auth: String!, $newPassword: String!, $oldPassword: String!) {
+  updatePassword(auth: $auth, newPassword: $newPassword, oldPassword: $oldPassword)
+}

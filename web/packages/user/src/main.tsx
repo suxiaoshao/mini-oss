@@ -9,15 +9,15 @@ import { store } from './app/store';
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <SnackbarProvider>
-        <ApolloProvider client={client}>
-          <CustomTheme>
+      <CustomTheme>
+        <SnackbarProvider>
+          <ApolloProvider client={client}>
             <BrowserRouter>
               <App />
             </BrowserRouter>
-          </CustomTheme>
-        </ApolloProvider>
-      </SnackbarProvider>
+          </ApolloProvider>
+        </SnackbarProvider>
+      </CustomTheme>
     </Provider>
   </React.StrictMode>,
   document.getElementById('root'),

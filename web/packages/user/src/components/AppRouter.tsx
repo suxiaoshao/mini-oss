@@ -3,6 +3,7 @@ import { Route, Routes, useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../app/hooks';
 import Home from '../pages/Home';
 import Login from '../pages/Login';
+import Setting from '../pages/Setting';
 import AppDrawer from './AppDrawer';
 
 export default function AppRouter(): JSX.Element {
@@ -20,6 +21,7 @@ export default function AppRouter(): JSX.Element {
     <Routes>
       <Route path="/" element={<AppDrawer />}>
         <Route index element={<Home />} />
+        <Route path="setting" element={<Setting />} />
       </Route>
       <Route path="/login" element={<Login />} />
     </Routes>
