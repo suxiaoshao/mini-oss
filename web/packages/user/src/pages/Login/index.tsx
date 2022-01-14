@@ -1,8 +1,9 @@
 import { Avatar, Box, Button, TextField, Typography } from '@mui/material';
 import { useUserLoginLazyQuery } from 'graphql';
+import { useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
-import { useAppDispatch } from '../../app/hooks';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import logo from '../../favicon.svg';
 import { login } from '../../features/auth/authSlice';
 
@@ -12,21 +13,35 @@ interface LoginForm {
 }
 
 export default function Login(): JSX.Element {
+  /** 表单 */
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<LoginForm>();
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const [fn] = useUserLoginLazyQuery();
   const onSubmit: SubmitHandler<LoginForm> = async (formData) => {
     const data = await fn({ variables: { ...formData } });
     if (data.data) {
       dispatch(login(data.data?.userLogin));
-      navigate(-1);
     }
   };
+
+  /** 跳转 */
+  const navigate = useNavigate();
+  const [urlSearch] = useSearchParams();
+  const auth = useAppSelector((state) => state.auth.value);
+  useEffect(() => {
+    if (auth !== null) {
+      const from = urlSearch.get('from');
+      if (from === null) {
+        navigate('/');
+      } else {
+        navigate(from);
+      }
+    }
+  }, [auth, navigate, urlSearch]);
 
   return (
     <Box
