@@ -18,7 +18,7 @@ source: ${extensions['source']}`);
     });
   }
   if (networkError) {
-    enqueueSnackbar(`网络错误:${networkError}`);
+    enqueueSnackbar(`网络错误:${networkError.message}`);
     console.log(`[Network error]: ${networkError}`);
   }
 });

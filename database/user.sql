@@ -5,5 +5,5 @@ create table if not exists Users
     create_time timestamp               not null,
     update_time timestamp               not null,
     password    text                    not null,
-    description        text
+    description text
 );

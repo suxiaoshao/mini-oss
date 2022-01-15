@@ -8,3 +8,4 @@ data:
   manager_name: "sushao"
   manager_password: "sushao"
   secret: "sushao"
+  mongodb: "mongodb://localhost:27017"
