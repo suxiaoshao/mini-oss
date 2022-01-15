@@ -34,7 +34,7 @@ export default function UserInfoSetting(): JSX.Element {
     sx: { marginTop: (theme) => theme.spacing(1) },
   };
   return (
-    <Box sx={{ margin: (theme) => theme.spacing(3), width: 800 }}>
+    <Box sx={(theme) => ({ margin: theme.spacing(3), width: 800, maxWidth: `calc(100% - ${theme.spacing(6)})` })}>
       <Card component="form" onSubmit={handleSubmit(onSubmit)}>
         <CardHeader title="用户信息设置" />
         <CardContent>

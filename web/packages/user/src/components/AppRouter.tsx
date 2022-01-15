@@ -1,3 +1,4 @@
+import { ErrorPage } from 'common';
 import { useEffect } from 'react';
 import { createSearchParams, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../app/hooks';
@@ -24,6 +25,7 @@ export default function AppRouter(): JSX.Element {
       <Route path="/" element={<AppDrawer />}>
         <Route index element={<Home />} />
         <Route path="setting" element={<Setting />} />
+        <Route path="*" element={<ErrorPage to={'/'} />} />
       </Route>
       <Route path="/login" element={<Login />} />
     </Routes>
