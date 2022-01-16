@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package core;
+import "auth.proto";
+
+service Bucket {
+  // 创建 Bucket
+  rpc CreateBucket (CreateBucketRequest) returns (BucketInfo) {}
+  // 删除 Bucket
+  rpc DeleteBucket (DeleteBucketRequest) returns (auth.Empty) {}
+  // 修改 Bucket
+  rpc UpdateBucket (UpdateBucketRequest) returns (BucketInfo) {}
+}
+
+// 访问权限类型
+enum Access {
+  // 开放
+  OPEN = 0;
+  // 读开放
+  READ_OPEN = 1;
+  // 不开放
+  PRIVATE = 2;
+}
+
+message UpdateBucketRequest{
+  // 名字
+  string name = 1;
+  // 访问控制
+  Access access = 2;
+  // 用户凭证
+  string auth = 3;
+}
+
+message DeleteBucketRequest{
+  // 名字
+  string name = 1;
+  // 用户凭证
+  string auth = 2;
+}
+
+message CreateBucketRequest{
+  // 名字
+  string name = 1;
+  // 访问控制
+  Access access = 2;
+  // 用户凭证
+  string auth = 3;
+}
+
+message BucketInfo{
+  // 名字
+  string name = 1;
+  // 创建时间
+  int64 createTime = 2;
+  // 创建时间
+  int64 updateTime = 3;
+  // 访问控制
+  Access access = 4;
+  // 用户名
+  string userName = 5;
+}

@@ -1,14 +1,12 @@
 use std::sync::Arc;
 
 use ::utils::database::PgPoolOptions;
-use proto::{
-    user::{self_manage_server::SelfManageServer, user_manage_server::UserManageServer},
-    Server,
-};
+use proto::{core::bucket_server::BucketServer, Server};
 
-use crate::greeter::{self_manage::SelfManageGreeter, user_manage::UserManageGreeter};
+use crate::greeter::bucket::BucketGreeter;
 
 mod greeter;
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let addr = "0.0.0.0:80".parse().unwrap();
@@ -22,13 +20,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .unwrap(),
     );
 
-    let user_manage_greeter = UserManageGreeter::new(Arc::clone(&pool));
-    let self_manage_greeter = SelfManageGreeter::new(Arc::clone(&pool));
+    let bucket_greeter = BucketGreeter::new(Arc::clone(&pool));
     println!("GreeterServer listening on {addr}");
 
     Server::builder()
-        .add_service(UserManageServer::new(user_manage_greeter))
-        .add_service(SelfManageServer::new(self_manage_greeter))
+        .add_service(BucketServer::new(bucket_greeter))
         .serve(addr)
         .await?;
 

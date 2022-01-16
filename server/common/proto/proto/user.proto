@@ -10,8 +10,11 @@ service UserManage {
   rpc UpdateUser (UpdateUserRequest) returns (UserInfo) {}
   // 用户删除
   rpc DeleteUser (DeleteUserRequest) returns (auth.Empty) {}
+  // 用户列表
+  rpc ListUser (ListRequest) returns (ListUserReply){}
+  // 用户信息
+  rpc GetUser(GetUserRequest) returns (UserInfo){}
 }
-
 
 message UpdateUserRequest {
   // 账号
@@ -38,14 +41,6 @@ message CreateUserRequest {
   optional string description = 3;
   // 身份验证
   string auth = 4;
-}
-
-
-service UserMessage{
-  // 用户列表
-  rpc ListUser (ListRequest) returns (ListUserReply){}
-  // 用户信息
-  rpc GetUser(GetUserRequest) returns (UserInfo){}
 }
 
 message ListRequest{

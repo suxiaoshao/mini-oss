@@ -12,12 +12,11 @@ use proto::{
 use utils::{
     database::{users::User, Pool, Postgres},
     validation::{
+        check_auth::check_user,
         claims::Claims,
         hash::{to_hash, validate_hash},
     },
 };
-
-use crate::utils::check_user;
 
 pub struct SelfManageGreeter {
     pool: Arc<Pool<Postgres>>,

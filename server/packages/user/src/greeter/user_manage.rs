@@ -4,17 +4,15 @@ use proto::{
     async_trait,
     auth::Empty,
     user::{
-        user_manage_server::UserManage, CreateUserRequest, DeleteUserRequest, UpdateUserRequest,
-        UserInfo,
+        user_manage_server::UserManage, CreateUserRequest, DeleteUserRequest, GetUserRequest,
+        ListRequest, ListUserReply, UpdateUserRequest, UserInfo,
     },
     Request, Response, Status,
 };
 use utils::{
     database::{users::User, Pool, Postgres},
-    validation::hash::to_hash,
+    validation::{check_auth::check_manager, hash::to_hash},
 };
-
-use crate::utils::check_manager;
 
 pub struct UserManageGreeter {
     pool: Arc<Pool<Postgres>>,
@@ -64,5 +62,30 @@ impl UserManage for UserManageGreeter {
         check_manager(&request.get_ref().auth).await?;
         User::delete(&request.get_ref().name, &self.pool).await?;
         Ok(Response::new(Empty {}))
+    }
+    async fn list_user(
+        &self,
+        request: Request<ListRequest>,
+    ) -> Result<Response<ListUserReply>, Status> {
+        // 验证管理员身份
+        check_manager(&request.get_ref().auth).await?;
+        let limit = &request.get_ref().limit;
+        let limit = if limit > &50 { &50 } else { limit };
+        let offset = &request.get_ref().offset;
+        let users = User::find_many(*limit, *offset, &self.pool).await?;
+        let count = User::count(&self.pool).await?;
+        Ok(Response::new(ListUserReply {
+            data: users.into_iter().map(|x| x.into()).collect(),
+            total: count,
+        }))
+    }
+    async fn get_user(
+        &self,
+        request: Request<GetUserRequest>,
+    ) -> Result<Response<UserInfo>, Status> {
+        // 验证管理员身份
+        check_manager(&request.get_ref().auth).await?;
+        let user = User::find_one(&request.get_ref().name, &self.pool).await?;
+        Ok(Response::new(user.into()))
     }
 }
