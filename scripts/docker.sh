@@ -13,5 +13,5 @@ docker push suxiaoshao/auth:latest;
 docker build -t suxiaoshao/user:latest -f ./docker/user.Dockerfile .;
 docker push suxiaoshao/user:latest;
 
-docker build -t suxiaoshao/test:latest -f ./docker/test.Dockerfile .;
-docker push suxiaoshao/test:latest;
+docker build -t suxiaoshao/core:latest -f ./docker/core.Dockerfile .;
+docker push suxiaoshao/core:latest;
