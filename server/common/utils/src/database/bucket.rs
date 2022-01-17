@@ -1,6 +1,8 @@
-use proto::{core::BucketInfo, Status};
-use sqlx::{types::time::PrimitiveDateTime, Pool, Postgres};
 use std::time::SystemTime;
+
+use sqlx::{types::time::PrimitiveDateTime, Pool, Postgres};
+
+use proto::{core::BucketInfo, Status};
 
 use crate::errors::grpc::ToStatusResult;
 
@@ -115,6 +117,34 @@ impl Bucket {
             .await
             .to_status()?;
         Ok(())
+    }
+    /// 获取列表
+    pub async fn find_many_by_user(
+        limit: u32,
+        offset: u32,
+        user_name: &str,
+        pool: &Pool<Postgres>,
+    ) -> Result<Vec<Self>, Status> {
+        let users: Vec<RowBucket> = sqlx::query_as(
+            "select name,access,create_time,update_time,user_name from bucket where user_name = $1 offset $2 limit $3",
+        )
+        .bind(user_name)
+        .bind(offset)
+        .bind(limit)
+        .fetch_all(pool)
+        .await
+        .to_status()?;
+        Ok(users.into_iter().map(|x| x.into()).collect())
+    }
+    /// 获取总数
+    pub async fn count_by_name(user_name: &str, pool: &Pool<Postgres>) -> Result<i64, Status> {
+        let (count,): (i64,) =
+            sqlx::query_as("select count(name) from bucket where user_name = $1")
+                .bind(user_name)
+                .fetch_one(pool)
+                .await
+                .to_status()?;
+        Ok(count)
     }
 }
 

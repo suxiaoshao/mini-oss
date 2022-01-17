@@ -11,7 +11,7 @@ service UserManage {
   // 用户删除
   rpc DeleteUser (DeleteUserRequest) returns (auth.Empty) {}
   // 用户列表
-  rpc ListUser (ListRequest) returns (ListUserReply){}
+  rpc GetUserList (GetListRequest) returns (GetUserListReply){}
   // 用户信息
   rpc GetUser(GetUserRequest) returns (UserInfo){}
 }
@@ -43,7 +43,7 @@ message CreateUserRequest {
   string auth = 4;
 }
 
-message ListRequest{
+message GetListRequest{
   // 获取多少数据
   uint32 limit=1;
   // 偏移量
@@ -52,7 +52,7 @@ message ListRequest{
   string auth = 3;
 }
 
-message ListUserReply{
+message GetUserListReply{
   // 数据
   repeated UserInfo data=1;
   // 总数

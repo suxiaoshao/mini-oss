@@ -4,8 +4,8 @@ use proto::{
     async_trait,
     auth::Empty,
     user::{
-        user_manage_server::UserManage, CreateUserRequest, DeleteUserRequest, GetUserRequest,
-        ListRequest, ListUserReply, UpdateUserRequest, UserInfo,
+        user_manage_server::UserManage, CreateUserRequest, DeleteUserRequest, GetListRequest,
+        GetUserListReply, GetUserRequest, UpdateUserRequest, UserInfo,
     },
     Request, Response, Status,
 };
@@ -76,11 +76,11 @@ impl UserManage for UserManageGreeter {
         User::delete(&name, &self.pool).await?;
         Ok(Response::new(Empty {}))
     }
-    async fn list_user(
+    async fn get_user_list(
         &self,
-        request: Request<ListRequest>,
-    ) -> Result<Response<ListUserReply>, Status> {
-        let ListRequest {
+        request: Request<GetListRequest>,
+    ) -> Result<Response<GetUserListReply>, Status> {
+        let GetListRequest {
             limit,
             offset,
             auth,
@@ -90,11 +90,13 @@ impl UserManage for UserManageGreeter {
         let limit = &limit;
         let limit = if limit > &50 { &50 } else { limit };
         let offset = &offset;
-        let users = User::find_many(*limit, *offset, &self.pool).await?;
-        let count = User::count(&self.pool).await?;
-        Ok(Response::new(ListUserReply {
-            data: users.into_iter().map(|x| x.into()).collect(),
-            total: count,
+        let (users, count) = tokio::join!(
+            User::find_many(*limit, *offset, &self.pool),
+            User::count(&self.pool)
+        );
+        Ok(Response::new(GetUserListReply {
+            data: users?.into_iter().map(|x| x.into()).collect(),
+            total: count?,
         }))
     }
     async fn get_user(

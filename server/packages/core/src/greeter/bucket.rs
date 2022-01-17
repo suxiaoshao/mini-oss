@@ -5,8 +5,9 @@ use proto::{
     auth::Empty,
     core::{
         bucket_server::Bucket, Access, BucketInfo, CreateBucketRequest, DeleteBucketRequest,
-        UpdateBucketRequest,
+        GetBucketListReply, UpdateBucketRequest,
     },
+    user::GetListRequest,
     Request, Response, Status,
 };
 use utils::{
@@ -85,5 +86,28 @@ impl Bucket for BucketGreeter {
         }
         bucket::Bucket::delete(&name, &self.pool).await?;
         Ok(Response::new(Empty {}))
+    }
+    async fn get_bucket_list(
+        &self,
+        request: Request<GetListRequest>,
+    ) -> Result<Response<GetBucketListReply>, Status> {
+        let GetListRequest {
+            limit,
+            offset,
+            auth,
+        } = request.into_inner();
+        let limit = &limit;
+        let limit = if limit > &50 { &50 } else { limit };
+        let offset = &offset;
+        let user_name = check_user(&auth).await?;
+        let pool = &self.pool;
+        let (count, data) = tokio::join!(
+            bucket::Bucket::count_by_name(&user_name, pool),
+            bucket::Bucket::find_many_by_user(*limit, *offset, &user_name, pool)
+        );
+        Ok(Response::new(GetBucketListReply {
+            data: data?.into_iter().map(|x| x.into()).collect(),
+            total: count?,
+        }))
     }
 }
