@@ -12,7 +12,7 @@ export default function UserInfoSetting(): JSX.Element {
   const { enqueueSnackbar } = useSnackbar();
   const auth = useAppSelector((state) => state.auth.value);
   const { data: { selfUserInfo } = {}, refetch } = useSelfUserInfoQuery({
-    variables: { auth: auth ?? '' },
+    variables: { data: { auth: auth ?? '' } },
     skip: auth === null,
   });
   const [updateInfo] = useUpdateInfoMutation();
@@ -20,7 +20,7 @@ export default function UserInfoSetting(): JSX.Element {
     defaultValues: { description: selfUserInfo?.description },
   });
   const onSubmit: SubmitHandler<UserInfoForm> = async (formData) => {
-    await updateInfo({ variables: { auth: auth ?? '', description: formData.description || null } });
+    await updateInfo({ variables: { data: { auth: auth ?? '', description: formData.description || null } } });
     enqueueSnackbar('修改成功', { variant: 'success' });
     await refetch();
   };

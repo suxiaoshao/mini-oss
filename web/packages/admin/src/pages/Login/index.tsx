@@ -22,7 +22,7 @@ export default function Login(): JSX.Element {
   const dispatch = useAppDispatch();
   const [fn] = useManagerLoginLazyQuery();
   const onSubmit: SubmitHandler<LoginForm> = async (formData) => {
-    const data = await fn({ variables: { ...formData } });
+    const data = await fn({ variables: { data: { ...formData } } });
     if (data.data) {
       dispatch(login(data.data?.managerLogin));
     }

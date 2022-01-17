@@ -9,7 +9,10 @@ import UpdateUserAction from './components/UpdateUserAction';
 export default function Users(): JSX.Element {
   const { limit, offset } = usePage({});
   const auth = useAppSelector((state) => state.auth.value);
-  const { data, refetch } = useUserListQuery({ variables: { limit, offset, auth: auth ?? '' }, skip: auth === null });
+  const { data, refetch } = useUserListQuery({
+    variables: { data: { limit, offset, auth: auth ?? '' } },
+    skip: auth === null,
+  });
   const [deleteUser] = useUserDeleteMutation();
   const columns = useMemo<ReadonlyArray<Column<UserListQuery['userList']['data'][0]>>>(
     () => [
@@ -42,7 +45,7 @@ export default function Users(): JSX.Element {
               {
                 text: '删除',
                 onClick: async () => {
-                  await deleteUser({ variables: { auth: auth ?? '', name } });
+                  await deleteUser({ variables: { data: { auth: auth ?? '', name } } });
                   onClose();
                   refetch();
                 },

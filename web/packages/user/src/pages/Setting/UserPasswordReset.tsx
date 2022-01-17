@@ -17,7 +17,7 @@ export default function UserPasswordReset(): JSX.Element {
   const [updateInfo] = useUpdatePasswordMutation();
   const { register, handleSubmit } = useForm<UserPasswordForm>();
   const onSubmit: SubmitHandler<UserPasswordForm> = async (formData) => {
-    const { data } = await updateInfo({ variables: { auth, ...formData } });
+    const { data } = await updateInfo({ variables: { data: { auth, ...formData } } });
     enqueueSnackbar('修改成功', { variant: 'success' });
     dispatch(login(data?.updatePassword ?? ''));
   };

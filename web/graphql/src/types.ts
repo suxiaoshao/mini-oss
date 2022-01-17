@@ -15,6 +15,52 @@ export type Scalars = {
   Float: number;
 };
 
+export type CreateUserRequest = {
+  /** 身份验证 */
+  auth: Scalars['String'];
+  /** 描述 */
+  description?: InputMaybe<Scalars['String']>;
+  /** 账号 */
+  name: Scalars['String'];
+  /** 密码 */
+  password: Scalars['String'];
+};
+
+export type DeleteUserRequest = {
+  /** 身份验证 */
+  auth: Scalars['String'];
+  /** 账号 */
+  name: Scalars['String'];
+};
+
+export type GetUserInfoRequest = {
+  /** 身份验证 */
+  auth: Scalars['String'];
+};
+
+export type GetUserRequest = {
+  /** 身份验证 */
+  auth: Scalars['String'];
+  /** 用户名 */
+  name: Scalars['String'];
+};
+
+export type ListRequest = {
+  /** 身份验证 */
+  auth: Scalars['String'];
+  /** 获取多少数据 */
+  limit: Scalars['Int'];
+  /** 偏移量 */
+  offset: Scalars['Int'];
+};
+
+export type LoginRequest = {
+  /** 账号 */
+  name: Scalars['String'];
+  /** 密码 */
+  password: Scalars['String'];
+};
+
 export type MutationRoot = {
   __typename?: 'MutationRoot';
   /** 用户创建 */
@@ -23,39 +69,30 @@ export type MutationRoot = {
   manageUserDelete: Scalars['Boolean'];
   /** 用户更新 */
   manageUserUpdate: UserInfo;
-  /** 用户更新密码 */
+  /** 用户更新信息 */
   updateInfo: UserInfo;
   /** 用户更新密码 */
   updatePassword: Scalars['String'];
 };
 
 export type MutationRootManageUserCreateArgs = {
-  auth: Scalars['String'];
-  description?: InputMaybe<Scalars['String']>;
-  name: Scalars['String'];
-  password: Scalars['String'];
+  data: CreateUserRequest;
 };
 
 export type MutationRootManageUserDeleteArgs = {
-  auth: Scalars['String'];
-  name: Scalars['String'];
+  data: DeleteUserRequest;
 };
 
 export type MutationRootManageUserUpdateArgs = {
-  auth: Scalars['String'];
-  description?: InputMaybe<Scalars['String']>;
-  name: Scalars['String'];
+  data: UpdateUserRequest;
 };
 
 export type MutationRootUpdateInfoArgs = {
-  auth: Scalars['String'];
-  description?: InputMaybe<Scalars['String']>;
+  data: UpdateUserInfoRequest;
 };
 
 export type MutationRootUpdatePasswordArgs = {
-  auth: Scalars['String'];
-  newPassword: Scalars['String'];
-  oldPassword: Scalars['String'];
+  data: UpdatePasswordRequest;
 };
 
 export type QueryRoot = {
@@ -73,28 +110,48 @@ export type QueryRoot = {
 };
 
 export type QueryRootManagerLoginArgs = {
-  name: Scalars['String'];
-  password: Scalars['String'];
+  data: LoginRequest;
 };
 
 export type QueryRootSelfUserInfoArgs = {
-  auth: Scalars['String'];
+  data: GetUserInfoRequest;
 };
 
 export type QueryRootUserInfoArgs = {
-  auth: Scalars['String'];
-  name: Scalars['String'];
+  data: GetUserRequest;
 };
 
 export type QueryRootUserListArgs = {
-  auth: Scalars['String'];
-  limit: Scalars['Int'];
-  offset: Scalars['Int'];
+  data: ListRequest;
 };
 
 export type QueryRootUserLoginArgs = {
+  data: LoginRequest;
+};
+
+export type UpdatePasswordRequest = {
+  /** 身份验证 */
+  auth: Scalars['String'];
+  /** 新密码 */
+  newPassword: Scalars['String'];
+  /** 旧密码 */
+  oldPassword: Scalars['String'];
+};
+
+export type UpdateUserInfoRequest = {
+  /** 身份验证 */
+  auth: Scalars['String'];
+  /** 描述 */
+  description?: InputMaybe<Scalars['String']>;
+};
+
+export type UpdateUserRequest = {
+  /** 身份验证 */
+  auth: Scalars['String'];
+  /** 描述 */
+  description?: InputMaybe<Scalars['String']>;
+  /** 账号 */
   name: Scalars['String'];
-  password: Scalars['String'];
 };
 
 export type UserInfo = {
@@ -118,23 +175,19 @@ export type UserList = {
 };
 
 export type UserLoginQueryVariables = Exact<{
-  name: Scalars['String'];
-  password: Scalars['String'];
+  data: LoginRequest;
 }>;
 
 export type UserLoginQuery = { __typename?: 'QueryRoot'; userLogin: string };
 
 export type ManagerLoginQueryVariables = Exact<{
-  name: Scalars['String'];
-  password: Scalars['String'];
+  data: LoginRequest;
 }>;
 
 export type ManagerLoginQuery = { __typename?: 'QueryRoot'; managerLogin: string };
 
 export type UserListQueryVariables = Exact<{
-  limit: Scalars['Int'];
-  offset: Scalars['Int'];
-  auth: Scalars['String'];
+  data: ListRequest;
 }>;
 
 export type UserListQuery = {
@@ -153,8 +206,7 @@ export type UserListQuery = {
 };
 
 export type UserInfoQueryVariables = Exact<{
-  name: Scalars['String'];
-  auth: Scalars['String'];
+  data: GetUserRequest;
 }>;
 
 export type UserInfoQuery = {
@@ -169,10 +221,7 @@ export type UserInfoQuery = {
 };
 
 export type UserCreateMutationVariables = Exact<{
-  name: Scalars['String'];
-  password: Scalars['String'];
-  auth: Scalars['String'];
-  description?: InputMaybe<Scalars['String']>;
+  data: CreateUserRequest;
 }>;
 
 export type UserCreateMutation = {
@@ -181,9 +230,7 @@ export type UserCreateMutation = {
 };
 
 export type UserUpdateMutationVariables = Exact<{
-  name: Scalars['String'];
-  auth: Scalars['String'];
-  description?: InputMaybe<Scalars['String']>;
+  data: UpdateUserRequest;
 }>;
 
 export type UserUpdateMutation = {
@@ -192,14 +239,13 @@ export type UserUpdateMutation = {
 };
 
 export type UserDeleteMutationVariables = Exact<{
-  name: Scalars['String'];
-  auth: Scalars['String'];
+  data: DeleteUserRequest;
 }>;
 
 export type UserDeleteMutation = { __typename?: 'MutationRoot'; manageUserDelete: boolean };
 
 export type SelfUserInfoQueryVariables = Exact<{
-  auth: Scalars['String'];
+  data: GetUserInfoRequest;
 }>;
 
 export type SelfUserInfoQuery = {
@@ -214,23 +260,20 @@ export type SelfUserInfoQuery = {
 };
 
 export type UpdateInfoMutationVariables = Exact<{
-  auth: Scalars['String'];
-  description?: InputMaybe<Scalars['String']>;
+  data: UpdateUserInfoRequest;
 }>;
 
 export type UpdateInfoMutation = { __typename?: 'MutationRoot'; updateInfo: { __typename?: 'UserInfo'; name: string } };
 
 export type UpdatePasswordMutationVariables = Exact<{
-  auth: Scalars['String'];
-  newPassword: Scalars['String'];
-  oldPassword: Scalars['String'];
+  data: UpdatePasswordRequest;
 }>;
 
 export type UpdatePasswordMutation = { __typename?: 'MutationRoot'; updatePassword: string };
 
 export const UserLoginDocument = gql`
-  query userLogin($name: String!, $password: String!) {
-    userLogin(name: $name, password: $password)
+  query userLogin($data: LoginRequest!) {
+    userLogin(data: $data)
   }
 `;
 
@@ -246,8 +289,7 @@ export const UserLoginDocument = gql`
  * @example
  * const { data, loading, error } = useUserLoginQuery({
  *   variables: {
- *      name: // value for 'name'
- *      password: // value for 'password'
+ *      data: // value for 'data'
  *   },
  * });
  */
@@ -265,8 +307,8 @@ export type UserLoginQueryHookResult = ReturnType<typeof useUserLoginQuery>;
 export type UserLoginLazyQueryHookResult = ReturnType<typeof useUserLoginLazyQuery>;
 export type UserLoginQueryResult = Apollo.QueryResult<UserLoginQuery, UserLoginQueryVariables>;
 export const ManagerLoginDocument = gql`
-  query managerLogin($name: String!, $password: String!) {
-    managerLogin(name: $name, password: $password)
+  query managerLogin($data: LoginRequest!) {
+    managerLogin(data: $data)
   }
 `;
 
@@ -282,8 +324,7 @@ export const ManagerLoginDocument = gql`
  * @example
  * const { data, loading, error } = useManagerLoginQuery({
  *   variables: {
- *      name: // value for 'name'
- *      password: // value for 'password'
+ *      data: // value for 'data'
  *   },
  * });
  */
@@ -303,8 +344,8 @@ export type ManagerLoginQueryHookResult = ReturnType<typeof useManagerLoginQuery
 export type ManagerLoginLazyQueryHookResult = ReturnType<typeof useManagerLoginLazyQuery>;
 export type ManagerLoginQueryResult = Apollo.QueryResult<ManagerLoginQuery, ManagerLoginQueryVariables>;
 export const UserListDocument = gql`
-  query userList($limit: Int!, $offset: Int!, $auth: String!) {
-    userList(limit: $limit, offset: $offset, auth: $auth) {
+  query userList($data: ListRequest!) {
+    userList(data: $data) {
       data {
         name
         description
@@ -328,9 +369,7 @@ export const UserListDocument = gql`
  * @example
  * const { data, loading, error } = useUserListQuery({
  *   variables: {
- *      limit: // value for 'limit'
- *      offset: // value for 'offset'
- *      auth: // value for 'auth'
+ *      data: // value for 'data'
  *   },
  * });
  */
@@ -346,8 +385,8 @@ export type UserListQueryHookResult = ReturnType<typeof useUserListQuery>;
 export type UserListLazyQueryHookResult = ReturnType<typeof useUserListLazyQuery>;
 export type UserListQueryResult = Apollo.QueryResult<UserListQuery, UserListQueryVariables>;
 export const UserInfoDocument = gql`
-  query userInfo($name: String!, $auth: String!) {
-    userInfo(name: $name, auth: $auth) {
+  query userInfo($data: GetUserRequest!) {
+    userInfo(data: $data) {
       name
       description
       createTime
@@ -368,8 +407,7 @@ export const UserInfoDocument = gql`
  * @example
  * const { data, loading, error } = useUserInfoQuery({
  *   variables: {
- *      name: // value for 'name'
- *      auth: // value for 'auth'
+ *      data: // value for 'data'
  *   },
  * });
  */
@@ -385,8 +423,8 @@ export type UserInfoQueryHookResult = ReturnType<typeof useUserInfoQuery>;
 export type UserInfoLazyQueryHookResult = ReturnType<typeof useUserInfoLazyQuery>;
 export type UserInfoQueryResult = Apollo.QueryResult<UserInfoQuery, UserInfoQueryVariables>;
 export const UserCreateDocument = gql`
-  mutation userCreate($name: String!, $password: String!, $auth: String!, $description: String) {
-    manageUserCreate(name: $name, password: $password, auth: $auth, description: $description) {
+  mutation userCreate($data: CreateUserRequest!) {
+    manageUserCreate(data: $data) {
       name
     }
   }
@@ -406,10 +444,7 @@ export type UserCreateMutationFn = Apollo.MutationFunction<UserCreateMutation, U
  * @example
  * const [userCreateMutation, { data, loading, error }] = useUserCreateMutation({
  *   variables: {
- *      name: // value for 'name'
- *      password: // value for 'password'
- *      auth: // value for 'auth'
- *      description: // value for 'description'
+ *      data: // value for 'data'
  *   },
  * });
  */
@@ -423,8 +458,8 @@ export type UserCreateMutationHookResult = ReturnType<typeof useUserCreateMutati
 export type UserCreateMutationResult = Apollo.MutationResult<UserCreateMutation>;
 export type UserCreateMutationOptions = Apollo.BaseMutationOptions<UserCreateMutation, UserCreateMutationVariables>;
 export const UserUpdateDocument = gql`
-  mutation userUpdate($name: String!, $auth: String!, $description: String) {
-    manageUserUpdate(name: $name, auth: $auth, description: $description) {
+  mutation userUpdate($data: UpdateUserRequest!) {
+    manageUserUpdate(data: $data) {
       name
     }
   }
@@ -444,9 +479,7 @@ export type UserUpdateMutationFn = Apollo.MutationFunction<UserUpdateMutation, U
  * @example
  * const [userUpdateMutation, { data, loading, error }] = useUserUpdateMutation({
  *   variables: {
- *      name: // value for 'name'
- *      auth: // value for 'auth'
- *      description: // value for 'description'
+ *      data: // value for 'data'
  *   },
  * });
  */
@@ -460,8 +493,8 @@ export type UserUpdateMutationHookResult = ReturnType<typeof useUserUpdateMutati
 export type UserUpdateMutationResult = Apollo.MutationResult<UserUpdateMutation>;
 export type UserUpdateMutationOptions = Apollo.BaseMutationOptions<UserUpdateMutation, UserUpdateMutationVariables>;
 export const UserDeleteDocument = gql`
-  mutation userDelete($name: String!, $auth: String!) {
-    manageUserDelete(name: $name, auth: $auth)
+  mutation userDelete($data: DeleteUserRequest!) {
+    manageUserDelete(data: $data)
   }
 `;
 export type UserDeleteMutationFn = Apollo.MutationFunction<UserDeleteMutation, UserDeleteMutationVariables>;
@@ -479,8 +512,7 @@ export type UserDeleteMutationFn = Apollo.MutationFunction<UserDeleteMutation, U
  * @example
  * const [userDeleteMutation, { data, loading, error }] = useUserDeleteMutation({
  *   variables: {
- *      name: // value for 'name'
- *      auth: // value for 'auth'
+ *      data: // value for 'data'
  *   },
  * });
  */
@@ -494,8 +526,8 @@ export type UserDeleteMutationHookResult = ReturnType<typeof useUserDeleteMutati
 export type UserDeleteMutationResult = Apollo.MutationResult<UserDeleteMutation>;
 export type UserDeleteMutationOptions = Apollo.BaseMutationOptions<UserDeleteMutation, UserDeleteMutationVariables>;
 export const SelfUserInfoDocument = gql`
-  query selfUserInfo($auth: String!) {
-    selfUserInfo(auth: $auth) {
+  query selfUserInfo($data: GetUserInfoRequest!) {
+    selfUserInfo(data: $data) {
       name
       createTime
       updateTime
@@ -516,7 +548,7 @@ export const SelfUserInfoDocument = gql`
  * @example
  * const { data, loading, error } = useSelfUserInfoQuery({
  *   variables: {
- *      auth: // value for 'auth'
+ *      data: // value for 'data'
  *   },
  * });
  */
@@ -536,8 +568,8 @@ export type SelfUserInfoQueryHookResult = ReturnType<typeof useSelfUserInfoQuery
 export type SelfUserInfoLazyQueryHookResult = ReturnType<typeof useSelfUserInfoLazyQuery>;
 export type SelfUserInfoQueryResult = Apollo.QueryResult<SelfUserInfoQuery, SelfUserInfoQueryVariables>;
 export const UpdateInfoDocument = gql`
-  mutation updateInfo($auth: String!, $description: String) {
-    updateInfo(auth: $auth, description: $description) {
+  mutation updateInfo($data: UpdateUserInfoRequest!) {
+    updateInfo(data: $data) {
       name
     }
   }
@@ -557,8 +589,7 @@ export type UpdateInfoMutationFn = Apollo.MutationFunction<UpdateInfoMutation, U
  * @example
  * const [updateInfoMutation, { data, loading, error }] = useUpdateInfoMutation({
  *   variables: {
- *      auth: // value for 'auth'
- *      description: // value for 'description'
+ *      data: // value for 'data'
  *   },
  * });
  */
@@ -572,8 +603,8 @@ export type UpdateInfoMutationHookResult = ReturnType<typeof useUpdateInfoMutati
 export type UpdateInfoMutationResult = Apollo.MutationResult<UpdateInfoMutation>;
 export type UpdateInfoMutationOptions = Apollo.BaseMutationOptions<UpdateInfoMutation, UpdateInfoMutationVariables>;
 export const UpdatePasswordDocument = gql`
-  mutation updatePassword($auth: String!, $newPassword: String!, $oldPassword: String!) {
-    updatePassword(auth: $auth, newPassword: $newPassword, oldPassword: $oldPassword)
+  mutation updatePassword($data: UpdatePasswordRequest!) {
+    updatePassword(data: $data)
   }
 `;
 export type UpdatePasswordMutationFn = Apollo.MutationFunction<UpdatePasswordMutation, UpdatePasswordMutationVariables>;
@@ -591,9 +622,7 @@ export type UpdatePasswordMutationFn = Apollo.MutationFunction<UpdatePasswordMut
  * @example
  * const [updatePasswordMutation, { data, loading, error }] = useUpdatePasswordMutation({
  *   variables: {
- *      auth: // value for 'auth'
- *      newPassword: // value for 'newPassword'
- *      oldPassword: // value for 'oldPassword'
+ *      data: // value for 'data'
  *   },
  * });
  */

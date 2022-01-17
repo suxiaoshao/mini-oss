@@ -1,6 +1,6 @@
 # 获取用户列表
-query userList($limit: Int!, $offset: Int!, $auth: String!) {
-  userList(limit: $limit, offset: $offset, auth: $auth) {
+query userList($data: ListRequest!) {
+  userList(data: $data) {
     data {
       name
       description
@@ -11,24 +11,24 @@ query userList($limit: Int!, $offset: Int!, $auth: String!) {
   }
 }
 # 获取用户
-query userInfo($name: String!, $auth: String!) {
-  userInfo(name: $name, auth: $auth) {
+query userInfo($data: GetUserRequest!) {
+  userInfo(data: $data) {
     name
     description
     createTime
     updateTime
   }
 }
-mutation userCreate($name: String!, $password: String!, $auth: String!, $description: String) {
-  manageUserCreate(name: $name, password: $password, auth: $auth, description: $description) {
+mutation userCreate($data: CreateUserRequest!) {
+  manageUserCreate(data: $data) {
     name
   }
 }
-mutation userUpdate($name: String!, $auth: String!, $description: String) {
-  manageUserUpdate(name: $name, auth: $auth, description: $description) {
+mutation userUpdate($data: UpdateUserRequest!) {
+  manageUserUpdate(data: $data) {
     name
   }
 }
-mutation userDelete($name: String!, $auth: String!) {
-  manageUserDelete(name: $name, auth: $auth)
+mutation userDelete($data: DeleteUserRequest!) {
+  manageUserDelete(data: $data)
 }

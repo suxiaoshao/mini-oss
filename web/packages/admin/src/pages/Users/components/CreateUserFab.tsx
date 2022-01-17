@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useAppSelector } from '../../../app/hooks';
 
-export type CreateUserForm = Omit<UserCreateMutationVariables, 'auth'>;
+export type CreateUserForm = Omit<UserCreateMutationVariables['data'], 'auth'>;
 
 export interface CreateUserFabProps {
   /** 表格重新刷新 */
@@ -21,7 +21,7 @@ export default function CreateUserFab({ refetch }: CreateUserFabProps): JSX.Elem
   const { register, handleSubmit } = useForm<CreateUserForm>();
   const auth = useAppSelector((state) => state.auth.value) ?? '';
   const onSubmit: SubmitHandler<CreateUserForm> = async (formData) => {
-    await createUser({ variables: { auth, ...formData, description: formData.description || null } });
+    await createUser({ variables: { data: { auth, ...formData, description: formData.description || null } } });
     refetch();
     handleClose();
   };

@@ -1,16 +1,16 @@
-query selfUserInfo($auth: String!) {
-  selfUserInfo(auth: $auth) {
+query selfUserInfo($data: GetUserInfoRequest!) {
+  selfUserInfo(data: $data) {
     name
     createTime
     updateTime
     description
   }
 }
-mutation updateInfo($auth: String!, $description: String) {
-  updateInfo(auth: $auth, description: $description) {
+mutation updateInfo($data: UpdateUserInfoRequest!) {
+  updateInfo(data: $data) {
     name
   }
 }
-mutation updatePassword($auth: String!, $newPassword: String!, $oldPassword: String!) {
-  updatePassword(auth: $auth, newPassword: $newPassword, oldPassword: $oldPassword)
+mutation updatePassword($data: UpdatePasswordRequest!) {
+  updatePassword(data: $data)
 }

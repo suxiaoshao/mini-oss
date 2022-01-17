@@ -37,7 +37,7 @@ export default function UpdateUserAction({
   const auth = useAppSelector((state) => state.auth.value) ?? '';
   const [updateUser] = useUserUpdateMutation();
   const onSubmit: SubmitHandler<UpdateUserForm> = async (formData) => {
-    await updateUser({ variables: { auth, name, description: formData.description || null } });
+    await updateUser({ variables: { data: { auth, name, description: formData.description || null } } });
     refetch();
     handleClose();
   };
