@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import TablePaginationActions from '@mui/material/TablePagination/TablePaginationActions';
 import { TableInstance } from 'react-table';
+import { CustomColumn } from './useCustomTable';
 import { PageState } from './usePage';
 
 export interface CustomTableProps<D extends object> extends TableContainerProps {
@@ -27,20 +28,26 @@ export function CustomTable<D extends object>({ tableInstance, page }: CustomTab
         <TableHead>
           {
             // Loop over the header rows
-            headerGroups.map((headerGroup, index) => (
+            headerGroups.map((headerGroup) => (
               // Apply the header row props
-              <TableRow {...headerGroup.getHeaderGroupProps()} key={index}>
+              <TableRow {...headerGroup.getHeaderGroupProps()} key={headerGroup.getHeaderGroupProps().key}>
                 {
                   // Loop over the headers in each row
-                  headerGroup.headers.map((column, index) => (
-                    // Apply the header cell props
-                    <TableCell {...column.getHeaderProps()} key={index}>
-                      {
-                        // Render the header
-                        column.render('Header')
-                      }
-                    </TableCell>
-                  ))
+                  headerGroup.headers.map((column) => {
+                    const headerCulumn = column as CustomColumn<D>;
+                    const headerProps = headerCulumn.headerCellProps ?? headerCulumn.cellProps;
+                    console.log(headerProps);
+
+                    return (
+                      // Apply the header cell props
+                      <TableCell {...column.getHeaderProps()} {...headerProps} key={column.getHeaderProps().key}>
+                        {
+                          // Render the header
+                          column.render('Header')
+                        }
+                      </TableCell>
+                    );
+                  })
                 }
               </TableRow>
             ))
@@ -50,18 +57,21 @@ export function CustomTable<D extends object>({ tableInstance, page }: CustomTab
         <TableBody {...getTableBodyProps()}>
           {
             // Loop over the table rows
-            rows.map((row, index) => {
+            rows.map((row) => {
               // Prepare the row for display
               prepareRow(row);
               return (
                 // Apply the row props
-                <TableRow {...row.getRowProps()} key={index}>
+                <TableRow {...row.getRowProps()} key={row.getRowProps().key}>
                   {
                     // Loop over the rows cells
-                    row.cells.map((cell, index) => {
+                    row.cells.map((cell) => {
+                      const column = cell.column as CustomColumn<D>;
+                      console.log(column.cellProps);
+
                       // Apply the cell props
                       return (
-                        <TableCell {...cell.getCellProps()} key={index}>
+                        <TableCell {...cell.getCellProps()} {...column.cellProps} key={cell.getCellProps().key}>
                           {
                             // Render the cell contents
                             cell.render('Cell')
@@ -104,3 +114,4 @@ export function CustomTable<D extends object>({ tableInstance, page }: CustomTab
 export * from './usePage';
 
 export * from './TableActions';
+export * from './useCustomTable';

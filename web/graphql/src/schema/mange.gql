@@ -1,5 +1,5 @@
 # 获取用户列表
-query userList($data: ListRequest!) {
+query userList($data: GetListRequest!) {
   userList(data: $data) {
     data {
       name

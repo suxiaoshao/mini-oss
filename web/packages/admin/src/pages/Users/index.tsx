@@ -1,8 +1,7 @@
 import { Box } from '@mui/material';
-import { CustomTable, format, TableActions, usePage } from 'common';
+import { CustomColumnArray, CustomTable, format, TableActions, useCustomTable, usePage } from 'common';
 import { UserListQuery, useUserDeleteMutation, useUserListQuery } from 'graphql';
 import { useMemo } from 'react';
-import { Column, useTable } from 'react-table';
 import { useAppSelector } from '../../app/hooks';
 import CreateUserFab from './components/CreateUserFab';
 import UpdateUserAction from './components/UpdateUserAction';
@@ -14,7 +13,7 @@ export default function Users(): JSX.Element {
     skip: auth === null,
   });
   const [deleteUser] = useUserDeleteMutation();
-  const columns = useMemo<ReadonlyArray<Column<UserListQuery['userList']['data'][0]>>>(
+  const columns = useMemo<CustomColumnArray<UserListQuery['userList']['data'][0]>>(
     () => [
       {
         Header: '名字',
@@ -60,13 +59,13 @@ export default function Users(): JSX.Element {
             ]}
           </TableActions>
         ),
-        width: 50,
+        cellProps: { padding: 'none' },
       },
     ],
     [auth, deleteUser, refetch],
   );
 
-  const tableInstance = useTable({ columns, data: data?.userList.data ?? [] });
+  const tableInstance = useCustomTable({ columns, data: data?.userList.data ?? [] });
 
   return (
     <Box sx={{ width: '100', height: '100%', padding: (theme) => theme.spacing(2) }}>

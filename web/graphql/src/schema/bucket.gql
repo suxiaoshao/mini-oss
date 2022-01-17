@@ -1,0 +1,24 @@
+query bucketList($data: GetListRequest!) {
+  bucketList(data: $data) {
+    data {
+      name
+      createTime
+      updateTime
+      access
+    }
+    total
+  }
+}
+mutation createBucket($data: CreateBucketRequest!) {
+  createBucket(data: $data) {
+    name
+  }
+}
+mutation updateBucket($data: UpdateBucketRequest!) {
+  updateBucket(data: $data) {
+    name
+  }
+}
+mutation deleteBucket($data: DeleteBucketRequest!) {
+  deleteBucket(data: $data)
+}

@@ -15,6 +15,47 @@ export type Scalars = {
   Float: number;
 };
 
+/** 访问权限类型 */
+export enum Access {
+  /** 开放 */
+  Open = 'OPEN',
+  /** 不开放 */
+  Private = 'PRIVATE',
+  /** 读开放 */
+  ReadOpen = 'READ_OPEN',
+}
+
+export type BucketInfo = {
+  __typename?: 'BucketInfo';
+  /** 访问权限 */
+  access: Access;
+  /** 创建时间 */
+  createTime: Scalars['Int'];
+  /** 名字 */
+  name: Scalars['String'];
+  /** 更新时间 */
+  updateTime: Scalars['Int'];
+  /** 用户名 */
+  userName: Scalars['String'];
+};
+
+export type BucketList = {
+  __typename?: 'BucketList';
+  /** 数据 */
+  data: Array<BucketInfo>;
+  /** 总数 */
+  total: Scalars['Int'];
+};
+
+export type CreateBucketRequest = {
+  /** 访问控制 */
+  access: Scalars['Int'];
+  /** 用户凭证 */
+  auth: Scalars['String'];
+  /** 名字 */
+  name: Scalars['String'];
+};
+
 export type CreateUserRequest = {
   /** 身份验证 */
   auth: Scalars['String'];
@@ -26,11 +67,27 @@ export type CreateUserRequest = {
   password: Scalars['String'];
 };
 
+export type DeleteBucketRequest = {
+  /** 用户凭证 */
+  auth: Scalars['String'];
+  /** 名字 */
+  name: Scalars['String'];
+};
+
 export type DeleteUserRequest = {
   /** 身份验证 */
   auth: Scalars['String'];
   /** 账号 */
   name: Scalars['String'];
+};
+
+export type GetListRequest = {
+  /** 身份验证 */
+  auth: Scalars['String'];
+  /** 获取多少数据 */
+  limit: Scalars['Int'];
+  /** 偏移量 */
+  offset: Scalars['Int'];
 };
 
 export type GetUserInfoRequest = {
@@ -45,15 +102,6 @@ export type GetUserRequest = {
   name: Scalars['String'];
 };
 
-export type ListRequest = {
-  /** 身份验证 */
-  auth: Scalars['String'];
-  /** 获取多少数据 */
-  limit: Scalars['Int'];
-  /** 偏移量 */
-  offset: Scalars['Int'];
-};
-
 export type LoginRequest = {
   /** 账号 */
   name: Scalars['String'];
@@ -63,16 +111,30 @@ export type LoginRequest = {
 
 export type MutationRoot = {
   __typename?: 'MutationRoot';
+  /** 创建存储桶 */
+  createBucket: BucketInfo;
+  /** 删除存储桶 */
+  deleteBucket: Scalars['Boolean'];
   /** 用户创建 */
   manageUserCreate: UserInfo;
-  /** 用户更新 */
+  /** 用户删除 */
   manageUserDelete: Scalars['Boolean'];
   /** 用户更新 */
   manageUserUpdate: UserInfo;
+  /** 更新存储桶 */
+  updateBucket: BucketInfo;
   /** 用户更新信息 */
   updateInfo: UserInfo;
   /** 用户更新密码 */
   updatePassword: Scalars['String'];
+};
+
+export type MutationRootCreateBucketArgs = {
+  data: CreateBucketRequest;
+};
+
+export type MutationRootDeleteBucketArgs = {
+  data: DeleteBucketRequest;
 };
 
 export type MutationRootManageUserCreateArgs = {
@@ -87,6 +149,10 @@ export type MutationRootManageUserUpdateArgs = {
   data: UpdateUserRequest;
 };
 
+export type MutationRootUpdateBucketArgs = {
+  data: UpdateBucketRequest;
+};
+
 export type MutationRootUpdateInfoArgs = {
   data: UpdateUserInfoRequest;
 };
@@ -97,6 +163,8 @@ export type MutationRootUpdatePasswordArgs = {
 
 export type QueryRoot = {
   __typename?: 'QueryRoot';
+  /** 用户存储桶列表 */
+  bucketList: BucketList;
   /** 管理员登陆 */
   managerLogin: Scalars['String'];
   /** 获取自身用户信息 */
@@ -107,6 +175,10 @@ export type QueryRoot = {
   userList: UserList;
   /** 用户登陆 */
   userLogin: Scalars['String'];
+};
+
+export type QueryRootBucketListArgs = {
+  data: GetListRequest;
 };
 
 export type QueryRootManagerLoginArgs = {
@@ -122,11 +194,20 @@ export type QueryRootUserInfoArgs = {
 };
 
 export type QueryRootUserListArgs = {
-  data: ListRequest;
+  data: GetListRequest;
 };
 
 export type QueryRootUserLoginArgs = {
   data: LoginRequest;
+};
+
+export type UpdateBucketRequest = {
+  /** 访问控制 */
+  access: Scalars['Int'];
+  /** 用户凭证 */
+  auth: Scalars['String'];
+  /** 名字 */
+  name: Scalars['String'];
 };
 
 export type UpdatePasswordRequest = {
@@ -187,7 +268,7 @@ export type ManagerLoginQueryVariables = Exact<{
 export type ManagerLoginQuery = { __typename?: 'QueryRoot'; managerLogin: string };
 
 export type UserListQueryVariables = Exact<{
-  data: ListRequest;
+  data: GetListRequest;
 }>;
 
 export type UserListQuery = {
@@ -344,7 +425,7 @@ export type ManagerLoginQueryHookResult = ReturnType<typeof useManagerLoginQuery
 export type ManagerLoginLazyQueryHookResult = ReturnType<typeof useManagerLoginLazyQuery>;
 export type ManagerLoginQueryResult = Apollo.QueryResult<ManagerLoginQuery, ManagerLoginQueryVariables>;
 export const UserListDocument = gql`
-  query userList($data: ListRequest!) {
+  query userList($data: GetListRequest!) {
     userList(data: $data) {
       data {
         name
