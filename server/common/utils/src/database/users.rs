@@ -44,6 +44,7 @@ impl User {
             .to_status()?;
         Self::find_one(name, pool).await
     }
+    /// 是否存在
     async fn exist(name: &str, pool: &Pool<Postgres>) -> bool {
         sqlx::query("select * from users where name = $1")
             .bind(name)

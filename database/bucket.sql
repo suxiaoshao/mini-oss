@@ -1,5 +1,5 @@
 \c mini_oss;
-create table if not exists Bucket
+create table if not exists bucket
 (
     name        varchar(255) primary key not null unique,
     create_time timestamp                not null,
@@ -7,7 +7,7 @@ create table if not exists Bucket
     access      access_type              not null,
     user_name   varchar(25)              not null
 );
-create table if not exists BucketTag
+create table if not exists bucket_tag
 (
     tag_name    varchar(25)  not null,
     bucket_name varchar(255) not null,
