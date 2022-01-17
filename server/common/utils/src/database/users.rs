@@ -28,9 +28,6 @@ impl User {
         description: &Option<String>,
         pool: &Pool<Postgres>,
     ) -> Result<Self, Status> {
-        if Self::exist(name, pool).await {
-            return Err(Status::already_exists("用户名重复"));
-        }
         // 获取现在时间
         let time = PrimitiveDateTime::from(SystemTime::now());
         sqlx::query("insert into users(name, create_time, update_time, password, description) values ($1,$2,$3,$4,$5)")
@@ -45,12 +42,12 @@ impl User {
         Self::find_one(name, pool).await
     }
     /// 是否存在
-    async fn exist(name: &str, pool: &Pool<Postgres>) -> bool {
+    pub async fn exist(name: &str, pool: &Pool<Postgres>) -> Result<(), sqlx::Error> {
         sqlx::query("select * from users where name = $1")
             .bind(name)
             .fetch_one(pool)
             .await
-            .is_ok()
+            .map(|_| ())
     }
     /// 更新
     pub async fn update(
@@ -58,9 +55,6 @@ impl User {
         description: &Option<String>,
         pool: &Pool<Postgres>,
     ) -> Result<Self, Status> {
-        if !Self::exist(name, pool).await {
-            return Err(Status::not_found("该用户不存在"));
-        }
         // 获取现在时间
         let time = PrimitiveDateTime::from(SystemTime::now());
         sqlx::query("update users set description = $1, update_time = $2 where name = $3")
@@ -91,9 +85,6 @@ impl User {
     }
     /// 删除用户
     pub async fn delete(name: &str, pool: &Pool<Postgres>) -> Result<(), Status> {
-        if !Self::exist(name, pool).await {
-            return Err(Status::not_found("该用户不存在"));
-        }
         sqlx::query("delete from users where name = $1")
             .bind(name)
             .execute(pool)

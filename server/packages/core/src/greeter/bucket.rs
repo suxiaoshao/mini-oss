@@ -52,7 +52,7 @@ impl Bucket for BucketGreeter {
         // 判断该存储桶是否存在
         bucket::Bucket::exist(&name, &self.pool)
             .await
-            .map_err(|_| Status::already_exists("该存储桶不存在"))?;
+            .map_err(|_| Status::not_found("该存储桶不存在"))?;
         // 判断用户是否一致
         let bucket::Bucket {
             user_name: user_name_,
@@ -74,7 +74,7 @@ impl Bucket for BucketGreeter {
         // 判断该存储桶是否存在
         bucket::Bucket::exist(&name, &self.pool)
             .await
-            .map_err(|_| Status::already_exists("该存储桶不存在"))?;
+            .map_err(|_| Status::not_found("该存储桶不存在"))?;
         // 判断用户是否一致
         let bucket::Bucket {
             user_name: user_name_,
