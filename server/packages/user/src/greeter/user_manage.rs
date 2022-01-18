@@ -38,9 +38,9 @@ impl UserManage for UserManageGreeter {
         // 验证管理员身份
         check_manager(&auth).await?;
         // 判断该用户是否存在
-        User::exist(&name, &self.pool)
-            .await
-            .map_err(|_| Status::already_exists("用户名重复"))?;
+        if User::exist(&name, &self.pool).await.is_ok() {
+            return Err(Status::already_exists("用户名重复"));
+        }
         let user = User::create(&name, &to_hash(&password)?, &description, &self.pool).await?;
         Ok(Response::new(user.into()))
     }

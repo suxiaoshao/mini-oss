@@ -37,9 +37,9 @@ impl Bucket for BucketGreeter {
         let user_name = check_user(&auth).await?;
         let name = format!("{name}-{user_name}");
         // 判断该存储桶是否存在
-        bucket::Bucket::exist(&name, &self.pool)
-            .await
-            .map_err(|_| Status::already_exists("存储桶名重复"))?;
+        if bucket::Bucket::exist(&name, &self.pool).await.is_ok() {
+            return Err(Status::already_exists("存储桶名重复"));
+        }
         let access: Access = Access::try_from(access)?;
         let bucket = bucket::Bucket::create(&name, access, &user_name, &self.pool).await?;
         Ok(Response::new(bucket.into()))
