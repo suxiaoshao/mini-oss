@@ -4,7 +4,7 @@ use proto::{
     async_trait,
     auth::Empty,
     core::{
-        bucket_server::Bucket, Access, BucketInfo, CreateBucketRequest, DeleteBucketRequest,
+        bucket_server::Bucket, BucketInfo, CreateBucketRequest, DeleteBucketRequest,
         GetBucketListReply, UpdateBucketRequest,
     },
     user::GetListRequest,
@@ -33,14 +33,14 @@ impl Bucket for BucketGreeter {
         &self,
         request: Request<CreateBucketRequest>,
     ) -> Result<Response<BucketInfo>, Status> {
-        let CreateBucketRequest { name, access, auth } = request.into_inner();
+        let access = request.get_ref().access();
+        let CreateBucketRequest { name, auth, .. } = request.into_inner();
         let user_name = check_user(&auth).await?;
         let name = format!("{name}-{user_name}");
         // 判断该存储桶是否存在
         if bucket::Bucket::exist(&name, &self.pool).await.is_ok() {
             return Err(Status::already_exists("存储桶名重复"));
         }
-        let access: Access = Access::try_from(access)?;
         let bucket = bucket::Bucket::create(&name, access, &user_name, &self.pool).await?;
         Ok(Response::new(bucket.into()))
     }
@@ -48,7 +48,8 @@ impl Bucket for BucketGreeter {
         &self,
         request: Request<UpdateBucketRequest>,
     ) -> Result<Response<BucketInfo>, Status> {
-        let UpdateBucketRequest { name, access, auth } = request.into_inner();
+        let access = request.get_ref().access();
+        let UpdateBucketRequest { name, auth, .. } = request.into_inner();
         let user_name = check_user(&auth).await?;
         // 判断该存储桶是否存在
         bucket::Bucket::exist(&name, &self.pool)
@@ -62,7 +63,7 @@ impl Bucket for BucketGreeter {
         if user_name != user_name_ {
             return Err(Status::permission_denied("没有权限操作不属于你的存储桶"));
         }
-        let access: bucket::Access = bucket::Access::try_from(access)?;
+        let access: bucket::Access = bucket::Access::from(access);
         let updated = bucket::Bucket::update(&name, &access, &self.pool).await?;
         Ok(Response::new(updated.into()))
     }

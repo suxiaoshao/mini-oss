@@ -2,9 +2,7 @@ use ::utils::errors::graphql::ToFieldResult;
 use async_graphql::{FieldResult, Object};
 use proto::{
     auth::{login_client::LoginClient, LoginReply, LoginRequest},
-    core::{
-        bucket_client::BucketClient, CreateBucketRequest, DeleteBucketRequest, UpdateBucketRequest,
-    },
+    core::{bucket_client::BucketClient, DeleteBucketRequest},
     user::{
         self_manage_client::SelfManageClient, user_manage_client::UserManageClient,
         CreateUserRequest, DeleteUserRequest, GetListRequest, GetUserInfoRequest, GetUserRequest,
@@ -14,7 +12,10 @@ use proto::{
 };
 
 use super::{
-    bucket_info::{BucketInfo, BucketList},
+    bucket::{
+        bucket_info::{BucketInfo, BucketList},
+        request,
+    },
     user_info::{UserInfo, UserList},
 };
 
@@ -74,7 +75,7 @@ impl QueryRoot {
             .to_field()?;
         let request = Request::new(data);
         let res = client.get_bucket_list(request).await.to_field()?;
-        BucketList::try_from(res.into_inner()).to_field()
+        Ok(BucketList::from(res.into_inner()))
     }
 }
 pub struct MutationRoot;
@@ -131,22 +132,22 @@ impl MutationRoot {
         Ok(UserInfo::from(res.into_inner()))
     }
     /// 创建存储桶
-    async fn create_bucket(&self, data: CreateBucketRequest) -> FieldResult<BucketInfo> {
+    async fn create_bucket(&self, data: request::CreateBucketRequest) -> FieldResult<BucketInfo> {
         let mut client = BucketClient::connect("http://core-service:80")
             .await
             .to_field()?;
-        let request = Request::new(data);
+        let request = Request::new(data.into());
         let res = client.create_bucket(request).await.to_field()?;
-        BucketInfo::try_from(res.into_inner()).to_field()
+        Ok(BucketInfo::from(res.into_inner()))
     }
     /// 更新存储桶
-    async fn update_bucket(&self, data: UpdateBucketRequest) -> FieldResult<BucketInfo> {
+    async fn update_bucket(&self, data: request::UpdateBucketRequest) -> FieldResult<BucketInfo> {
         let mut client = BucketClient::connect("http://core-service:80")
             .await
             .to_field()?;
-        let request = Request::new(data);
+        let request = Request::new(data.into());
         let res = client.update_bucket(request).await.to_field()?;
-        BucketInfo::try_from(res.into_inner()).to_field()
+        Ok(BucketInfo::from(res.into_inner()))
     }
     /// 删除存储桶
     async fn delete_bucket(&self, data: DeleteBucketRequest) -> FieldResult<bool> {

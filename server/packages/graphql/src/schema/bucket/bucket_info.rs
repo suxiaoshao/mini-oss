@@ -1,8 +1,5 @@
 use async_graphql::SimpleObject;
-use proto::{
-    core::{Access, GetBucketListReply},
-    Status,
-};
+use proto::core::{Access, GetBucketListReply};
 
 #[derive(SimpleObject)]
 pub struct BucketInfo {
@@ -18,26 +15,24 @@ pub struct BucketInfo {
     pub user_name: String,
 }
 
-impl TryFrom<proto::core::BucketInfo> for BucketInfo {
-    fn try_from(user: proto::core::BucketInfo) -> Result<Self, Status> {
+impl From<proto::core::BucketInfo> for BucketInfo {
+    fn from(user: proto::core::BucketInfo) -> Self {
+        let access = user.access();
         let proto::core::BucketInfo {
             name,
             create_time,
             update_time,
-            access,
             user_name,
+            ..
         } = user;
-        let access = Access::try_from(access)?;
-        Ok(Self {
+        Self {
             name,
             create_time,
             update_time,
             access,
             user_name,
-        })
+        }
     }
-
-    type Error = Status;
 }
 #[derive(SimpleObject)]
 pub struct BucketList {
@@ -47,17 +42,11 @@ pub struct BucketList {
     pub data: Vec<BucketInfo>,
 }
 
-impl TryFrom<GetBucketListReply> for BucketList {
-    fn try_from(list_user: GetBucketListReply) -> Result<BucketList, Status> {
-        let mut data = vec![];
-        for bucket_info in list_user.data {
-            data.push(BucketInfo::try_from(bucket_info)?);
-        }
-        Ok(Self {
+impl From<GetBucketListReply> for BucketList {
+    fn from(list_user: GetBucketListReply) -> BucketList {
+        Self {
             total: list_user.total,
-            data,
-        })
+            data: list_user.data.into_iter().map(|x| x.into()).collect(),
+        }
     }
-
-    type Error = Status;
 }
