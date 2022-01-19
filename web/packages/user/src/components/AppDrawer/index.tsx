@@ -1,4 +1,4 @@
-import { Home, Logout, Settings } from '@mui/icons-material';
+import { AllInbox, Home, Logout, Settings } from '@mui/icons-material';
 import { Box, Divider, Drawer, List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import { Outlet } from 'react-router-dom';
 import { useAppDispatch } from '../../app/hooks';
@@ -20,6 +20,7 @@ export default function AppDrawer(): JSX.Element {
       >
         <List sx={{ width }}>
           <ListItemRoute toPath="/" matchPaths={['/', '']} text="首页" icon={<Home />} />
+          <ListItemRoute toPath="/bucket" matchPaths={['/bucket']} text="存储桶" icon={<AllInbox />} />
           <ListItemRoute toPath="/setting" matchPaths={['/setting']} text="设置" icon={<Settings />} />
         </List>
         <Divider />

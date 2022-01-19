@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
-import UserInfoSetting from './UserInfoSetting';
-import UserPasswordReset from './UserPasswordReset';
+import UserInfoSetting from './components/UserInfoSetting';
+import UserPasswordReset from './components/UserPasswordReset';
 
 export default function Setting(): JSX.Element {
   return (

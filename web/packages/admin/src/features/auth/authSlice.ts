@@ -1,4 +1,16 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { client } from 'common';
+import { LoginRequest, ManagerLoginQuery, ManagerLoginQueryVariables, ManagerLoginDocument } from 'graphql';
+
+export const login = createAsyncThunk('login', async (data: LoginRequest) => {
+  const {
+    data: { managerLogin },
+  } = await client.query<ManagerLoginQuery, ManagerLoginQueryVariables>({
+    query: ManagerLoginDocument,
+    variables: { data },
+  });
+  return await managerLogin;
+});
 
 export const authSlice = createSlice({
   name: 'auth',
@@ -10,13 +22,15 @@ export const authSlice = createSlice({
       window.localStorage.removeItem('admin_auth');
       state.value = null;
     },
-    login: (state, action: PayloadAction<string>) => {
-      window.localStorage.setItem('admin_auth', action.payload);
-      state.value = action.payload;
-    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(login.fulfilled, (state, { payload }) => {
+      window.localStorage.setItem('admin_auth', payload);
+      state.value = payload;
+    });
   },
 });
 
-export const { logout, login } = authSlice.actions;
+export const { logout } = authSlice.actions;
 
 export default authSlice.reducer;

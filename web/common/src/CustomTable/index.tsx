@@ -36,7 +36,6 @@ export function CustomTable<D extends object>({ tableInstance, page }: CustomTab
                   headerGroup.headers.map((column) => {
                     const headerCulumn = column as CustomColumn<D>;
                     const headerProps = headerCulumn.headerCellProps ?? headerCulumn.cellProps;
-                    console.log(headerProps);
 
                     return (
                       // Apply the header cell props
@@ -67,7 +66,6 @@ export function CustomTable<D extends object>({ tableInstance, page }: CustomTab
                     // Loop over the rows cells
                     row.cells.map((cell) => {
                       const column = cell.column as CustomColumn<D>;
-                      console.log(column.cellProps);
 
                       // Apply the cell props
                       return (

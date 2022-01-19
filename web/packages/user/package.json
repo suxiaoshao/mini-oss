@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "tslint": "tsc --build tsconfig.json"
   },
   "dependencies": {
     "graphql": "workspace:graphql",

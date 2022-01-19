@@ -1,5 +1,4 @@
 import { Avatar, Box, Button, TextField, Typography } from '@mui/material';
-import { useManagerLoginLazyQuery } from 'graphql';
 import { useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -20,12 +19,8 @@ export default function Login(): JSX.Element {
     formState: { errors },
   } = useForm<LoginForm>();
   const dispatch = useAppDispatch();
-  const [fn] = useManagerLoginLazyQuery();
   const onSubmit: SubmitHandler<LoginForm> = async (formData) => {
-    const data = await fn({ variables: { data: { ...formData } } });
-    if (data.data) {
-      dispatch(login(data.data?.managerLogin));
-    }
+    dispatch(login(formData));
   };
 
   /** 跳转 */

@@ -1,4 +1,16 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { client } from 'common';
+import { LoginRequest, UserLoginDocument, UserLoginQuery, UserLoginQueryVariables } from 'graphql';
+
+export const login = createAsyncThunk('login', async (data: LoginRequest) => {
+  const {
+    data: { userLogin },
+  } = await client.query<UserLoginQuery, UserLoginQueryVariables>({
+    query: UserLoginDocument,
+    variables: { data },
+  });
+  return await userLogin;
+});
 
 export const authSlice = createSlice({
   name: 'auth',
@@ -10,13 +22,20 @@ export const authSlice = createSlice({
       window.localStorage.removeItem('user_auth');
       state.value = null;
     },
-    login: (state, action: PayloadAction<string>) => {
-      window.localStorage.setItem('user_auth', action.payload);
-      state.value = action.payload;
+    /** 用于修改密码 */
+    resetAuth: (state, { payload }: PayloadAction<string>) => {
+      window.localStorage.setItem('user_auth', payload);
+      state.value = payload;
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(login.fulfilled, (state, { payload }) => {
+      window.localStorage.setItem('user_auth', payload);
+      state.value = payload;
+    });
   },
 });
 
-export const { logout, login } = authSlice.actions;
+export const { logout, resetAuth } = authSlice.actions;
 
 export default authSlice.reducer;

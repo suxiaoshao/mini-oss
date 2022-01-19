@@ -1,20 +1,19 @@
+import { useAppSelector } from '@/app/hooks';
 import { Refresh } from '@mui/icons-material';
 import { Box, IconButton } from '@mui/material';
-import { CustomColumnArray, CustomTable, format, TableActions, useCustomTable, usePage } from 'common';
-import { UserListQuery, useUserDeleteMutation, useUserListQuery } from 'graphql';
+import { CustomColumnArray, CustomTable, format, useCustomTable, usePage, TableActions } from 'common';
+import { BucketListQuery, useBucketListQuery, useDeleteBucketMutation } from 'graphql';
 import { useMemo } from 'react';
-import { useAppSelector } from '../../app/hooks';
-import CreateUserButton from './components/CreateUserButton';
-import UpdateUserAction from './components/UpdateUserAction';
-export default function Users(): JSX.Element {
+import AccessFormat from '../../components/AccessFormat';
+import CreateBucketButton from './components/CreateBucketButton';
+import UpdateBucketAction from './components/UpdateBucketAction';
+
+export default function BucketList(): JSX.Element {
   const { limit, offset } = usePage({});
   const auth = useAppSelector((state) => state.auth.value);
-  const { data, refetch } = useUserListQuery({
-    variables: { data: { limit, offset, auth: auth ?? '' } },
-    skip: auth === null,
-  });
-  const [deleteUser] = useUserDeleteMutation();
-  const columns = useMemo<CustomColumnArray<UserListQuery['userList']['data'][0]>>(
+  const { data, refetch } = useBucketListQuery({ variables: { data: { auth: auth ?? '', limit, offset } } });
+  const [deleteBucket] = useDeleteBucketMutation();
+  const columns = useMemo<CustomColumnArray<BucketListQuery['bucketList']['data'][0]>>(
     () => [
       {
         Header: '名字',
@@ -22,9 +21,9 @@ export default function Users(): JSX.Element {
         accessor: 'name',
       },
       {
-        Header: '描述',
-        id: 'description',
-        accessor: ({ description }) => description ?? '-',
+        Header: '访问',
+        id: 'access',
+        accessor: ({ access }) => <AccessFormat access={access} />,
       },
       {
         Header: '创建时间',
@@ -39,35 +38,26 @@ export default function Users(): JSX.Element {
       {
         Header: '操作',
         id: 'action',
-        accessor: ({ name, description }) => (
+        accessor: ({ name, access }) => (
           <TableActions>
             {(onClose) => [
               {
                 text: '删除',
                 onClick: async () => {
-                  await deleteUser({ variables: { data: { auth: auth ?? '', name } } });
+                  await deleteBucket({ variables: { data: { auth: auth ?? '', name } } });
                   onClose();
                   refetch();
                 },
               },
-              <UpdateUserAction
-                description={description ?? undefined}
-                name={name}
-                refetch={refetch}
-                key={2}
-                menuClose={onClose}
-              />,
+              <UpdateBucketAction key={2} refetch={refetch} menuClose={onClose} name={name} access={access} />,
             ]}
           </TableActions>
         ),
-        cellProps: { padding: 'none' },
       },
     ],
-    [auth, deleteUser, refetch],
+    [auth, deleteBucket, refetch],
   );
-
-  const tableInstance = useCustomTable({ columns, data: data?.userList.data ?? [] });
-
+  const tableInstance = useCustomTable({ columns, data: data?.bucketList.data ?? [] });
   return (
     <Box
       sx={{
@@ -79,7 +69,7 @@ export default function Users(): JSX.Element {
       }}
     >
       <Box sx={{ flex: '0 0 auto', marginBottom: (theme) => theme.spacing(2), display: 'flex' }}>
-        <CreateUserButton refetch={refetch} />
+        <CreateBucketButton refetch={refetch} />
         <IconButton sx={{ marginLeft: 'auto' }} onClick={() => refetch()}>
           <Refresh />
         </IconButton>

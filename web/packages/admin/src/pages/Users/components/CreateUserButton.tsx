@@ -1,5 +1,4 @@
-import { Add } from '@mui/icons-material';
-import { Tooltip, Fab, Dialog, Box, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material';
+import { Dialog, Box, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material';
 import { UserCreateMutationVariables, useUserCreateMutation } from 'graphql';
 import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -12,7 +11,7 @@ export interface CreateUserFabProps {
   refetch: () => void;
 }
 
-export default function CreateUserFab({ refetch }: CreateUserFabProps): JSX.Element {
+export default function CreateUserButton({ refetch }: CreateUserFabProps): JSX.Element {
   const [open, setOpen] = useState(false);
   const handleClose = () => {
     setOpen(false);
@@ -27,16 +26,9 @@ export default function CreateUserFab({ refetch }: CreateUserFabProps): JSX.Elem
   };
   return (
     <>
-      <Tooltip placement="top" title="添加新用户">
-        <Fab
-          color="primary"
-          size="large"
-          sx={{ position: 'fixed', right: (theme) => theme.spacing(7), bottom: (theme) => theme.spacing(7) }}
-          onClick={() => setOpen(true)}
-        >
-          <Add />
-        </Fab>
-      </Tooltip>
+      <Button color="primary" variant="contained" size="large" onClick={() => setOpen(true)}>
+        添加新用户
+      </Button>
       <Dialog open={open} onClose={handleClose}>
         <Box sx={{ width: 600 }} onSubmit={handleSubmit(onSubmit)} component="form">
           <DialogTitle>新建用户</DialogTitle>

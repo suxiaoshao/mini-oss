@@ -48,11 +48,8 @@ export type BucketList = {
 };
 
 export type CreateBucketRequest = {
-  /** 访问控制 */
-  access: Scalars['Int'];
-  /** 用户凭证 */
+  access: Access;
   auth: Scalars['String'];
-  /** 名字 */
   name: Scalars['String'];
 };
 
@@ -202,11 +199,8 @@ export type QueryRootUserLoginArgs = {
 };
 
 export type UpdateBucketRequest = {
-  /** 访问控制 */
-  access: Scalars['Int'];
-  /** 用户凭证 */
+  access: Access;
   auth: Scalars['String'];
-  /** 名字 */
   name: Scalars['String'];
 };
 
@@ -254,6 +248,43 @@ export type UserList = {
   /** 总数 */
   total: Scalars['Int'];
 };
+
+export type BucketListQueryVariables = Exact<{
+  data: GetListRequest;
+}>;
+
+export type BucketListQuery = {
+  __typename?: 'QueryRoot';
+  bucketList: {
+    __typename?: 'BucketList';
+    total: number;
+    data: Array<{ __typename?: 'BucketInfo'; name: string; createTime: number; updateTime: number; access: Access }>;
+  };
+};
+
+export type CreateBucketMutationVariables = Exact<{
+  data: CreateBucketRequest;
+}>;
+
+export type CreateBucketMutation = {
+  __typename?: 'MutationRoot';
+  createBucket: { __typename?: 'BucketInfo'; name: string };
+};
+
+export type UpdateBucketMutationVariables = Exact<{
+  data: UpdateBucketRequest;
+}>;
+
+export type UpdateBucketMutation = {
+  __typename?: 'MutationRoot';
+  updateBucket: { __typename?: 'BucketInfo'; name: string };
+};
+
+export type DeleteBucketMutationVariables = Exact<{
+  data: DeleteBucketRequest;
+}>;
+
+export type DeleteBucketMutation = { __typename?: 'MutationRoot'; deleteBucket: boolean };
 
 export type UserLoginQueryVariables = Exact<{
   data: LoginRequest;
@@ -352,6 +383,161 @@ export type UpdatePasswordMutationVariables = Exact<{
 
 export type UpdatePasswordMutation = { __typename?: 'MutationRoot'; updatePassword: string };
 
+export const BucketListDocument = gql`
+  query bucketList($data: GetListRequest!) {
+    bucketList(data: $data) {
+      data {
+        name
+        createTime
+        updateTime
+        access
+      }
+      total
+    }
+  }
+`;
+
+/**
+ * __useBucketListQuery__
+ *
+ * To run a query within a React component, call `useBucketListQuery` and pass it any options that fit your needs.
+ * When your component renders, `useBucketListQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useBucketListQuery({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useBucketListQuery(baseOptions: Apollo.QueryHookOptions<BucketListQuery, BucketListQueryVariables>) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<BucketListQuery, BucketListQueryVariables>(BucketListDocument, options);
+}
+export function useBucketListLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<BucketListQuery, BucketListQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<BucketListQuery, BucketListQueryVariables>(BucketListDocument, options);
+}
+export type BucketListQueryHookResult = ReturnType<typeof useBucketListQuery>;
+export type BucketListLazyQueryHookResult = ReturnType<typeof useBucketListLazyQuery>;
+export type BucketListQueryResult = Apollo.QueryResult<BucketListQuery, BucketListQueryVariables>;
+export const CreateBucketDocument = gql`
+  mutation createBucket($data: CreateBucketRequest!) {
+    createBucket(data: $data) {
+      name
+    }
+  }
+`;
+export type CreateBucketMutationFn = Apollo.MutationFunction<CreateBucketMutation, CreateBucketMutationVariables>;
+
+/**
+ * __useCreateBucketMutation__
+ *
+ * To run a mutation, you first call `useCreateBucketMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateBucketMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createBucketMutation, { data, loading, error }] = useCreateBucketMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useCreateBucketMutation(
+  baseOptions?: Apollo.MutationHookOptions<CreateBucketMutation, CreateBucketMutationVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<CreateBucketMutation, CreateBucketMutationVariables>(CreateBucketDocument, options);
+}
+export type CreateBucketMutationHookResult = ReturnType<typeof useCreateBucketMutation>;
+export type CreateBucketMutationResult = Apollo.MutationResult<CreateBucketMutation>;
+export type CreateBucketMutationOptions = Apollo.BaseMutationOptions<
+  CreateBucketMutation,
+  CreateBucketMutationVariables
+>;
+export const UpdateBucketDocument = gql`
+  mutation updateBucket($data: UpdateBucketRequest!) {
+    updateBucket(data: $data) {
+      name
+    }
+  }
+`;
+export type UpdateBucketMutationFn = Apollo.MutationFunction<UpdateBucketMutation, UpdateBucketMutationVariables>;
+
+/**
+ * __useUpdateBucketMutation__
+ *
+ * To run a mutation, you first call `useUpdateBucketMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateBucketMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateBucketMutation, { data, loading, error }] = useUpdateBucketMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useUpdateBucketMutation(
+  baseOptions?: Apollo.MutationHookOptions<UpdateBucketMutation, UpdateBucketMutationVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<UpdateBucketMutation, UpdateBucketMutationVariables>(UpdateBucketDocument, options);
+}
+export type UpdateBucketMutationHookResult = ReturnType<typeof useUpdateBucketMutation>;
+export type UpdateBucketMutationResult = Apollo.MutationResult<UpdateBucketMutation>;
+export type UpdateBucketMutationOptions = Apollo.BaseMutationOptions<
+  UpdateBucketMutation,
+  UpdateBucketMutationVariables
+>;
+export const DeleteBucketDocument = gql`
+  mutation deleteBucket($data: DeleteBucketRequest!) {
+    deleteBucket(data: $data)
+  }
+`;
+export type DeleteBucketMutationFn = Apollo.MutationFunction<DeleteBucketMutation, DeleteBucketMutationVariables>;
+
+/**
+ * __useDeleteBucketMutation__
+ *
+ * To run a mutation, you first call `useDeleteBucketMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteBucketMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteBucketMutation, { data, loading, error }] = useDeleteBucketMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useDeleteBucketMutation(
+  baseOptions?: Apollo.MutationHookOptions<DeleteBucketMutation, DeleteBucketMutationVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<DeleteBucketMutation, DeleteBucketMutationVariables>(DeleteBucketDocument, options);
+}
+export type DeleteBucketMutationHookResult = ReturnType<typeof useDeleteBucketMutation>;
+export type DeleteBucketMutationResult = Apollo.MutationResult<DeleteBucketMutation>;
+export type DeleteBucketMutationOptions = Apollo.BaseMutationOptions<
+  DeleteBucketMutation,
+  DeleteBucketMutationVariables
+>;
 export const UserLoginDocument = gql`
   query userLogin($data: LoginRequest!) {
     userLogin(data: $data)

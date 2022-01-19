@@ -1,9 +1,9 @@
+import { useAppSelector, useAppDispatch } from '@/app/hooks';
+import { resetAuth } from '@/features/auth/authSlice';
 import { Box, Card, CardHeader, CardContent, TextField, CardActions, TextFieldProps, Button } from '@mui/material';
 import { useSnackbar } from 'common';
 import { useUpdatePasswordMutation } from 'graphql';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { login } from '../../features/auth/authSlice';
 
 export interface UserPasswordForm {
   newPassword: string;
@@ -19,7 +19,7 @@ export default function UserPasswordReset(): JSX.Element {
   const onSubmit: SubmitHandler<UserPasswordForm> = async (formData) => {
     const { data } = await updateInfo({ variables: { data: { auth, ...formData } } });
     enqueueSnackbar('修改成功', { variant: 'success' });
-    dispatch(login(data?.updatePassword ?? ''));
+    dispatch(resetAuth(data?.updatePassword ?? ''));
   };
   /** 样式  */
   const textFieldProp: TextFieldProps = {
