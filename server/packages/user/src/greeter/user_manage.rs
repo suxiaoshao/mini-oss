@@ -7,10 +7,12 @@ use proto::{
         user_manage_server::UserManage, CreateUserRequest, DeleteUserRequest, GetListRequest,
         GetUserListReply, GetUserRequest, UpdateUserRequest, UserInfo,
     },
+    validation::Validate,
     Request, Response, Status,
 };
 use utils::{
     database::{users::User, Pool, Postgres},
+    errors::grpc::ToStatusResult,
     validation::{check_auth::check_manager, hash::to_hash},
 };
 
@@ -29,6 +31,8 @@ impl UserManage for UserManageGreeter {
         &self,
         request: Request<CreateUserRequest>,
     ) -> Result<Response<UserInfo>, Status> {
+        // 验证
+        request.get_ref().validate().to_status()?;
         let CreateUserRequest {
             name,
             password,

@@ -1,5 +1,4 @@
 use std::env::VarError;
-
 use tonic::Status;
 
 /// result 生成需要
@@ -39,5 +38,15 @@ impl ToStatus for jsonwebtoken::errors::Error {
 impl ToStatus for sqlx::error::Error {
     fn to_status(self) -> Status {
         Status::internal(format!("数据库错误:{self}"))
+    }
+}
+impl ToStatus for proto::validation::ValidationErrors {
+    fn to_status(self) -> Status {
+        if let Some((name, err)) = &self.field_errors().into_iter().find(|_| true) {
+            if let Some(err) = err.get(0) {
+                return Status::invalid_argument(format!("{}{}", name, err.code));
+            };
+        };
+        Status::invalid_argument("参数错误")
     }
 }

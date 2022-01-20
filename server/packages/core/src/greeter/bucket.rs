@@ -8,6 +8,7 @@ use proto::{
         GetBucketListReply, UpdateBucketRequest,
     },
     user::GetListRequest,
+    validation::Validate,
     Request, Response, Status,
 };
 use utils::{
@@ -15,6 +16,7 @@ use utils::{
         bucket::{self},
         Pool, Postgres,
     },
+    errors::grpc::ToStatusResult,
     validation::check_auth::check_user,
 };
 
@@ -33,6 +35,8 @@ impl Bucket for BucketGreeter {
         &self,
         request: Request<CreateBucketRequest>,
     ) -> Result<Response<BucketInfo>, Status> {
+        // 验证
+        request.get_ref().validate().to_status()?;
         let access = request.get_ref().access();
         let CreateBucketRequest { name, auth, .. } = request.into_inner();
         let user_name = check_user(&auth).await?;

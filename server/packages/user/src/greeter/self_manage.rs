@@ -7,10 +7,12 @@ use proto::{
         self_manage_server::SelfManage, GetUserInfoRequest, UpdatePasswordRequest,
         UpdateUserInfoRequest, UserInfo,
     },
+    validation::Validate,
     Request, Response, Status,
 };
 use utils::{
     database::{users::User, Pool, Postgres},
+    errors::grpc::ToStatusResult,
     validation::{
         check_auth::check_user,
         claims::Claims,
@@ -51,6 +53,8 @@ impl SelfManage for SelfManageGreeter {
         &self,
         request: Request<UpdatePasswordRequest>,
     ) -> Result<Response<LoginReply>, Status> {
+        // 验证
+        request.get_ref().validate().to_status()?;
         let UpdatePasswordRequest {
             old_password,
             new_password,
