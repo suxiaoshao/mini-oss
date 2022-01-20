@@ -1,4 +1,5 @@
 fn main() {
+    std::fs::create_dir_all("./src/target").unwrap();
     tonic_build::configure()
         .out_dir("./src/target")
         .compile(

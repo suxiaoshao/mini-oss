@@ -48,15 +48,3 @@ impl Login for LoginGreeter {
         Ok(Response::new(LoginReply { auth: token }))
     }
 }
-
-#[tokio::test]
-async fn manager_login() {
-    use proto::auth::login_client::LoginClient;
-    let mut client = LoginClient::connect("http://localhost:80").await.unwrap();
-    let request = Request::new(LoginRequest {
-        name: "sushao".to_string(),
-        password: "sushao".to_string(),
-    });
-    let res = client.user_login(request).await.unwrap();
-    println!("{}", res.get_ref().auth);
-}

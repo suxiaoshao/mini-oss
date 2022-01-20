@@ -159,13 +159,3 @@ impl MutationRoot {
         Ok(true)
     }
 }
-#[tokio::test]
-async fn test() {
-    let mut client = LoginClient::connect("http://localhost:80").await.unwrap();
-    let request = Request::new(LoginRequest {
-        name: "sushao".to_string(),
-        password: "sushao".to_string(),
-    });
-    let res = client.manager_login(request).await.unwrap();
-    println!("{}", res.get_ref().auth);
-}
