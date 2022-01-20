@@ -6,7 +6,7 @@ pub fn validate_name(input: &str) -> Result<(), ValidationError> {
     if input.chars().count() < 4 {
         return Err(ValidationError::new("必须大于3个字符"));
     }
-    if input.chars().count() >= 25 {
+    if input.chars().count() > 25 {
         return Err(ValidationError::new("必须小于26个字符"));
     }
     match input.chars().next() {

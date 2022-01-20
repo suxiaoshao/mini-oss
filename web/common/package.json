@@ -15,7 +15,8 @@
     "graphql": "^16.2.0",
     "notistack": "^2.0.3",
     "rxjs": "^7.5.2",
-    "react-table": "^7.7.0"
+    "react-table": "^7.7.0",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@types/react-table": "^7.7.9"

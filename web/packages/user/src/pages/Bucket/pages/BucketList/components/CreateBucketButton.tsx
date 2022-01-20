@@ -1,4 +1,5 @@
 import { useAppSelector } from '@/app/hooks';
+import { yupResolver } from '@hookform/resolvers/yup';
 import {
   Dialog,
   Box,
@@ -14,6 +15,7 @@ import {
   Radio,
   RadioGroup,
 } from '@mui/material';
+import { object, string } from 'common';
 import { Access, CreateBucketMutationVariables, useCreateBucketMutation } from 'graphql';
 import { useState } from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
@@ -25,14 +27,24 @@ export interface CreateBucketFabProps {
   refetch: () => void;
 }
 
+const createBucketSchema = object({
+  name: string().name(),
+});
+
 export default function CreateBucketButton({ refetch }: CreateBucketFabProps): JSX.Element {
   const [open, setOpen] = useState(false);
   const handleClose = () => {
     setOpen(false);
   };
   const [createBucket] = useCreateBucketMutation();
-  const { register, handleSubmit, control } = useForm<CreateBucketForm>({
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<CreateBucketForm>({
     defaultValues: { access: Access.Private },
+    resolver: yupResolver(createBucketSchema),
   });
   const auth = useAppSelector((state) => state.auth.value) ?? '';
   const username = useAppSelector((state) => state.userInfo.name);
@@ -59,6 +71,8 @@ export default function CreateBucketButton({ refetch }: CreateBucketFabProps): J
               label="名字"
               InputProps={{ endAdornment: <InputAdornment position="end"> -{username}</InputAdornment> }}
               {...register('name', { required: true })}
+              error={errors.name !== undefined}
+              helperText={errors.name?.message}
             />
             <Controller
               name="access"

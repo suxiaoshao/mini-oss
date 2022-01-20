@@ -5,11 +5,18 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import logo from '../../favicon.svg';
 import { login } from '../../features/auth/authSlice';
+import { object, string } from 'common';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 interface LoginForm {
   password: string;
   name: string;
 }
+
+const loginSchema = object({
+  name: string().name(),
+  password: string().password(),
+});
 
 export default function Login(): JSX.Element {
   /** 表单 */
@@ -17,7 +24,9 @@ export default function Login(): JSX.Element {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginForm>();
+  } = useForm<LoginForm>({
+    resolver: yupResolver(loginSchema),
+  });
   const dispatch = useAppDispatch();
   const onSubmit: SubmitHandler<LoginForm> = async (formData) => {
     dispatch(login(formData));
@@ -58,23 +67,21 @@ export default function Login(): JSX.Element {
         <Typography component="h1" variant="h5">
           管理员登陆
         </Typography>
-        {/* register your input into the hook by invoking the "register" function */}
         <TextField
           required
           label="用户名"
           {...register('name', { required: true })}
           sx={{ marginTop: (theme) => theme.spacing(2), width: '100%' }}
-          helperText={errors.password && '不能为空'}
+          helperText={errors.name?.message}
+          error={errors.name !== undefined}
         />
-
-        {/* include validation with required or other standard HTML validation rules */}
         <TextField
           required
           label="密码"
           type="password"
           {...register('password', { required: true })}
           error={errors.password !== undefined}
-          helperText={errors.password && '不能为空'}
+          helperText={errors.password?.message}
           sx={{ marginTop: (theme) => theme.spacing(2), width: '100%' }}
         />
         <Button

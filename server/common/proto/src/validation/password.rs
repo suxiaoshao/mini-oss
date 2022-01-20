@@ -4,7 +4,7 @@ pub fn validate_password(input: &str) -> Result<(), ValidationError> {
     if input.chars().count() < 8 {
         return Err(ValidationError::new("必须大于7个字符"));
     }
-    if input.chars().count() >= 25 {
+    if input.chars().count() > 25 {
         return Err(ValidationError::new("必须小于26个字符"));
     }
     let mut num_exist = 0;

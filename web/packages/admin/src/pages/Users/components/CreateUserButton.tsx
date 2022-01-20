@@ -1,4 +1,6 @@
+import { yupResolver } from '@hookform/resolvers/yup';
 import { Dialog, Box, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material';
+import { object, string } from 'common';
 import { UserCreateMutationVariables, useUserCreateMutation } from 'graphql';
 import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -11,13 +13,24 @@ export interface CreateUserFabProps {
   refetch: () => void;
 }
 
+const createUserSchema = object({
+  name: string().name(),
+  password: string().password(),
+});
+
 export default function CreateUserButton({ refetch }: CreateUserFabProps): JSX.Element {
   const [open, setOpen] = useState(false);
   const handleClose = () => {
     setOpen(false);
   };
   const [createUser] = useUserCreateMutation();
-  const { register, handleSubmit } = useForm<CreateUserForm>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateUserForm>({
+    resolver: yupResolver(createUserSchema),
+  });
   const auth = useAppSelector((state) => state.auth.value) ?? '';
   const onSubmit: SubmitHandler<CreateUserForm> = async (formData) => {
     await createUser({ variables: { data: { auth, ...formData, description: formData.description || null } } });
@@ -40,6 +53,8 @@ export default function CreateUserButton({ refetch }: CreateUserFabProps): JSX.E
               fullWidth
               label="用户名"
               {...register('name', { required: true })}
+              helperText={errors.name?.message}
+              error={errors.name !== undefined}
             />
             <TextField
               variant="standard"
@@ -49,6 +64,8 @@ export default function CreateUserButton({ refetch }: CreateUserFabProps): JSX.E
               fullWidth
               label="密码"
               {...register('password', { required: true })}
+              error={errors.password !== undefined}
+              helperText={errors.password?.message}
             />
             <TextField
               variant="standard"
