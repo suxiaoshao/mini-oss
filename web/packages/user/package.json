@@ -8,7 +8,7 @@
     "tslint": "tsc --build tsconfig.json"
   },
   "dependencies": {
-    "graphql": "workspace:graphql",
-    "common": "workspace:common"
+    "common": "workspace:^1.0.0",
+    "graphql": "workspace:^0.0.0"
   }
 }
