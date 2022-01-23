@@ -17,16 +17,18 @@ use utils::{
         Pool, Postgres,
     },
     errors::grpc::ToStatusResult,
+    mongo::Mongo,
     validation::check_auth::check_user,
 };
-
+#[derive(Clone)]
 pub struct BucketGreeter {
     pool: Arc<Pool<Postgres>>,
+    mongo: Arc<Mongo>,
 }
 
 impl BucketGreeter {
-    pub fn new(pool: Arc<Pool<Postgres>>) -> Self {
-        Self { pool }
+    pub fn new(pool: Arc<Pool<Postgres>>, mongo: Arc<Mongo>) -> Self {
+        Self { pool, mongo }
     }
 }
 #[async_trait]
@@ -89,7 +91,9 @@ impl Bucket for BucketGreeter {
         if user_name != user_name_ {
             return Err(Status::permission_denied("没有权限操作不属于你的存储桶"));
         }
+        // 数据库中删除
         bucket::Bucket::delete(&name, &self.pool).await?;
+        self.mongo.drop_self(name).await?;
         Ok(Response::new(Empty {}))
     }
     async fn get_bucket_list(

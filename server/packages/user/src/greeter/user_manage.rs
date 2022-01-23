@@ -13,7 +13,7 @@ use proto::{
 use utils::{
     database::{users::User, Pool, Postgres},
     errors::grpc::ToStatusResult,
-    validation::{check_auth::check_manager, hash::to_hash},
+    validation::{check_auth::check_manager, hash::password_to_hash},
 };
 
 pub struct UserManageGreeter {
@@ -45,7 +45,13 @@ impl UserManage for UserManageGreeter {
         if User::exist(&name, &self.pool).await.is_ok() {
             return Err(Status::already_exists("用户名重复"));
         }
-        let user = User::create(&name, &to_hash(&password)?, &description, &self.pool).await?;
+        let user = User::create(
+            &name,
+            &password_to_hash(&password)?,
+            &description,
+            &self.pool,
+        )
+        .await?;
         Ok(Response::new(user.into()))
     }
     async fn update_user(

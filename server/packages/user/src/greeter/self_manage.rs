@@ -16,7 +16,7 @@ use utils::{
     validation::{
         check_auth::check_user,
         claims::Claims,
-        hash::{to_hash, validate_hash},
+        hash::{password_to_hash, validate_password_hash},
     },
 };
 
@@ -63,11 +63,11 @@ impl SelfManage for SelfManageGreeter {
         // 验证用户身份
         let user = Claims::check_user(auth, &self.pool).await?;
         // 验证旧密码
-        if validate_hash(&old_password, &user.password).is_err() {
+        if validate_password_hash(&old_password, &user.password).is_err() {
             return Err(Status::invalid_argument("旧密码错误"));
         }
         // 更新密码
-        User::update_password(&user.name, &to_hash(&new_password)?, &self.pool).await?;
+        User::update_password(&user.name, &password_to_hash(&new_password)?, &self.pool).await?;
         // 生成 token
         let token = Claims::new_token(user.name, new_password)?;
         Ok(Response::new(LoginReply { auth: token }))

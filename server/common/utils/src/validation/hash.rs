@@ -7,7 +7,7 @@ use proto::Status;
 use crate::errors::grpc::ToStatusResult;
 
 /// 密码加盐
-pub fn to_hash(password: &str) -> Result<String, Status> {
+pub fn password_to_hash(password: &str) -> Result<String, Status> {
     let salt = SaltString::generate(&mut OsRng);
 
     // Hash password to PHC string ($pbkdf2-sha256$...)
@@ -18,7 +18,7 @@ pub fn to_hash(password: &str) -> Result<String, Status> {
     Ok(password_hash)
 }
 /// 验证 hash
-pub fn validate_hash(pre_hash: &str, hashed: &str) -> Result<(), Status> {
+pub fn validate_password_hash(pre_hash: &str, hashed: &str) -> Result<(), Status> {
     let parsed_hash = PasswordHash::new(hashed).to_status()?;
     Pbkdf2
         .verify_password(pre_hash.as_bytes(), &parsed_hash)

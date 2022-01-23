@@ -50,3 +50,8 @@ impl ToStatus for proto::validation::ValidationErrors {
         Status::invalid_argument("参数错误")
     }
 }
+impl ToStatus for mongodb::error::Error {
+    fn to_status(self) -> Status {
+        Status::internal(format!("数据库错误:{self}"))
+    }
+}

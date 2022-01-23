@@ -8,7 +8,7 @@ use sqlx::{Pool, Postgres};
 
 use crate::{database::users::User, errors::grpc::ToStatusResult};
 
-use super::{hash::validate_hash, jwt_decode::jwt_decode};
+use super::{hash::validate_password_hash, jwt_decode::jwt_decode};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
@@ -66,7 +66,7 @@ impl Claims {
             .await
             .map_err(|_| Status::not_found("没有此用户"))?;
         // Verify password against PHC string
-        if validate_hash(&password, &user.password).is_ok() {
+        if validate_password_hash(&password, &user.password).is_ok() {
             Claims::new_token(name, password)
         } else {
             Err(Status::invalid_argument("账号密码错误"))
@@ -89,7 +89,7 @@ impl Claims {
             .await
             .map_err(|_| Status::not_found("没有此用户"))?;
         // Verify password against PHC string
-        if validate_hash(&chaim.password, &user.password).is_err() {
+        if validate_password_hash(&chaim.password, &user.password).is_err() {
             return Err(Status::unauthenticated("账号密码错误"));
         }
         Ok(user)

@@ -10,9 +10,11 @@ sqlx = { version = "0.5.10", features = [ "runtime-tokio-rustls","postgres","tim
 tonic = "0.6.2"
 jsonwebtoken = "7.2.0"
 pbkdf2 = "0.10.0"
-async-graphql = "3.0.22"
+async-graphql = "3.0.23"
 proto={path="../proto"}
-serde = { version = "1.0.133", features = ["derive"] }
+serde = { version = "1.0.134", features = ["derive"] }
+mongodb = "2.1.0"
+mongodb-gridfs = "0.2.2"
 
 [dev-dependencies]
 tokio = { version = "1.15.0", features = ["macros", "rt-multi-thread"] }
