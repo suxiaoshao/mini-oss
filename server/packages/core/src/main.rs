@@ -21,7 +21,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .unwrap(),
     );
     let mongo = Arc::new(
-        Mongo::new(&std::env::var("postgres").unwrap())
+        Mongo::new(&std::env::var("mongodb").unwrap())
             .await
             .unwrap(),
     );
