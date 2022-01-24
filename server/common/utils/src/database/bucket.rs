@@ -34,25 +34,25 @@ pub struct Bucket {
     /// 访问权限
     pub access: Access,
     /// 用户名
-    pub user_name: String,
+    pub username: String,
 }
 impl Bucket {
     /// 创建
     pub async fn create(
         name: &str,
         access: impl Into<Access>,
-        user_name: &str,
+        username: &str,
         pool: &Pool<Postgres>,
     ) -> Result<Self, Status> {
         let access: Access = access.into();
         // 获取现在时间
         let time = PrimitiveDateTime::from(SystemTime::now());
-        sqlx::query("insert into bucket(name, create_time, update_time, access, user_name) values ($1,$2,$3,$4,$5)")
+        sqlx::query("insert into bucket(name, create_time, update_time, access, username) values ($1,$2,$3,$4,$5)")
             .bind(name)
             .bind(&time)
             .bind(&time)
             .bind(access)
-            .bind(user_name)
+            .bind(username)
             .execute(pool)
             .await
             .to_status()?;
@@ -86,7 +86,7 @@ impl Bucket {
     /// 获取第一项
     pub async fn find_one(name: &str, pool: &Pool<Postgres>) -> Result<Self, Status> {
         let bucket: RowBucket = sqlx::query_as(
-            "select name,access,create_time,update_time,user_name from bucket where name = $1",
+            "select name,access,create_time,update_time,username from bucket where name = $1",
         )
         .bind(name)
         .fetch_one(pool)
@@ -94,10 +94,19 @@ impl Bucket {
         .to_status()?;
         Ok(bucket.into())
     }
-    /// 删除删除
+    /// 删除
     pub async fn delete(name: &str, pool: &Pool<Postgres>) -> Result<(), Status> {
         sqlx::query("delete from bucket where name = $1")
             .bind(name)
+            .execute(pool)
+            .await
+            .to_status()?;
+        Ok(())
+    }
+    /// 删除某个用户下所有
+    pub async fn delete_by_user(username: &str, pool: &Pool<Postgres>) -> Result<(), Status> {
+        sqlx::query("delete from bucket where username = $1")
+            .bind(username)
             .execute(pool)
             .await
             .to_status()?;
@@ -107,13 +116,13 @@ impl Bucket {
     pub async fn find_many_by_user(
         limit: u32,
         offset: u32,
-        user_name: &str,
+        username: &str,
         pool: &Pool<Postgres>,
     ) -> Result<Vec<Self>, Status> {
         let users: Vec<RowBucket> = sqlx::query_as(
-            "select name,access,create_time,update_time,user_name from bucket where user_name = $1 offset $2 limit $3",
+            "select name,access,create_time,update_time,username from bucket where username = $1 offset $2 limit $3",
         )
-        .bind(user_name)
+        .bind(username)
         .bind(offset)
         .bind(limit)
         .fetch_all(pool)
@@ -121,14 +130,27 @@ impl Bucket {
         .to_status()?;
         Ok(users.into_iter().map(|x| x.into()).collect())
     }
+    /// 获取全部列表
+    pub async fn find_total_by_user(
+        username: &str,
+        pool: &Pool<Postgres>,
+    ) -> Result<Vec<Self>, Status> {
+        let users: Vec<RowBucket> = sqlx::query_as(
+            "select name,access,create_time,update_time,username from bucket where username = $1",
+        )
+        .bind(username)
+        .fetch_all(pool)
+        .await
+        .to_status()?;
+        Ok(users.into_iter().map(|x| x.into()).collect())
+    }
     /// 获取总数
-    pub async fn count_by_name(user_name: &str, pool: &Pool<Postgres>) -> Result<i64, Status> {
-        let (count,): (i64,) =
-            sqlx::query_as("select count(name) from bucket where user_name = $1")
-                .bind(user_name)
-                .fetch_one(pool)
-                .await
-                .to_status()?;
+    pub async fn count_by_name(username: &str, pool: &Pool<Postgres>) -> Result<i64, Status> {
+        let (count,): (i64,) = sqlx::query_as("select count(name) from bucket where username = $1")
+            .bind(username)
+            .fetch_one(pool)
+            .await
+            .to_status()?;
         Ok(count)
     }
 }
@@ -141,7 +163,7 @@ impl Into<BucketInfo> for Bucket {
             create_time,
             update_time,
             access,
-            user_name,
+            username,
             ..
         } = self;
         let access: i32 = match access {
@@ -156,7 +178,7 @@ impl Into<BucketInfo> for Bucket {
             access,
             create_time,
             update_time,
-            user_name,
+            username,
         }
     }
 }
@@ -164,13 +186,13 @@ impl Into<BucketInfo> for Bucket {
 type RowBucket = (String, Access, PrimitiveDateTime, PrimitiveDateTime, String);
 
 impl From<RowBucket> for Bucket {
-    fn from((name, access, create_time, update_time, user_name): RowBucket) -> Self {
+    fn from((name, access, create_time, update_time, username): RowBucket) -> Self {
         Self {
             name,
             access,
             create_time,
             update_time,
-            user_name,
+            username,
         }
     }
 }

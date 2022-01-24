@@ -9,6 +9,8 @@ service Bucket {
   rpc CreateBucket (CreateBucketRequest) returns (BucketInfo) {}
   // 删除 Bucket
   rpc DeleteBucket (DeleteBucketRequest) returns (auth.Empty) {}
+  // 删除 某一个用户下的Bucket
+  rpc DeleteBuckets (DeleteBucketsRequest) returns (auth.Empty) {}
   // 修改 Bucket
   rpc UpdateBucket (UpdateBucketRequest) returns (BucketInfo) {}
   // 获取用户 bucker 列表
@@ -48,6 +50,13 @@ message DeleteBucketRequest{
   string auth = 2;
 }
 
+message DeleteBucketsRequest{
+  // 用户名
+  string username = 1;
+  // 用户凭证
+  string auth = 2;
+}
+
 message CreateBucketRequest{
   // 名字
   string name = 1;
@@ -67,5 +76,5 @@ message BucketInfo{
   // 访问控制
   Access access = 4;
   // 用户名
-  string userName = 5;
+  string username = 5;
 }

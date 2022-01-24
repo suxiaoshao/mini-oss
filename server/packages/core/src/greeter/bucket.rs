@@ -5,7 +5,7 @@ use proto::{
     auth::Empty,
     core::{
         bucket_server::Bucket, BucketInfo, CreateBucketRequest, DeleteBucketRequest,
-        GetBucketListReply, UpdateBucketRequest,
+        DeleteBucketsRequest, GetBucketListReply, UpdateBucketRequest,
     },
     user::GetListRequest,
     validation::Validate,
@@ -18,7 +18,7 @@ use utils::{
     },
     errors::grpc::ToStatusResult,
     mongo::Mongo,
-    validation::check_auth::check_user,
+    validation::check_auth::{check_manager, check_user},
 };
 #[derive(Clone)]
 pub struct BucketGreeter {
@@ -41,13 +41,13 @@ impl Bucket for BucketGreeter {
         request.get_ref().validate().to_status()?;
         let access = request.get_ref().access();
         let CreateBucketRequest { name, auth, .. } = request.into_inner();
-        let user_name = check_user(&auth).await?;
-        let name = format!("{name}-{user_name}");
+        let username = check_user(&auth).await?;
+        let name = format!("{name}-{username}");
         // 判断该存储桶是否存在
         if bucket::Bucket::exist(&name, &self.pool).await.is_ok() {
             return Err(Status::already_exists("存储桶名重复"));
         }
-        let bucket = bucket::Bucket::create(&name, access, &user_name, &self.pool).await?;
+        let bucket = bucket::Bucket::create(&name, access, &username, &self.pool).await?;
         Ok(Response::new(bucket.into()))
     }
     async fn update_bucket(
@@ -56,17 +56,17 @@ impl Bucket for BucketGreeter {
     ) -> Result<Response<BucketInfo>, Status> {
         let access = request.get_ref().access();
         let UpdateBucketRequest { name, auth, .. } = request.into_inner();
-        let user_name = check_user(&auth).await?;
+        let username = check_user(&auth).await?;
         // 判断该存储桶是否存在
         bucket::Bucket::exist(&name, &self.pool)
             .await
             .map_err(|_| Status::not_found("该存储桶不存在"))?;
         // 判断用户是否一致
         let bucket::Bucket {
-            user_name: user_name_,
+            username: username_,
             ..
         } = bucket::Bucket::find_one(&name, &self.pool).await?;
-        if user_name != user_name_ {
+        if username != username_ {
             return Err(Status::permission_denied("没有权限操作不属于你的存储桶"));
         }
         let access: bucket::Access = bucket::Access::from(access);
@@ -78,22 +78,47 @@ impl Bucket for BucketGreeter {
         request: Request<DeleteBucketRequest>,
     ) -> Result<Response<Empty>, Status> {
         let DeleteBucketRequest { name, auth } = request.into_inner();
-        let user_name = check_user(&auth).await?;
+        let username = check_user(&auth).await?;
         // 判断该存储桶是否存在
         bucket::Bucket::exist(&name, &self.pool)
             .await
             .map_err(|_| Status::not_found("该存储桶不存在"))?;
         // 判断用户是否一致
         let bucket::Bucket {
-            user_name: user_name_,
+            username: username_,
             ..
         } = bucket::Bucket::find_one(&name, &self.pool).await?;
-        if user_name != user_name_ {
+        if username != username_ {
             return Err(Status::permission_denied("没有权限操作不属于你的存储桶"));
         }
         // 数据库中删除
         bucket::Bucket::delete(&name, &self.pool).await?;
         self.mongo.drop_self(name).await?;
+        Ok(Response::new(Empty {}))
+    }
+    async fn delete_buckets(
+        &self,
+        request: Request<DeleteBucketsRequest>,
+    ) -> Result<Response<Empty>, Status> {
+        let pool = &self.pool;
+        let DeleteBucketsRequest { username, auth } = request.into_inner();
+        check_manager(&auth).await?;
+        // 获取所有 buckets
+        let buckets = bucket::Bucket::find_total_by_user(&username, pool).await?;
+        // 在 mongo 中删除
+        let mongo_delete = buckets
+            .into_iter()
+            .map(|bucket::Bucket { name, .. }| self.mongo.drop_self(name))
+            .collect::<Vec<_>>();
+        let mongo_delete = futures::future::join_all(mongo_delete);
+        // sql中删除
+        let sql_delete = bucket::Bucket::delete_by_user(&username, pool);
+        // 验证结果
+        let (mongo_delete, sql_delete) = futures::join!(mongo_delete, sql_delete);
+        sql_delete?;
+        for mongo in mongo_delete {
+            mongo?;
+        }
         Ok(Response::new(Empty {}))
     }
     async fn get_bucket_list(
@@ -108,11 +133,11 @@ impl Bucket for BucketGreeter {
         let limit = &limit;
         let limit = if limit > &50 { &50 } else { limit };
         let offset = &offset;
-        let user_name = check_user(&auth).await?;
+        let username = check_user(&auth).await?;
         let pool = &self.pool;
         let (count, data) = tokio::join!(
-            bucket::Bucket::count_by_name(&user_name, pool),
-            bucket::Bucket::find_many_by_user(*limit, *offset, &user_name, pool)
+            bucket::Bucket::count_by_name(&username, pool),
+            bucket::Bucket::find_many_by_user(*limit, *offset, &username, pool)
         );
         Ok(Response::new(GetBucketListReply {
             data: data?.into_iter().map(|x| x.into()).collect(),

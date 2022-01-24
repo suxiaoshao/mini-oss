@@ -3,6 +3,7 @@ use std::sync::Arc;
 use proto::{
     async_trait,
     auth::Empty,
+    core::{bucket_client::BucketClient, DeleteBucketsRequest},
     user::{
         user_manage_server::UserManage, CreateUserRequest, DeleteUserRequest, GetListRequest,
         GetUserListReply, GetUserRequest, UpdateUserRequest, UserInfo,
@@ -83,6 +84,16 @@ impl UserManage for UserManageGreeter {
             .map_err(|_| Status::not_found("该用户不存在"))?;
         // 验证管理员身份
         check_manager(&auth).await?;
+        // 删除 bucket
+        let mut client = BucketClient::connect("http://core-service:80")
+            .await
+            .to_status()?;
+        let request = Request::new(DeleteBucketsRequest {
+            auth,
+            username: name.clone(),
+        });
+        client.delete_buckets(request).await?;
+        // 删除用户
         User::delete(&name, &self.pool).await?;
         Ok(Response::new(Empty {}))
     }

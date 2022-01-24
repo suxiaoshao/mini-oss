@@ -1,4 +1,5 @@
 use crate::validation::name::validate_name;
+use async_graphql::InputObject;
 use serde::Deserialize;
 use validator::Validate;
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -10,7 +11,7 @@ pub struct GetBucketListReply {
     #[prost(int64, tag = "2")]
     pub total: i64,
 }
-#[derive(async_graphql::InputObject, Clone, PartialEq, ::prost::Message)]
+#[derive(InputObject, Clone, PartialEq, ::prost::Message)]
 pub struct UpdateBucketRequest {
     /// 名字
     #[prost(string, tag = "1")]
@@ -22,7 +23,7 @@ pub struct UpdateBucketRequest {
     #[prost(string, tag = "3")]
     pub auth: ::prost::alloc::string::String,
 }
-#[derive(async_graphql::InputObject, Clone, PartialEq, ::prost::Message)]
+#[derive(InputObject, Clone, PartialEq, ::prost::Message)]
 pub struct DeleteBucketRequest {
     /// 名字
     #[prost(string, tag = "1")]
@@ -31,7 +32,16 @@ pub struct DeleteBucketRequest {
     #[prost(string, tag = "2")]
     pub auth: ::prost::alloc::string::String,
 }
-#[derive(async_graphql::InputObject, Clone, PartialEq, ::prost::Message, Validate, Deserialize)]
+#[derive(InputObject, Clone, PartialEq, ::prost::Message)]
+pub struct DeleteBucketsRequest {
+    /// 用户名
+    #[prost(string, tag = "1")]
+    pub username: ::prost::alloc::string::String,
+    /// 用户凭证
+    #[prost(string, tag = "2")]
+    pub auth: ::prost::alloc::string::String,
+}
+#[derive(InputObject, Clone, PartialEq, ::prost::Message, Validate, Deserialize)]
 pub struct CreateBucketRequest {
     /// 名字
     #[prost(string, tag = "1")]
@@ -60,7 +70,7 @@ pub struct BucketInfo {
     pub access: i32,
     /// 用户名
     #[prost(string, tag = "5")]
-    pub user_name: ::prost::alloc::string::String,
+    pub username: ::prost::alloc::string::String,
 }
 /// 访问权限类型
 #[derive(
@@ -174,6 +184,21 @@ pub mod bucket_client {
             let path = http::uri::PathAndQuery::from_static("/core.Bucket/DeleteBucket");
             self.inner.unary(request.into_request(), path, codec).await
         }
+        #[doc = " 删除 某一个用户下的Bucket"]
+        pub async fn delete_buckets(
+            &mut self,
+            request: impl tonic::IntoRequest<super::DeleteBucketsRequest>,
+        ) -> Result<tonic::Response<super::super::auth::Empty>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/core.Bucket/DeleteBuckets");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
         #[doc = " 修改 Bucket"]
         pub async fn update_bucket(
             &mut self,
@@ -222,6 +247,11 @@ pub mod bucket_server {
         async fn delete_bucket(
             &self,
             request: tonic::Request<super::DeleteBucketRequest>,
+        ) -> Result<tonic::Response<super::super::auth::Empty>, tonic::Status>;
+        #[doc = " 删除 某一个用户下的Bucket"]
+        async fn delete_buckets(
+            &self,
+            request: tonic::Request<super::DeleteBucketsRequest>,
         ) -> Result<tonic::Response<super::super::auth::Empty>, tonic::Status>;
         #[doc = " 修改 Bucket"]
         async fn update_bucket(
@@ -325,6 +355,37 @@ pub mod bucket_server {
                     let fut = async move {
                         let inner = inner.0;
                         let method = DeleteBucketSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
+                            accept_compression_encodings,
+                            send_compression_encodings,
+                        );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/core.Bucket/DeleteBuckets" => {
+                    #[allow(non_camel_case_types)]
+                    struct DeleteBucketsSvc<T: Bucket>(pub Arc<T>);
+                    impl<T: Bucket> tonic::server::UnaryService<super::DeleteBucketsRequest> for DeleteBucketsSvc<T> {
+                        type Response = super::super::auth::Empty;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::DeleteBucketsRequest>,
+                        ) -> Self::Future {
+                            let inner = self.0.clone();
+                            let fut = async move { (*inner).delete_buckets(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = DeleteBucketsSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
                             accept_compression_encodings,

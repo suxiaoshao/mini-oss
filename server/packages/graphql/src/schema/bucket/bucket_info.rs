@@ -12,7 +12,7 @@ pub struct BucketInfo {
     /// 访问权限
     pub access: Access,
     /// 用户名
-    pub user_name: String,
+    pub username: String,
 }
 
 impl From<proto::core::BucketInfo> for BucketInfo {
@@ -22,7 +22,7 @@ impl From<proto::core::BucketInfo> for BucketInfo {
             name,
             create_time,
             update_time,
-            user_name,
+            username,
             ..
         } = user;
         Self {
@@ -30,7 +30,7 @@ impl From<proto::core::BucketInfo> for BucketInfo {
             create_time,
             update_time,
             access,
-            user_name,
+            username,
         }
     }
 }

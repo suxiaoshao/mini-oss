@@ -55,3 +55,8 @@ impl ToStatus for mongodb::error::Error {
         Status::internal(format!("数据库错误:{self}"))
     }
 }
+impl ToStatus for tonic::transport::Error {
+    fn to_status(self) -> Status {
+        Status::internal("内部连接错误")
+    }
+}
