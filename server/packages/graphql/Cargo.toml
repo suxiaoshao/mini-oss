@@ -10,6 +10,6 @@ tokio = { version = "1.15.0", features = ["macros", "rt-multi-thread"] }
 async-graphql = "3.0.23"
 axum = { version = "0.4.4", features = ["headers"] }
 async-graphql-axum = "3.0.23"
-proto={path="../../common/proto"}
-utils={path="../../common/utils"}
+proto={path="../../common/proto",features=["core","auth","user"]}
+utils={path="../../common/utils",features=["graphql"]}
 tower-http = { version = "0.2.1", features = ["cors"] }

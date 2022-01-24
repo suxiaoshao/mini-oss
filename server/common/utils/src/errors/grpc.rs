@@ -25,16 +25,19 @@ impl ToStatus for VarError {
         Status::internal("管理员配置缺失")
     }
 }
+#[cfg(feature = "password")]
 impl ToStatus for pbkdf2::password_hash::Error {
     fn to_status(self) -> Status {
         Status::failed_precondition("hash 错误")
     }
 }
+#[cfg(feature = "jwt")]
 impl ToStatus for jsonwebtoken::errors::Error {
     fn to_status(self) -> Status {
         Status::invalid_argument("token错误")
     }
 }
+#[cfg(feature = "sql")]
 impl ToStatus for sqlx::error::Error {
     fn to_status(self) -> Status {
         Status::internal(format!("数据库错误:{self}"))
@@ -50,6 +53,7 @@ impl ToStatus for proto::validation::ValidationErrors {
         Status::invalid_argument("参数错误")
     }
 }
+#[cfg(feature = "mongo")]
 impl ToStatus for mongodb::error::Error {
     fn to_status(self) -> Status {
         Status::internal(format!("数据库错误:{self}"))

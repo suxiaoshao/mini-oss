@@ -9,3 +9,4 @@ data:
   manager_password: "sushao123"
   secret: "sushao"
   mongodb: "mongodb://localhost:27017"
+  bucket_database: "bucket"

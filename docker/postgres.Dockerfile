@@ -1,4 +1,4 @@
-FROM postgres
+FROM postgres:alpine
 COPY ./database /sql
 WORKDIR /sql
 ENV POSTGRES_PASSWORD sushao

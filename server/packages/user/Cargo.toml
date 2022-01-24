@@ -7,5 +7,5 @@ edition = "2021"
 
 [dependencies]
 tokio = { version = "1.15.0", features = ["rt-multi-thread", "time", "fs", "macros", "net"] }
-proto={path="../../common/proto"}
-utils={path="../../common/utils"}
+proto={path="../../common/proto",features=["user","core"]}
+utils={path="../../common/utils",features=["sql","password","jwt"]}
