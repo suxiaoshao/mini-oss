@@ -17,7 +17,7 @@ pub struct UpdateBucketRequest {
     #[prost(string, tag = "1")]
     pub name: ::prost::alloc::string::String,
     /// 访问控制
-    #[prost(enumeration = "Access", tag = "2")]
+    #[prost(enumeration = "BucketAccess", tag = "2")]
     pub access: i32,
     /// 用户凭证
     #[prost(string, tag = "3")]
@@ -48,7 +48,7 @@ pub struct CreateBucketRequest {
     #[validate(custom = "validate_name")]
     pub name: ::prost::alloc::string::String,
     /// 访问控制
-    #[prost(enumeration = "Access", tag = "2")]
+    #[prost(enumeration = "BucketAccess", tag = "2")]
     pub access: i32,
     /// 用户凭证
     #[prost(string, tag = "3")]
@@ -66,11 +66,104 @@ pub struct BucketInfo {
     #[prost(int64, tag = "3")]
     pub update_time: i64,
     /// 访问控制
-    #[prost(enumeration = "Access", tag = "4")]
+    #[prost(enumeration = "BucketAccess", tag = "4")]
     pub access: i32,
     /// 用户名
     #[prost(string, tag = "5")]
     pub username: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetFolderListRequest {
+    /// 获取多少数据
+    #[prost(uint32, tag = "1")]
+    pub limit: u32,
+    /// 偏移量
+    #[prost(uint32, tag = "2")]
+    pub offset: u32,
+    /// 身份验证
+    #[prost(string, tag = "3")]
+    pub auth: ::prost::alloc::string::String,
+    /// 路径
+    #[prost(string, tag = "4")]
+    pub path: ::prost::alloc::string::String,
+    /// bucket 名
+    #[prost(string, tag = "5")]
+    pub bucket_name: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetFolderListReply {
+    /// 数据
+    #[prost(message, repeated, tag = "1")]
+    pub data: ::prost::alloc::vec::Vec<FolderInfo>,
+    /// 总数
+    #[prost(int64, tag = "2")]
+    pub total: i64,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct UpdateFolderRequest {
+    /// 路径
+    #[prost(string, tag = "1")]
+    pub path: ::prost::alloc::string::String,
+    /// bucket 名
+    #[prost(string, tag = "2")]
+    pub bucket_name: ::prost::alloc::string::String,
+    /// 用户凭证
+    #[prost(string, tag = "6")]
+    pub auth: ::prost::alloc::string::String,
+    /// 访问控制
+    #[prost(enumeration = "ObjectAccess", tag = "5")]
+    pub access: i32,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct DeleteFolderRequest {
+    /// 名字
+    #[prost(string, tag = "1")]
+    pub path: ::prost::alloc::string::String,
+    /// bucket 名
+    #[prost(string, tag = "2")]
+    pub bucket_name: ::prost::alloc::string::String,
+    /// 用户凭证
+    #[prost(string, tag = "3")]
+    pub auth: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CreateFolderRequest {
+    /// 路径
+    #[prost(string, tag = "1")]
+    pub path: ::prost::alloc::string::String,
+    /// bucket 名
+    #[prost(string, tag = "2")]
+    pub bucket_name: ::prost::alloc::string::String,
+    /// 路径
+    #[prost(string, tag = "3")]
+    pub father_path: ::prost::alloc::string::String,
+    /// 用户凭证
+    #[prost(string, tag = "6")]
+    pub auth: ::prost::alloc::string::String,
+    /// 访问控制
+    #[prost(enumeration = "ObjectAccess", tag = "5")]
+    pub access: i32,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct FolderInfo {
+    /// 路径
+    #[prost(string, tag = "1")]
+    pub path: ::prost::alloc::string::String,
+    /// 创建时间
+    #[prost(int64, tag = "2")]
+    pub create_time: i64,
+    /// 创建时间
+    #[prost(int64, tag = "3")]
+    pub update_time: i64,
+    /// bucket 名
+    #[prost(string, tag = "4")]
+    pub bucket_name: ::prost::alloc::string::String,
+    /// 访问控制
+    #[prost(enumeration = "ObjectAccess", tag = "5")]
+    pub access: i32,
+    /// 路径
+    #[prost(string, tag = "6")]
+    pub father_path: ::prost::alloc::string::String,
 }
 /// 访问权限类型
 #[derive(
@@ -86,13 +179,23 @@ pub struct BucketInfo {
     ::prost::Enumeration,
 )]
 #[repr(i32)]
-pub enum Access {
+pub enum BucketAccess {
     /// 开放
     Open = 0,
     /// 读开放
     ReadOpen = 1,
     /// 不开放
     Private = 2,
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum ObjectAccess {
+    /// 开放
+    BucketObject = 0,
+    /// 读开放
+    ReadOpenObject = 1,
+    /// 不开放
+    PrivateObject = 2,
 }
 #[doc = r" Generated client implementations."]
 pub mod bucket_client {
@@ -227,6 +330,128 @@ pub mod bucket_client {
             })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static("/core.Bucket/GetBucketList");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+    }
+}
+#[doc = r" Generated client implementations."]
+pub mod folder_client {
+    #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+    use tonic::codegen::*;
+    #[derive(Debug, Clone)]
+    pub struct FolderClient<T> {
+        inner: tonic::client::Grpc<T>,
+    }
+    impl FolderClient<tonic::transport::Channel> {
+        #[doc = r" Attempt to create a new client by connecting to a given endpoint."]
+        pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
+        where
+            D: std::convert::TryInto<tonic::transport::Endpoint>,
+            D::Error: Into<StdError>,
+        {
+            let conn = tonic::transport::Endpoint::new(dst)?.connect().await?;
+            Ok(Self::new(conn))
+        }
+    }
+    impl<T> FolderClient<T>
+    where
+        T: tonic::client::GrpcService<tonic::body::BoxBody>,
+        T::ResponseBody: Body + Send + 'static,
+        T::Error: Into<StdError>,
+        <T::ResponseBody as Body>::Error: Into<StdError> + Send,
+    {
+        pub fn new(inner: T) -> Self {
+            let inner = tonic::client::Grpc::new(inner);
+            Self { inner }
+        }
+        pub fn with_interceptor<F>(
+            inner: T,
+            interceptor: F,
+        ) -> FolderClient<InterceptedService<T, F>>
+        where
+            F: tonic::service::Interceptor,
+            T: tonic::codegen::Service<
+                http::Request<tonic::body::BoxBody>,
+                Response = http::Response<
+                    <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
+                >,
+            >,
+            <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
+                Into<StdError> + Send + Sync,
+        {
+            FolderClient::new(InterceptedService::new(inner, interceptor))
+        }
+        #[doc = r" Compress requests with `gzip`."]
+        #[doc = r""]
+        #[doc = r" This requires the server to support it otherwise it might respond with an"]
+        #[doc = r" error."]
+        pub fn send_gzip(mut self) -> Self {
+            self.inner = self.inner.send_gzip();
+            self
+        }
+        #[doc = r" Enable decompressing responses with `gzip`."]
+        pub fn accept_gzip(mut self) -> Self {
+            self.inner = self.inner.accept_gzip();
+            self
+        }
+        #[doc = " 创建文件夹"]
+        pub async fn create_folder(
+            &mut self,
+            request: impl tonic::IntoRequest<super::CreateFolderRequest>,
+        ) -> Result<tonic::Response<super::FolderInfo>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/core.Folder/CreateFolder");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        #[doc = " 删除文件夹"]
+        pub async fn delete_folder(
+            &mut self,
+            request: impl tonic::IntoRequest<super::DeleteFolderRequest>,
+        ) -> Result<tonic::Response<super::super::auth::Empty>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/core.Folder/DeleteFolder");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        #[doc = " 修改文件夹"]
+        pub async fn update_folder(
+            &mut self,
+            request: impl tonic::IntoRequest<super::UpdateFolderRequest>,
+        ) -> Result<tonic::Response<super::FolderInfo>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/core.Folder/UpdateFolder");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        #[doc = " 获取path列表"]
+        pub async fn get_folder_list(
+            &mut self,
+            request: impl tonic::IntoRequest<super::GetFolderListRequest>,
+        ) -> Result<tonic::Response<super::GetFolderListReply>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/core.Folder/GetFolderList");
             self.inner.unary(request.into_request(), path, codec).await
         }
     }
@@ -493,5 +718,231 @@ pub mod bucket_server {
     }
     impl<T: Bucket> tonic::transport::NamedService for BucketServer<T> {
         const NAME: &'static str = "core.Bucket";
+    }
+}
+#[doc = r" Generated server implementations."]
+pub mod folder_server {
+    #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+    use tonic::codegen::*;
+    #[doc = "Generated trait containing gRPC methods that should be implemented for use with FolderServer."]
+    #[async_trait]
+    pub trait Folder: Send + Sync + 'static {
+        #[doc = " 创建文件夹"]
+        async fn create_folder(
+            &self,
+            request: tonic::Request<super::CreateFolderRequest>,
+        ) -> Result<tonic::Response<super::FolderInfo>, tonic::Status>;
+        #[doc = " 删除文件夹"]
+        async fn delete_folder(
+            &self,
+            request: tonic::Request<super::DeleteFolderRequest>,
+        ) -> Result<tonic::Response<super::super::auth::Empty>, tonic::Status>;
+        #[doc = " 修改文件夹"]
+        async fn update_folder(
+            &self,
+            request: tonic::Request<super::UpdateFolderRequest>,
+        ) -> Result<tonic::Response<super::FolderInfo>, tonic::Status>;
+        #[doc = " 获取path列表"]
+        async fn get_folder_list(
+            &self,
+            request: tonic::Request<super::GetFolderListRequest>,
+        ) -> Result<tonic::Response<super::GetFolderListReply>, tonic::Status>;
+    }
+    #[derive(Debug)]
+    pub struct FolderServer<T: Folder> {
+        inner: _Inner<T>,
+        accept_compression_encodings: (),
+        send_compression_encodings: (),
+    }
+    struct _Inner<T>(Arc<T>);
+    impl<T: Folder> FolderServer<T> {
+        pub fn new(inner: T) -> Self {
+            let inner = Arc::new(inner);
+            let inner = _Inner(inner);
+            Self {
+                inner,
+                accept_compression_encodings: Default::default(),
+                send_compression_encodings: Default::default(),
+            }
+        }
+        pub fn with_interceptor<F>(inner: T, interceptor: F) -> InterceptedService<Self, F>
+        where
+            F: tonic::service::Interceptor,
+        {
+            InterceptedService::new(Self::new(inner), interceptor)
+        }
+    }
+    impl<T, B> tonic::codegen::Service<http::Request<B>> for FolderServer<T>
+    where
+        T: Folder,
+        B: Body + Send + 'static,
+        B::Error: Into<StdError> + Send + 'static,
+    {
+        type Response = http::Response<tonic::body::BoxBody>;
+        type Error = Never;
+        type Future = BoxFuture<Self::Response, Self::Error>;
+        fn poll_ready(&mut self, _cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
+            Poll::Ready(Ok(()))
+        }
+        fn call(&mut self, req: http::Request<B>) -> Self::Future {
+            let inner = self.inner.clone();
+            match req.uri().path() {
+                "/core.Folder/CreateFolder" => {
+                    #[allow(non_camel_case_types)]
+                    struct CreateFolderSvc<T: Folder>(pub Arc<T>);
+                    impl<T: Folder> tonic::server::UnaryService<super::CreateFolderRequest> for CreateFolderSvc<T> {
+                        type Response = super::FolderInfo;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::CreateFolderRequest>,
+                        ) -> Self::Future {
+                            let inner = self.0.clone();
+                            let fut = async move { (*inner).create_folder(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = CreateFolderSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
+                            accept_compression_encodings,
+                            send_compression_encodings,
+                        );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/core.Folder/DeleteFolder" => {
+                    #[allow(non_camel_case_types)]
+                    struct DeleteFolderSvc<T: Folder>(pub Arc<T>);
+                    impl<T: Folder> tonic::server::UnaryService<super::DeleteFolderRequest> for DeleteFolderSvc<T> {
+                        type Response = super::super::auth::Empty;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::DeleteFolderRequest>,
+                        ) -> Self::Future {
+                            let inner = self.0.clone();
+                            let fut = async move { (*inner).delete_folder(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = DeleteFolderSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
+                            accept_compression_encodings,
+                            send_compression_encodings,
+                        );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/core.Folder/UpdateFolder" => {
+                    #[allow(non_camel_case_types)]
+                    struct UpdateFolderSvc<T: Folder>(pub Arc<T>);
+                    impl<T: Folder> tonic::server::UnaryService<super::UpdateFolderRequest> for UpdateFolderSvc<T> {
+                        type Response = super::FolderInfo;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::UpdateFolderRequest>,
+                        ) -> Self::Future {
+                            let inner = self.0.clone();
+                            let fut = async move { (*inner).update_folder(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = UpdateFolderSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
+                            accept_compression_encodings,
+                            send_compression_encodings,
+                        );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/core.Folder/GetFolderList" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetFolderListSvc<T: Folder>(pub Arc<T>);
+                    impl<T: Folder> tonic::server::UnaryService<super::GetFolderListRequest> for GetFolderListSvc<T> {
+                        type Response = super::GetFolderListReply;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::GetFolderListRequest>,
+                        ) -> Self::Future {
+                            let inner = self.0.clone();
+                            let fut = async move { (*inner).get_folder_list(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = GetFolderListSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
+                            accept_compression_encodings,
+                            send_compression_encodings,
+                        );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                _ => Box::pin(async move {
+                    Ok(http::Response::builder()
+                        .status(200)
+                        .header("grpc-status", "12")
+                        .header("content-type", "application/grpc")
+                        .body(empty_body())
+                        .unwrap())
+                }),
+            }
+        }
+    }
+    impl<T: Folder> Clone for FolderServer<T> {
+        fn clone(&self) -> Self {
+            let inner = self.inner.clone();
+            Self {
+                inner,
+                accept_compression_encodings: self.accept_compression_encodings,
+                send_compression_encodings: self.send_compression_encodings,
+            }
+        }
+    }
+    impl<T: Folder> Clone for _Inner<T> {
+        fn clone(&self) -> Self {
+            Self(self.0.clone())
+        }
+    }
+    impl<T: std::fmt::Debug> std::fmt::Debug for _Inner<T> {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            write!(f, "{:?}", self.0)
+        }
+    }
+    impl<T: Folder> tonic::transport::NamedService for FolderServer<T> {
+        const NAME: &'static str = "core.Folder";
     }
 }

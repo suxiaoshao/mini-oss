@@ -9,11 +9,12 @@ create table if not exists bucket
 );
 create table if not exists folder
 (
-    path        text         not null,
-    create_time timestamp    not null,
-    update_time timestamp    not null,
-    bucket_name varchar(255) not null unique,
-    father_path text,
+    path        text               not null,
+    create_time timestamp          not null,
+    update_time timestamp          not null,
+    bucket_name varchar(255)       not null unique,
+    access      object_access_type not null,
+    father_path text               not null,
     primary key (path, bucket_name)
 );
 create table if not exists object

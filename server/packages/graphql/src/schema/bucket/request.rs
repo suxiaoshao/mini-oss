@@ -1,9 +1,9 @@
 use async_graphql::InputObject;
-use proto::core::{self, Access};
+use proto::core::{self, BucketAccess};
 #[derive(InputObject)]
 pub struct UpdateBucketRequest {
     pub name: String,
-    pub access: Access,
+    pub access: BucketAccess,
     pub auth: String,
 }
 
@@ -23,7 +23,7 @@ impl Into<core::UpdateBucketRequest> for UpdateBucketRequest {
 #[derive(InputObject)]
 pub struct CreateBucketRequest {
     pub name: String,
-    pub access: Access,
+    pub access: BucketAccess,
     pub auth: String,
 }
 

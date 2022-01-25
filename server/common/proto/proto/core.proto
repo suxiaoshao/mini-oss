@@ -19,13 +19,13 @@ service Bucket {
 
 message GetBucketListReply{
   // 数据
-  repeated BucketInfo data=1;
+  repeated BucketInfo data = 1;
   // 总数
-  int64 total =2;
+  int64 total = 2;
 }
 
 // 访问权限类型
-enum Access {
+enum BucketAccess {
   // 开放
   OPEN = 0;
   // 读开放
@@ -38,7 +38,7 @@ message UpdateBucketRequest{
   // 名字
   string name = 1;
   // 访问控制
-  Access access = 2;
+  BucketAccess access = 2;
   // 用户凭证
   string auth = 3;
 }
@@ -61,7 +61,7 @@ message CreateBucketRequest{
   // 名字
   string name = 1;
   // 访问控制
-  Access access = 2;
+  BucketAccess access = 2;
   // 用户凭证
   string auth = 3;
 }
@@ -74,7 +74,98 @@ message BucketInfo{
   // 创建时间
   int64 updateTime = 3;
   // 访问控制
-  Access access = 4;
+  BucketAccess access = 4;
   // 用户名
   string username = 5;
+}
+
+service Folder {
+  // 创建文件夹
+  rpc CreateFolder (CreateFolderRequest) returns (FolderInfo) {}
+  // 删除文件夹
+  rpc DeleteFolder (DeleteFolderRequest) returns (auth.Empty) {}
+  // 修改文件夹
+  rpc UpdateFolder (UpdateFolderRequest) returns (FolderInfo) {}
+  // 获取path列表
+  rpc GetFolderList(GetFolderListRequest) returns (GetFolderListReply){}
+}
+
+message GetFolderListRequest{
+  // 获取多少数据
+  uint32 limit = 1;
+  // 偏移量
+  uint32 offset = 2;
+  // 身份验证
+  string auth = 3;
+  // 路径
+  string path = 4;
+  // bucket 名
+  string bucket_name = 5;
+
+}
+
+message GetFolderListReply{
+  // 数据
+  repeated FolderInfo data = 1;
+  // 总数
+  int64 total = 2;
+}
+
+message UpdateFolderRequest{
+  // 路径
+  string path = 1;
+  // bucket 名
+  string bucket_name = 2;
+  // 用户凭证
+  string auth = 6;
+  // 访问控制
+  ObjectAccess access = 5;
+}
+
+message DeleteFolderRequest{
+  // 名字
+  string path = 1;
+  // bucket 名
+  string bucket_name = 2;
+  // 用户凭证
+  string auth = 3;
+}
+
+
+message CreateFolderRequest{
+  // 路径
+  string path = 1;
+  // bucket 名
+  string bucket_name = 2;
+  // 路径
+  string father_path = 3;
+  // 用户凭证
+  string auth = 6;
+  // 访问控制
+  ObjectAccess access = 5;
+}
+
+message FolderInfo{
+  // 路径
+  string path = 1;
+  // 创建时间
+  int64 createTime = 2;
+  // 创建时间
+  int64 updateTime = 3;
+  // bucket 名
+  string bucket_name = 4;
+  // 访问控制
+  ObjectAccess access = 5;
+  // 路径
+  string father_path = 6;
+}
+
+// 访问权限类型
+enum ObjectAccess {
+  // 开放
+  Bucket_Object = 0;
+  // 读开放
+  READ_OPEN_Object = 1;
+  // 不开放
+  PRIVATE_Object = 2;
 }

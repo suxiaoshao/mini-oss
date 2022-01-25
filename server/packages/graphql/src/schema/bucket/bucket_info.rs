@@ -1,5 +1,5 @@
 use async_graphql::SimpleObject;
-use proto::core::{Access, GetBucketListReply};
+use proto::core::{BucketAccess, GetBucketListReply};
 
 #[derive(SimpleObject)]
 pub struct BucketInfo {
@@ -10,7 +10,7 @@ pub struct BucketInfo {
     /// 更新时间
     pub update_time: i64,
     /// 访问权限
-    pub access: Access,
+    pub access: BucketAccess,
     /// 用户名
     pub username: String,
 }

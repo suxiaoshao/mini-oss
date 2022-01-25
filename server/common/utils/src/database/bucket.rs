@@ -7,24 +7,24 @@ use proto::{core::BucketInfo, Status};
 use crate::errors::grpc::ToStatusResult;
 
 #[derive(sqlx::Type)]
-#[sqlx(type_name = "access_type")]
-pub enum Access {
+#[sqlx(type_name = "bucket_access_type")]
+pub enum BucketAccess {
     Open,
     ReadOpen,
     Private,
 }
 
-impl From<proto::core::Access> for Access {
-    fn from(access: proto::core::Access) -> Self {
+impl From<proto::core::BucketAccess> for BucketAccess {
+    fn from(access: proto::core::BucketAccess) -> Self {
         match access {
-            proto::core::Access::Open => Self::Open,
-            proto::core::Access::ReadOpen => Self::ReadOpen,
-            proto::core::Access::Private => Self::Private,
+            proto::core::BucketAccess::Open => Self::Open,
+            proto::core::BucketAccess::ReadOpen => Self::ReadOpen,
+            proto::core::BucketAccess::Private => Self::Private,
         }
     }
 }
 
-pub struct Bucket {
+pub struct BucketModal {
     /// 名字
     pub name: String,
     /// 创建时间
@@ -32,19 +32,19 @@ pub struct Bucket {
     /// 更新时间
     pub update_time: PrimitiveDateTime,
     /// 访问权限
-    pub access: Access,
+    pub access: BucketAccess,
     /// 用户名
     pub username: String,
 }
-impl Bucket {
+impl BucketModal {
     /// 创建
     pub async fn create(
         name: &str,
-        access: impl Into<Access>,
+        access: impl Into<BucketAccess>,
         username: &str,
         pool: &Pool<Postgres>,
     ) -> Result<Self, Status> {
-        let access: Access = access.into();
+        let access: BucketAccess = access.into();
         // 获取现在时间
         let time = PrimitiveDateTime::from(SystemTime::now());
         sqlx::query("insert into bucket(name, create_time, update_time, access, username) values ($1,$2,$3,$4,$5)")
@@ -69,7 +69,7 @@ impl Bucket {
     /// 更新
     pub async fn update(
         name: &str,
-        access: &Access,
+        access: &BucketAccess,
         pool: &Pool<Postgres>,
     ) -> Result<Self, Status> {
         // 获取现在时间
@@ -156,9 +156,9 @@ impl Bucket {
 }
 
 #[allow(clippy::from_over_into)]
-impl Into<BucketInfo> for Bucket {
+impl Into<BucketInfo> for BucketModal {
     fn into(self) -> BucketInfo {
-        let Bucket {
+        let BucketModal {
             name,
             create_time,
             update_time,
@@ -167,9 +167,9 @@ impl Into<BucketInfo> for Bucket {
             ..
         } = self;
         let access: i32 = match access {
-            Access::Open => 0,
-            Access::ReadOpen => 1,
-            Access::Private => 2,
+            BucketAccess::Open => 0,
+            BucketAccess::ReadOpen => 1,
+            BucketAccess::Private => 2,
         };
         let create_time = (create_time.assume_utc().unix_timestamp_nanos() / 1000000) as i64;
         let update_time = (update_time.assume_utc().unix_timestamp_nanos() / 1000000) as i64;
@@ -183,9 +183,15 @@ impl Into<BucketInfo> for Bucket {
     }
 }
 
-type RowBucket = (String, Access, PrimitiveDateTime, PrimitiveDateTime, String);
+type RowBucket = (
+    String,
+    BucketAccess,
+    PrimitiveDateTime,
+    PrimitiveDateTime,
+    String,
+);
 
-impl From<RowBucket> for Bucket {
+impl From<RowBucket> for BucketModal {
     fn from((name, access, create_time, update_time, username): RowBucket) -> Self {
         Self {
             name,
