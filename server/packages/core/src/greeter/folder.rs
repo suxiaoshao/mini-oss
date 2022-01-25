@@ -88,9 +88,17 @@ impl Folder for FolderGreeter {
         FolderModal::exist(&path, &bucket_name, pool)
             .await
             .map_err(|_| Status::not_found("该文件夹不存在"))?;
-        FolderModal::delete(&path, &bucket_name, pool).await?;
+        // 获取所有文件夹下的文件夹
+        let delete_names = FolderModal::recursive_names_by_path(&path, &bucket_name, pool).await?;
+        futures::future::try_join_all(
+            delete_names
+                .iter()
+                .map(|path| FolderModal::delete(path, &bucket_name, pool)),
+        )
+        .await?;
         Ok(Response::new(Empty {}))
     }
+
     async fn get_folder_list(
         &self,
         request: Request<GetFolderListRequest>,
@@ -112,8 +120,8 @@ impl Folder for FolderGreeter {
             .await
             .map_err(|_| Status::not_found("该文件夹不存在"))?;
         let (count, data) = tokio::join!(
-            FolderModal::count_by_name(&bucket_name, &path, pool),
-            FolderModal::find_many_by_user(*limit, *offset, &path, &bucket_name, pool)
+            FolderModal::count_by_father_path(&bucket_name, &path, pool),
+            FolderModal::find_many_by_father_path(*limit, *offset, &path, &bucket_name, pool)
         );
         Ok(Response::new(GetFolderListReply {
             data: data?.into_iter().map(|x| x.into()).collect(),

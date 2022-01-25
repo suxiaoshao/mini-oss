@@ -81,24 +81,27 @@ impl Bucket for BucketGreeter {
         &self,
         request: Request<DeleteBucketRequest>,
     ) -> Result<Response<Empty>, Status> {
+        let pool = &self.pool;
         let DeleteBucketRequest { name, auth } = request.into_inner();
         let username = check_user(&auth).await?;
         // 判断该存储桶是否存在
-        BucketModal::exist(&name, &self.pool)
+        BucketModal::exist(&name, pool)
             .await
             .map_err(|_| Status::not_found("该存储桶不存在"))?;
         // 判断用户是否一致
         let BucketModal {
             username: username_,
             ..
-        } = BucketModal::find_one(&name, &self.pool).await?;
+        } = BucketModal::find_one(&name, pool).await?;
         if username != username_ {
             return Err(Status::permission_denied("没有权限操作不属于你的存储桶"));
         }
-        // 数据库中删除
-        BucketModal::delete(&name, &self.pool).await?;
-        self.mongo.drop_self(name).await?;
-        // todo folder 删除
+        // 数据库删除
+        futures::try_join!(
+            BucketModal::delete(&name, pool),
+            FolderModal::delete_by_bucket(&name, pool),
+            self.mongo.drop_self(name.clone())
+        )?;
         Ok(Response::new(Empty {}))
     }
     async fn delete_buckets(
@@ -110,21 +113,20 @@ impl Bucket for BucketGreeter {
         check_manager(&auth).await?;
         // 获取所有 buckets
         let buckets = BucketModal::find_total_by_user(&username, pool).await?;
+        // 删除 folder
+        let mut folder_delete = vec![];
+        let mut mongo_delete = vec![];
         // 在 mongo 中删除
-        let mongo_delete = buckets
-            .into_iter()
-            .map(|BucketModal { name, .. }| self.mongo.drop_self(name))
-            .collect::<Vec<_>>();
-        let mongo_delete = futures::future::join_all(mongo_delete);
+        for BucketModal { name, .. } in &buckets {
+            folder_delete.push(FolderModal::delete_by_bucket(name, pool));
+            mongo_delete.push(self.mongo.drop_self(name.clone()));
+        }
+        let mongo_delete = futures::future::try_join_all(mongo_delete);
+        let folder_delete = futures::future::try_join_all(folder_delete);
         // sql中删除
         let sql_delete = BucketModal::delete_by_user(&username, pool);
         // 验证结果
-        let (mongo_delete, sql_delete) = futures::join!(mongo_delete, sql_delete);
-        sql_delete?;
-        for mongo in mongo_delete {
-            mongo?;
-        }
-        // todo 删除 folder
+        futures::try_join!(mongo_delete, sql_delete, folder_delete)?;
         Ok(Response::new(Empty {}))
     }
     async fn get_bucket_list(

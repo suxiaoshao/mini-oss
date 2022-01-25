@@ -5,6 +5,7 @@ use sqlx::{types::time::PrimitiveDateTime, Pool, Postgres};
 use proto::{core::FolderInfo, Status};
 
 use crate::errors::grpc::ToStatusResult;
+use async_recursion::async_recursion;
 
 #[derive(sqlx::Type)]
 #[sqlx(type_name = "object_access_type")]
@@ -124,8 +125,52 @@ impl FolderModal {
             .to_status()?;
         Ok(())
     }
+    /// 删除某个 bucket 下所有
+    pub async fn delete_by_bucket(bucket_name: &str, pool: &Pool<Postgres>) -> Result<(), Status> {
+        sqlx::query("delete from folder where bucket_name = $1")
+            .bind(bucket_name)
+            .execute(pool)
+            .await
+            .to_status()?;
+        Ok(())
+    }
+    /// 获取列表名
+    pub async fn find_names_by_path(
+        father_path: &str,
+        bucket_name: &str,
+        pool: &Pool<Postgres>,
+    ) -> Result<Vec<String>, Status> {
+        let names: Vec<(String,)> =
+            sqlx::query_as("select path from folder where father_path = $1 and bucket_name=$2")
+                .bind(father_path)
+                .bind(bucket_name)
+                .fetch_all(pool)
+                .await
+                .to_status()?;
+        Ok(names.into_iter().map(|(name,)| name).collect())
+    }
+
+    /// 递归获取列表名
+    #[async_recursion]
+    pub async fn recursive_names_by_path(
+        father_path: &str,
+        bucket_name: &str,
+        pool: &Pool<Postgres>,
+    ) -> Result<Vec<String>, Status> {
+        let mut names = vec![];
+        let mut son_names = Self::find_names_by_path(father_path, bucket_name, pool).await?;
+        if son_names.is_empty() {
+            return Ok(vec![]);
+        }
+        for son_name in &son_names {
+            names.append(&mut Self::recursive_names_by_path(son_name, bucket_name, pool).await?);
+        }
+        names.append(&mut son_names);
+        names.push(father_path.to_string());
+        Ok(names)
+    }
     /// 获取列表
-    pub async fn find_many_by_user(
+    pub async fn find_many_by_father_path(
         limit: u32,
         offset: u32,
         father_path: &str,
@@ -145,7 +190,7 @@ impl FolderModal {
         Ok(users.into_iter().map(|x| x.into()).collect())
     }
     /// 获取总数
-    pub async fn count_by_name(
+    pub async fn count_by_father_path(
         bucket_name: &str,
         father_path: &str,
         pool: &Pool<Postgres>,
