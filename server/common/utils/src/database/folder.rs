@@ -5,6 +5,7 @@ use sqlx::{types::time::PrimitiveDateTime, Pool, Postgres};
 use proto::{core::FolderInfo, Status};
 
 use crate::errors::grpc::ToStatusResult;
+#[cfg(all(feature = "recursion", feature = "future"))]
 use async_recursion::async_recursion;
 
 #[derive(sqlx::Type)]
@@ -151,6 +152,7 @@ impl FolderModal {
     }
 
     /// 递归获取列表名
+    #[cfg(all(feature = "recursion", feature = "future"))]
     #[async_recursion]
     pub async fn recursive_names_by_path(
         father_path: &str,
@@ -158,14 +160,21 @@ impl FolderModal {
         pool: &Pool<Postgres>,
     ) -> Result<Vec<String>, Status> {
         let mut names = vec![];
-        let mut son_names = Self::find_names_by_path(father_path, bucket_name, pool).await?;
-        if son_names.is_empty() {
+        // 获取子目录一代
+        let mut child_names = Self::find_names_by_path(father_path, bucket_name, pool).await?;
+        if child_names.is_empty() {
             return Ok(vec![]);
         }
-        for son_name in &son_names {
-            names.append(&mut Self::recursive_names_by_path(son_name, bucket_name, pool).await?);
+        // 获取子目录的后代
+        let grade_names = child_names
+            .iter()
+            .map(|son_name| Self::recursive_names_by_path(son_name, bucket_name, pool))
+            .collect::<Vec<_>>();
+        let mut grade_names = futures::future::try_join_all(grade_names).await?;
+        for grade_name in &mut grade_names {
+            names.append(grade_name);
         }
-        names.append(&mut son_names);
+        names.append(&mut child_names);
         names.push(father_path.to_string());
         Ok(names)
     }

@@ -14,7 +14,7 @@
     "format": "prettier --config ../.prettierrc.js --write src"
   },
   "dependencies": {
-    "@apollo/client": "^3.5.7",
+    "@apollo/client": "^3.5.8",
     "graphql": "^16.2.0"
   }
 }

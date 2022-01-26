@@ -1,4 +1,4 @@
-use crate::validation::name::validate_name;
+use crate::validation::{folder::validate_folder, name::validate_name};
 use async_graphql::InputObject;
 use serde::Deserialize;
 use validator::Validate;
@@ -72,7 +72,7 @@ pub struct BucketInfo {
     #[prost(string, tag = "5")]
     pub username: ::prost::alloc::string::String,
 }
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message, Validate, Deserialize)]
 pub struct GetFolderListRequest {
     /// 获取多少数据
     #[prost(uint32, tag = "1")]
@@ -85,6 +85,7 @@ pub struct GetFolderListRequest {
     pub auth: ::prost::alloc::string::String,
     /// 路径
     #[prost(string, tag = "4")]
+    #[validate(custom = "validate_folder")]
     pub path: ::prost::alloc::string::String,
     /// bucket 名
     #[prost(string, tag = "5")]

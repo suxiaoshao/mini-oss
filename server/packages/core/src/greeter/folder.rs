@@ -43,6 +43,7 @@ impl Folder for FolderGreeter {
         FolderModal::exist(&father_path, &bucket_name, pool)
             .await
             .map_err(|_| Status::not_found("父文件夹不存在"))?;
+        let path = format!("{father_path}/{path}");
         // 判断该文件夹是否存在
         if FolderModal::exist(&path, &bucket_name, &self.pool)
             .await
