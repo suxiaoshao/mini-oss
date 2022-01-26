@@ -12,7 +12,7 @@ use proto::{
     Request, Response, Status,
 };
 use utils::{
-    database::{users::User, Pool, Postgres},
+    database::{users::UserModal, Pool, Postgres},
     errors::grpc::ToStatusResult,
     validation::{check_auth::check_manager, hash::password_to_hash},
 };
@@ -43,10 +43,10 @@ impl UserManage for UserManageGreeter {
         // 验证管理员身份
         check_manager(&auth).await?;
         // 判断该用户是否存在
-        if User::exist(&name, &self.pool).await.is_ok() {
+        if UserModal::exist(&name, &self.pool).await.is_ok() {
             return Err(Status::already_exists("用户名重复"));
         }
-        let user = User::create(
+        let user = UserModal::create(
             &name,
             &password_to_hash(&password)?,
             &description,
@@ -67,10 +67,10 @@ impl UserManage for UserManageGreeter {
         // 验证管理员身份
         check_manager(&auth).await?;
         // 判断该用户是否存在
-        User::exist(&name, &self.pool)
+        UserModal::exist(&name, &self.pool)
             .await
             .map_err(|_| Status::not_found("该用户不存在"))?;
-        let user = User::update(&name, &description, &self.pool).await?;
+        let user = UserModal::update(&name, &description, &self.pool).await?;
         Ok(Response::new(user.into()))
     }
     async fn delete_user(
@@ -79,7 +79,7 @@ impl UserManage for UserManageGreeter {
     ) -> Result<Response<Empty>, Status> {
         let DeleteUserRequest { name, auth } = request.into_inner();
         // 判断该用户是否存在
-        User::exist(&name, &self.pool)
+        UserModal::exist(&name, &self.pool)
             .await
             .map_err(|_| Status::not_found("该用户不存在"))?;
         // 验证管理员身份
@@ -94,7 +94,7 @@ impl UserManage for UserManageGreeter {
         });
         client.delete_buckets(request).await?;
         // 删除用户
-        User::delete(&name, &self.pool).await?;
+        UserModal::delete(&name, &self.pool).await?;
         Ok(Response::new(Empty {}))
     }
     async fn get_user_list(
@@ -112,8 +112,8 @@ impl UserManage for UserManageGreeter {
         let limit = if limit > &50 { &50 } else { limit };
         let offset = &offset;
         let (users, count) = tokio::join!(
-            User::find_many(*limit, *offset, &self.pool),
-            User::count(&self.pool)
+            UserModal::find_many(*limit, *offset, &self.pool),
+            UserModal::count(&self.pool)
         );
         Ok(Response::new(GetUserListReply {
             data: users?.into_iter().map(|x| x.into()).collect(),
@@ -127,7 +127,7 @@ impl UserManage for UserManageGreeter {
         let GetUserRequest { name, auth } = request.into_inner();
         // 验证管理员身份
         check_manager(&auth).await?;
-        let user = User::find_one(&name, &self.pool).await?;
+        let user = UserModal::find_one(&name, &self.pool).await?;
         Ok(Response::new(user.into()))
     }
 }

@@ -6,7 +6,7 @@ use proto::Status;
 use serde::{Deserialize, Serialize};
 use sqlx::{Pool, Postgres};
 
-use crate::{database::users::User, errors::grpc::ToStatusResult};
+use crate::{database::users::UserModal, errors::grpc::ToStatusResult};
 
 use super::{hash::validate_password_hash, jwt_decode::jwt_decode};
 
@@ -62,7 +62,7 @@ impl Claims {
         password: String,
         pool: &Pool<Postgres>,
     ) -> Result<String, Status> {
-        let user = User::find_one(&name, pool)
+        let user = UserModal::find_one(&name, pool)
             .await
             .map_err(|_| Status::not_found("没有此用户"))?;
         // Verify password against PHC string
@@ -83,9 +83,9 @@ impl Claims {
         Ok(())
     }
     /// 验证用户
-    pub async fn check_user(auth: String, pool: &Pool<Postgres>) -> Result<User, Status> {
+    pub async fn check_user(auth: String, pool: &Pool<Postgres>) -> Result<UserModal, Status> {
         let chaim = jwt_decode::<Self>(&auth)?;
-        let user = User::find_one(&chaim.name, pool)
+        let user = UserModal::find_one(&chaim.name, pool)
             .await
             .map_err(|_| Status::not_found("没有此用户"))?;
         // Verify password against PHC string

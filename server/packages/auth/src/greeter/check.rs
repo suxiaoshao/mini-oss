@@ -6,7 +6,7 @@ use proto::{
     Request, Response, Status,
 };
 use utils::{
-    database::{users::User, Pool, Postgres},
+    database::{users::UserModal, Pool, Postgres},
     validation::claims::Claims,
 };
 
@@ -35,7 +35,7 @@ impl Check for CheckGreeter {
         request: Request<CheckRequest>,
     ) -> Result<Response<CheckReply>, Status> {
         let auth = request.into_inner().auth;
-        let User { name, .. } = Claims::check_user(auth, &self.pool).await?;
+        let UserModal { name, .. } = Claims::check_user(auth, &self.pool).await?;
         Ok(Response::new(CheckReply { name }))
     }
 }

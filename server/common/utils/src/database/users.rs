@@ -1,14 +1,14 @@
 use std::time::SystemTime;
 
-use sqlx::{types::time::PrimitiveDateTime, Pool, Postgres};
+use sqlx::{types::time::PrimitiveDateTime, FromRow, Pool, Postgres};
 use tonic::Status;
 
 use proto::user::UserInfo;
 
 use crate::errors::grpc::ToStatusResult;
 
-#[derive(Debug)]
-pub struct User {
+#[derive(Debug, FromRow)]
+pub struct UserModal {
     /// 名字
     pub name: String,
     /// 密码
@@ -20,7 +20,7 @@ pub struct User {
     /// 描述
     pub description: Option<String>,
 }
-impl User {
+impl UserModal {
     /// 创建
     pub async fn create(
         name: &str,
@@ -94,14 +94,14 @@ impl User {
     }
     /// 获取第一项
     pub async fn find_one(name: &str, pool: &Pool<Postgres>) -> Result<Self, Status> {
-        let user: RowUser = sqlx::query_as(
+        let user = sqlx::query_as(
             "select name,password,create_time,update_time,description from users where name = $1",
         )
         .bind(name)
         .fetch_one(pool)
         .await
         .to_status()?;
-        Ok(user.into())
+        Ok(user)
     }
     /// 获取列表
     pub async fn find_many(
@@ -109,8 +109,8 @@ impl User {
         offset: u32,
         pool: &Pool<Postgres>,
     ) -> Result<Vec<Self>, Status> {
-        let users:Vec<RowUser> =sqlx::query_as("select name,password,create_time,update_time,description from users offset $1 limit $2").bind(offset).bind(limit).fetch_all(pool).await.to_status()?;
-        Ok(users.into_iter().map(|x| x.into()).collect())
+        let users =sqlx::query_as("select name,password,create_time,update_time,description from users offset $1 limit $2").bind(offset).bind(limit).fetch_all(pool).await.to_status()?;
+        Ok(users)
     }
     /// 获取总数
     pub async fn count(pool: &Pool<Postgres>) -> Result<i64, Status> {
@@ -122,9 +122,9 @@ impl User {
     }
 }
 #[allow(clippy::from_over_into)]
-impl Into<UserInfo> for User {
+impl Into<UserInfo> for UserModal {
     fn into(self) -> UserInfo {
-        let User {
+        let UserModal {
             name,
             create_time,
             update_time,
@@ -141,30 +141,11 @@ impl Into<UserInfo> for User {
         }
     }
 }
-
-type RowUser = (
-    String,
-    String,
-    PrimitiveDateTime,
-    PrimitiveDateTime,
-    Option<String>,
-);
-impl From<RowUser> for User {
-    fn from((name, password, create_time, update_time, description): RowUser) -> Self {
-        Self {
-            name,
-            password,
-            create_time,
-            update_time,
-            description,
-        }
-    }
-}
 #[cfg(test)]
 mod test {
     use sqlx::postgres::PgPoolOptions;
 
-    use super::User;
+    use super::UserModal;
 
     #[tokio::test]
     async fn test() {
@@ -173,8 +154,8 @@ mod test {
             .connect("postgres://sushao:sushao@localhost:5432/mini_oss")
             .await
             .unwrap();
-        let a = User::find_many(10, 0, &pool).await.unwrap();
-        let count = User::count(&pool).await.unwrap();
+        let a = UserModal::find_many(10, 0, &pool).await.unwrap();
+        let count = UserModal::count(&pool).await.unwrap();
         println!("{a:?} {count}");
     }
 }

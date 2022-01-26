@@ -1,6 +1,6 @@
 use std::time::SystemTime;
 
-use sqlx::{types::time::PrimitiveDateTime, Pool, Postgres};
+use sqlx::{types::time::PrimitiveDateTime, FromRow, Pool, Postgres};
 
 use proto::{core::FolderInfo, Status};
 
@@ -25,6 +25,7 @@ impl From<proto::core::ObjectAccess> for ObjectAccess {
     }
 }
 
+#[derive(FromRow)]
 pub struct FolderModal {
     /// 名字
     pub path: String,
@@ -103,14 +104,14 @@ impl FolderModal {
         bucket_name: &str,
         pool: &Pool<Postgres>,
     ) -> Result<Self, Status> {
-        let folder:RowFolder = sqlx::query_as(
+        let folder = sqlx::query_as(
             "select path,access,create_time,update_time,bucket_name,father_path from folder where path = $1 and bucket_name=$2",
         )
         .bind(path).bind(bucket_name)
         .fetch_one(pool)
         .await
         .to_status()?;
-        Ok(folder.into())
+        Ok(folder)
     }
     /// 删除
     pub async fn delete(
@@ -186,7 +187,7 @@ impl FolderModal {
         bucket_name: &str,
         pool: &Pool<Postgres>,
     ) -> Result<Vec<Self>, Status> {
-        let users: Vec<RowFolder> = sqlx::query_as(
+        let users = sqlx::query_as(
             "select path,access,create_time,update_time,bucket_name,father_path from folder where father_path = $1 and bucket_name=$2 offset $3 limit $4",
         )
         .bind(father_path)
@@ -196,7 +197,7 @@ impl FolderModal {
         .fetch_all(pool)
         .await
         .to_status()?;
-        Ok(users.into_iter().map(|x| x.into()).collect())
+        Ok(users)
     }
     /// 获取总数
     pub async fn count_by_father_path(
@@ -213,26 +214,6 @@ impl FolderModal {
         .await
         .to_status()?;
         Ok(count)
-    }
-}
-type RowFolder = (
-    String,
-    ObjectAccess,
-    PrimitiveDateTime,
-    PrimitiveDateTime,
-    String,
-    String,
-);
-impl From<RowFolder> for FolderModal {
-    fn from((path, access, create_time, update_time, bucket_name, father_path): RowFolder) -> Self {
-        Self {
-            path,
-            create_time,
-            update_time,
-            access,
-            bucket_name,
-            father_path,
-        }
     }
 }
 #[allow(clippy::from_over_into)]

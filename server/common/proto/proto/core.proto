@@ -117,9 +117,9 @@ message UpdateFolderRequest{
   // bucket 名
   string bucket_name = 2;
   // 用户凭证
-  string auth = 6;
+  string auth = 3;
   // 访问控制
-  ObjectAccess access = 5;
+  ObjectAccess access = 4;
 }
 
 message DeleteFolderRequest{
@@ -140,7 +140,7 @@ message CreateFolderRequest{
   // 路径
   string father_path = 3;
   // 用户凭证
-  string auth = 6;
+  string auth = 4;
   // 访问控制
   ObjectAccess access = 5;
 }
@@ -168,4 +168,107 @@ enum ObjectAccess {
   READ_OPEN_Object = 1;
   // 不开放
   PRIVATE_Object = 2;
+}
+
+service Object {
+  // 创建文件夹
+  rpc CreateObject (CreateObjectRequest) returns (ObjectInfo) {}
+  // 删除文件夹
+  rpc DeleteObject (DeleteObjectRequest) returns (auth.Empty) {}
+  // 修改文件夹
+  rpc UpdateObject (UpdateObjectRequest) returns (ObjectInfo) {}
+  // 获取path列表
+  rpc GetObjectList(GetObjectListRequest) returns (GetObjectListReply){}
+}
+
+message GetObjectListRequest{
+  // 获取多少数据
+  uint32 limit = 1;
+  // 偏移量
+  uint32 offset = 2;
+  // 身份验证
+  string auth = 3;
+  // 路径
+  string path = 4;
+  // bucket 名
+  string bucket_name = 5;
+  // 文件名
+  string filename=6;
+
+}
+
+message GetObjectListReply{
+  // 数据
+  repeated ObjectInfo data = 1;
+  // 总数
+  int64 total = 2;
+}
+
+message CreateObjectRequest{
+  // 路径
+  string path=1;
+  // 文件名
+  string filename=2;
+  // bucket 名
+  string bucket_name=3;
+  // 访问控制
+  ObjectAccess access = 4;
+  // 内容
+  bytes content =5;
+  // 访问控制
+  string auth = 6;
+}
+
+message DeleteObjectRequest{
+  // 路径
+  string path=1;
+  // 文件名
+  string filename=2;
+  // bucket 名
+  string bucket_name=3;
+  // 访问控制
+  string auth = 4;
+}
+
+message UpdateObjectRequest{
+  // 路径
+  string path=1;
+  // 旧文件名
+  string filename=2;
+  // bucket 名
+  string bucket_name=3;
+  // 访问控制
+  ObjectAccess access = 4;
+  // 新文件名
+  string new_filename=6;
+  // 访问控制
+  string auth = 7;
+  // 自定义 header
+  repeated Header headers=8;
+}
+
+message ObjectInfo {
+  // 路径
+  string path=1;
+  // 文件名
+  string filename=2;
+  // bucket 名
+  string bucket_name=3;
+  // 访问控制
+  ObjectAccess access = 4;
+  // 创建时间
+  int64 createTime = 5;
+  // 创建时间
+  int64 updateTime = 6;
+  // 大小
+  int64 size=7;
+  // 摘要
+  string black3=8;
+  // 自定义 header
+  repeated Header headers=9;
+}
+
+message Header{
+  string key =1;
+  string value=2;
 }

@@ -11,7 +11,7 @@ use proto::{
     Request, Response, Status,
 };
 use utils::{
-    database::{users::User, Pool, Postgres},
+    database::{users::UserModal, Pool, Postgres},
     errors::grpc::ToStatusResult,
     validation::{
         check_auth::check_user,
@@ -37,7 +37,7 @@ impl SelfManage for SelfManageGreeter {
     ) -> Result<Response<UserInfo>, Status> {
         // 验证用户身份
         let name = check_user(&request.get_ref().auth).await?;
-        let user = User::update(&name, &request.get_ref().description, &self.pool).await?;
+        let user = UserModal::update(&name, &request.get_ref().description, &self.pool).await?;
         Ok(Response::new(user.into()))
     }
     async fn get_user_info(
@@ -46,7 +46,7 @@ impl SelfManage for SelfManageGreeter {
     ) -> Result<Response<UserInfo>, Status> {
         // 验证用户身份
         let name = check_user(&request.get_ref().auth).await?;
-        let user = User::find_one(&name, &self.pool).await?;
+        let user = UserModal::find_one(&name, &self.pool).await?;
         Ok(Response::new(user.into()))
     }
     async fn update_password(
@@ -67,7 +67,8 @@ impl SelfManage for SelfManageGreeter {
             return Err(Status::invalid_argument("旧密码错误"));
         }
         // 更新密码
-        User::update_password(&user.name, &password_to_hash(&new_password)?, &self.pool).await?;
+        UserModal::update_password(&user.name, &password_to_hash(&new_password)?, &self.pool)
+            .await?;
         // 生成 token
         let token = Claims::new_token(user.name, new_password)?;
         Ok(Response::new(LoginReply { auth: token }))

@@ -1,6 +1,6 @@
 use std::time::SystemTime;
 
-use sqlx::{types::time::PrimitiveDateTime, Pool, Postgres};
+use sqlx::{types::time::PrimitiveDateTime, FromRow, Pool, Postgres};
 
 use proto::{core::BucketInfo, Status};
 
@@ -13,7 +13,6 @@ pub enum BucketAccess {
     ReadOpen,
     Private,
 }
-
 impl From<proto::core::BucketAccess> for BucketAccess {
     fn from(access: proto::core::BucketAccess) -> Self {
         match access {
@@ -24,6 +23,7 @@ impl From<proto::core::BucketAccess> for BucketAccess {
     }
 }
 
+#[derive(FromRow)]
 pub struct BucketModal {
     /// 名字
     pub name: String,
@@ -85,14 +85,14 @@ impl BucketModal {
     }
     /// 获取第一项
     pub async fn find_one(name: &str, pool: &Pool<Postgres>) -> Result<Self, Status> {
-        let bucket: RowBucket = sqlx::query_as(
+        let bucket = sqlx::query_as(
             "select name,access,create_time,update_time,username from bucket where name = $1",
         )
         .bind(name)
         .fetch_one(pool)
         .await
         .to_status()?;
-        Ok(bucket.into())
+        Ok(bucket)
     }
     /// 删除
     pub async fn delete(name: &str, pool: &Pool<Postgres>) -> Result<(), Status> {
@@ -119,7 +119,7 @@ impl BucketModal {
         username: &str,
         pool: &Pool<Postgres>,
     ) -> Result<Vec<Self>, Status> {
-        let users: Vec<RowBucket> = sqlx::query_as(
+        let users = sqlx::query_as(
             "select name,access,create_time,update_time,username from bucket where username = $1 offset $2 limit $3",
         )
         .bind(username)
@@ -128,21 +128,21 @@ impl BucketModal {
         .fetch_all(pool)
         .await
         .to_status()?;
-        Ok(users.into_iter().map(|x| x.into()).collect())
+        Ok(users)
     }
     /// 获取全部列表
     pub async fn find_total_by_user(
         username: &str,
         pool: &Pool<Postgres>,
     ) -> Result<Vec<Self>, Status> {
-        let users: Vec<RowBucket> = sqlx::query_as(
+        let users = sqlx::query_as(
             "select name,access,create_time,update_time,username from bucket where username = $1",
         )
         .bind(username)
         .fetch_all(pool)
         .await
         .to_status()?;
-        Ok(users.into_iter().map(|x| x.into()).collect())
+        Ok(users)
     }
     /// 获取总数
     pub async fn count_by_name(username: &str, pool: &Pool<Postgres>) -> Result<i64, Status> {
@@ -174,26 +174,6 @@ impl Into<BucketInfo> for BucketModal {
         let create_time = (create_time.assume_utc().unix_timestamp_nanos() / 1000000) as i64;
         let update_time = (update_time.assume_utc().unix_timestamp_nanos() / 1000000) as i64;
         BucketInfo {
-            name,
-            access,
-            create_time,
-            update_time,
-            username,
-        }
-    }
-}
-
-type RowBucket = (
-    String,
-    BucketAccess,
-    PrimitiveDateTime,
-    PrimitiveDateTime,
-    String,
-);
-
-impl From<RowBucket> for BucketModal {
-    fn from((name, access, create_time, update_time, username): RowBucket) -> Self {
-        Self {
             name,
             access,
             create_time,
