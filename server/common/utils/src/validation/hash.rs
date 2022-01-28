@@ -29,15 +29,7 @@ pub fn validate_password_hash(pre_hash: &str, hashed: &str) -> Result<(), Status
         .to_status()
 }
 
-#[cfg(feature = "future")]
-use futures::stream::{Stream, StreamExt};
-#[cfg(feature = "future")]
 /// 文件 hash
-pub async fn file_hash(mut source: impl Stream<Item = Vec<u8>> + Unpin) -> String {
-    let mut hasher = blake3::Hasher::new();
-    while let Some(data) = source.next().await {
-        hasher.update(data.as_slice());
-    }
-    let hash = hasher.finalize();
-    hash.to_string()
+pub fn file_hash(source: &[u8]) -> String {
+    blake3::hash(source).to_string()
 }

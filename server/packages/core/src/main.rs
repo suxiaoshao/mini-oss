@@ -1,15 +1,16 @@
 use std::sync::Arc;
 
 use ::utils::database::PgPoolOptions;
+use ::utils::mongo::Mongo;
 use proto::{
-    core::{bucket_server::BucketServer, folder_server::FolderServer},
+    core::{bucket_server::BucketServer, folder_server::FolderServer, object_server::ObjectServer},
     Server,
 };
-use utils::mongo::Mongo;
 
-use crate::greeter::{bucket::BucketGreeter, folder::FolderGreeter};
+use crate::greeter::{bucket::BucketGreeter, folder::FolderGreeter, object::ObjectGreeter};
 
 mod greeter;
+mod utils;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -31,11 +32,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let bucket_greeter = BucketGreeter::new(Arc::clone(&pool), Arc::clone(&mongo));
     let folder_greeter = FolderGreeter::new(Arc::clone(&pool));
+    let object_greeter = ObjectGreeter::new(Arc::clone(&pool), Arc::clone(&mongo));
     println!("GreeterServer listening on {addr}");
 
     Server::builder()
         .add_service(BucketServer::new(bucket_greeter))
         .add_service(FolderServer::new(folder_greeter))
+        .add_service(ObjectServer::new(object_greeter))
         .serve(addr)
         .await?;
 

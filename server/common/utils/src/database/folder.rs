@@ -8,7 +8,7 @@ use crate::errors::grpc::ToStatusResult;
 #[cfg(all(feature = "recursion", feature = "future"))]
 use async_recursion::async_recursion;
 
-#[derive(sqlx::Type)]
+#[derive(sqlx::Type, Debug)]
 #[sqlx(type_name = "object_access_type")]
 pub enum ObjectAccess {
     Bucket,

@@ -28,6 +28,6 @@ create table if not exists object
     blake3      varchar(64)        not null,
     size        bigint             not null,
     access      object_access_type not null,
-    headers     header_type[]      not null,
+    headers     jsonb[]      not null,
     primary key (path, filename, bucket_name)
 );

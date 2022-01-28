@@ -1,6 +1,6 @@
 use crate::validation::{folder::validate_folder, name::validate_name};
 use async_graphql::InputObject;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use validator::Validate;
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetBucketListReply {
@@ -167,27 +167,6 @@ pub struct FolderInfo {
     pub father_path: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct GetObjectListRequest {
-    /// 获取多少数据
-    #[prost(uint32, tag = "1")]
-    pub limit: u32,
-    /// 偏移量
-    #[prost(uint32, tag = "2")]
-    pub offset: u32,
-    /// 身份验证
-    #[prost(string, tag = "3")]
-    pub auth: ::prost::alloc::string::String,
-    /// 路径
-    #[prost(string, tag = "4")]
-    pub path: ::prost::alloc::string::String,
-    /// bucket 名
-    #[prost(string, tag = "5")]
-    pub bucket_name: ::prost::alloc::string::String,
-    /// 文件名
-    #[prost(string, tag = "6")]
-    pub filename: ::prost::alloc::string::String,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetObjectListReply {
     /// 数据
     #[prost(message, repeated, tag = "1")]
@@ -281,12 +260,12 @@ pub struct ObjectInfo {
     pub size: i64,
     /// 摘要
     #[prost(string, tag = "8")]
-    pub black3: ::prost::alloc::string::String,
+    pub blake3: ::prost::alloc::string::String,
     /// 自定义 header
     #[prost(message, repeated, tag = "9")]
     pub headers: ::prost::alloc::vec::Vec<Header>,
 }
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message, Serialize, Deserialize)]
 pub struct Header {
     #[prost(string, tag = "1")]
     pub key: ::prost::alloc::string::String,
@@ -692,7 +671,7 @@ pub mod object_client {
         #[doc = " 获取path列表"]
         pub async fn get_object_list(
             &mut self,
-            request: impl tonic::IntoRequest<super::GetObjectListRequest>,
+            request: impl tonic::IntoRequest<super::GetFolderListRequest>,
         ) -> Result<tonic::Response<super::GetObjectListReply>, tonic::Status> {
             self.inner.ready().await.map_err(|e| {
                 tonic::Status::new(
@@ -1221,7 +1200,7 @@ pub mod object_server {
         #[doc = " 获取path列表"]
         async fn get_object_list(
             &self,
-            request: tonic::Request<super::GetObjectListRequest>,
+            request: tonic::Request<super::GetFolderListRequest>,
         ) -> Result<tonic::Response<super::GetObjectListReply>, tonic::Status>;
     }
     #[derive(Debug)]
@@ -1359,12 +1338,12 @@ pub mod object_server {
                 "/core.Object/GetObjectList" => {
                     #[allow(non_camel_case_types)]
                     struct GetObjectListSvc<T: Object>(pub Arc<T>);
-                    impl<T: Object> tonic::server::UnaryService<super::GetObjectListRequest> for GetObjectListSvc<T> {
+                    impl<T: Object> tonic::server::UnaryService<super::GetFolderListRequest> for GetObjectListSvc<T> {
                         type Response = super::GetObjectListReply;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::GetObjectListRequest>,
+                            request: tonic::Request<super::GetFolderListRequest>,
                         ) -> Self::Future {
                             let inner = self.0.clone();
                             let fut = async move { (*inner).get_object_list(request).await };

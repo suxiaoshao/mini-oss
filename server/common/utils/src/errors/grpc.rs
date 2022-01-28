@@ -59,8 +59,26 @@ impl ToStatus for mongodb::error::Error {
         Status::internal(format!("数据库错误:{self}"))
     }
 }
+#[cfg(feature = "mongo")]
+impl ToStatus for mongodb::bson::oid::Error {
+    fn to_status(self) -> Status {
+        Status::internal(format!("数据库错误:{self}"))
+    }
+}
+#[cfg(feature = "mongo")]
+impl ToStatus for mongodb_gridfs::GridFSError {
+    fn to_status(self) -> Status {
+        Status::internal(format!("数据库错误:{self}"))
+    }
+}
 impl ToStatus for tonic::transport::Error {
     fn to_status(self) -> Status {
         Status::internal("内部连接错误")
+    }
+}
+#[cfg(feature = "json")]
+impl ToStatus for serde_json::Error {
+    fn to_status(self) -> Status {
+        Status::internal("内部解析错误")
     }
 }

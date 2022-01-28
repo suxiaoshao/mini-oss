@@ -9,4 +9,5 @@ edition = "2021"
 tokio = { version = "1.15.0", features = ["rt-multi-thread", "time", "fs", "macros", "net"] }
 futures = "0.3.19"
 proto={path="../../common/proto",features=["core","user"]}
-utils={path="../../common/utils",features=["mongo","sql","recursion","future"]}
+utils={path="../../common/utils",features=["mongo","sql","recursion","future","json"]}
+mime_guess = "2.0.3"

@@ -1,6 +1,7 @@
-use std::env::var;
+use std::{env::var, str::FromStr};
 
-use mongodb::{options::ClientOptions, Client, Database};
+use futures::AsyncRead;
+use mongodb::{bson::oid::ObjectId, options::ClientOptions, Client, Database};
 use mongodb_gridfs::{options::GridFSBucketOptions, GridFSBucket};
 use proto::Status;
 
@@ -30,6 +31,27 @@ impl Mongo {
     pub async fn drop_self(&self, name: String) -> Result<(), Status> {
         let bucket = self.bucket(name);
         bucket.drop().await.to_status()
+    }
+    /// 添加文件
+    pub async fn upload_file(
+        &self,
+        bucket_name: String,
+        filename: &str,
+        source: impl AsyncRead + Unpin,
+    ) -> Result<String, Status> {
+        let mut bucket = Self::bucket(self, bucket_name);
+        let object_id = bucket
+            .upload_from_stream(filename, source, None)
+            .await
+            .to_status()?;
+        Ok(object_id.to_string())
+    }
+    /// 删除文件
+    pub async fn delete_file(&self, bucket_name: String, id: &str) -> Result<(), Status> {
+        let id = ObjectId::from_str(id).to_status()?;
+        let bucket = self.bucket(bucket_name);
+        bucket.delete(id).await.to_status()?;
+        Ok(())
     }
 }
 

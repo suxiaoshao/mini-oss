@@ -178,23 +178,7 @@ service Object {
   // 修改文件夹
   rpc UpdateObject (UpdateObjectRequest) returns (ObjectInfo) {}
   // 获取path列表
-  rpc GetObjectList(GetObjectListRequest) returns (GetObjectListReply){}
-}
-
-message GetObjectListRequest{
-  // 获取多少数据
-  uint32 limit = 1;
-  // 偏移量
-  uint32 offset = 2;
-  // 身份验证
-  string auth = 3;
-  // 路径
-  string path = 4;
-  // bucket 名
-  string bucket_name = 5;
-  // 文件名
-  string filename=6;
-
+  rpc GetObjectList(GetFolderListRequest) returns (GetObjectListReply){}
 }
 
 message GetObjectListReply{
@@ -263,7 +247,7 @@ message ObjectInfo {
   // 大小
   int64 size=7;
   // 摘要
-  string black3=8;
+  string blake3=8;
   // 自定义 header
   repeated Header headers=9;
 }

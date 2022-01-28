@@ -21,6 +21,8 @@ use utils::{
     mongo::Mongo,
     validation::check_auth::{check_manager, check_user},
 };
+
+use crate::utils::check::check_bucket;
 #[derive(Clone)]
 pub struct BucketGreeter {
     pool: Arc<Pool<Postgres>>,
@@ -58,21 +60,11 @@ impl Bucket for BucketGreeter {
         &self,
         request: Request<UpdateBucketRequest>,
     ) -> Result<Response<BucketInfo>, Status> {
+        let pool = &self.pool;
         let access = request.get_ref().access();
         let UpdateBucketRequest { name, auth, .. } = request.into_inner();
-        let username = check_user(&auth).await?;
-        // 判断该存储桶是否存在
-        BucketModal::exist(&name, &self.pool)
-            .await
-            .map_err(|_| Status::not_found("该存储桶不存在"))?;
-        // 判断用户是否一致
-        let BucketModal {
-            username: username_,
-            ..
-        } = BucketModal::find_one(&name, &self.pool).await?;
-        if username != username_ {
-            return Err(Status::permission_denied("没有权限操作不属于你的存储桶"));
-        }
+        // 判断该存储桶是否存在和权限
+        check_bucket(&auth, &name, pool).await?;
         let access: bucket::BucketAccess = bucket::BucketAccess::from(access);
         let updated = BucketModal::update(&name, &access, &self.pool).await?;
         Ok(Response::new(updated.into()))
@@ -83,19 +75,8 @@ impl Bucket for BucketGreeter {
     ) -> Result<Response<Empty>, Status> {
         let pool = &self.pool;
         let DeleteBucketRequest { name, auth } = request.into_inner();
-        let username = check_user(&auth).await?;
-        // 判断该存储桶是否存在
-        BucketModal::exist(&name, pool)
-            .await
-            .map_err(|_| Status::not_found("该存储桶不存在"))?;
-        // 判断用户是否一致
-        let BucketModal {
-            username: username_,
-            ..
-        } = BucketModal::find_one(&name, pool).await?;
-        if username != username_ {
-            return Err(Status::permission_denied("没有权限操作不属于你的存储桶"));
-        }
+        // 判断该存储桶是否存在和权限
+        check_bucket(&auth, &name, pool).await?;
         // 数据库删除
         futures::try_join!(
             BucketModal::delete(&name, pool),
