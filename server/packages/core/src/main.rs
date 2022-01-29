@@ -31,7 +31,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     );
 
     let bucket_greeter = BucketGreeter::new(Arc::clone(&pool), Arc::clone(&mongo));
-    let folder_greeter = FolderGreeter::new(Arc::clone(&pool));
+    let folder_greeter = FolderGreeter::new(Arc::clone(&pool), Arc::clone(&mongo));
     let object_greeter = ObjectGreeter::new(Arc::clone(&pool), Arc::clone(&mongo));
     println!("GreeterServer listening on {addr}");
 

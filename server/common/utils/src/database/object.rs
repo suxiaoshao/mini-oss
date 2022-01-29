@@ -165,8 +165,49 @@ impl ObjectModal {
             .to_status()?;
         Ok(())
     }
+    /// 删除某个 bucket 下所有
+    pub async fn delete_by_bucket(bucket_name: &str, pool: &Pool<Postgres>) -> Result<(), Status> {
+        sqlx::query("delete from object where bucket_name = $1")
+            .bind(bucket_name)
+            .execute(pool)
+            .await
+            .to_status()?;
+        Ok(())
+    }
+    /// 根据 paths 获取对象
+    #[cfg(feature = "future")]
+    pub async fn find_by_paths(
+        bucket_name: &str,
+        paths: &[String],
+        pool: &Pool<Postgres>,
+    ) -> Result<Vec<Self>, Status> {
+        let mut result = vec![];
+        futures::future::try_join_all(
+            paths
+                .iter()
+                .map(|path| Self::find_total_by_path(path, bucket_name, pool)),
+        )
+        .await?
+        .into_iter()
+        .for_each(|mut item| result.append(&mut item));
+        Ok(result)
+    }
     /// 获取列表
-    pub async fn find_many_by_father_path(
+    pub async fn find_total_by_path(
+        father_path: &str,
+        bucket_name: &str,
+        pool: &Pool<Postgres>,
+    ) -> Result<Vec<Self>, Status> {
+        let users = sqlx::query_as(r#"select * from object where path = $1 and bucket_name=$2"#)
+            .bind(father_path)
+            .bind(bucket_name)
+            .fetch_all(pool)
+            .await
+            .to_status()?;
+        Ok(users)
+    }
+    /// 获取列表
+    pub async fn find_many_by_path(
         limit: u32,
         offset: u32,
         father_path: &str,

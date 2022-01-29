@@ -15,6 +15,7 @@ use utils::{
     database::{
         bucket::{self, BucketModal},
         folder::{FolderModal, ObjectAccess},
+        object::ObjectModal,
         Pool, Postgres,
     },
     errors::grpc::ToStatusResult,
@@ -81,6 +82,7 @@ impl Bucket for BucketGreeter {
         futures::try_join!(
             BucketModal::delete(&name, pool),
             FolderModal::delete_by_bucket(&name, pool),
+            ObjectModal::delete_by_bucket(&name, pool),
             self.mongo.drop_self(name.clone())
         )?;
         Ok(Response::new(Empty {}))
@@ -97,17 +99,20 @@ impl Bucket for BucketGreeter {
         // 删除 folder
         let mut folder_delete = vec![];
         let mut mongo_delete = vec![];
+        let mut object_delete = vec![];
         // 在 mongo 中删除
         for BucketModal { name, .. } in &buckets {
             folder_delete.push(FolderModal::delete_by_bucket(name, pool));
             mongo_delete.push(self.mongo.drop_self(name.clone()));
+            object_delete.push(ObjectModal::delete_by_bucket(name, pool));
         }
         let mongo_delete = futures::future::try_join_all(mongo_delete);
         let folder_delete = futures::future::try_join_all(folder_delete);
+        let object_delete = futures::future::try_join_all(object_delete);
         // sql中删除
         let sql_delete = BucketModal::delete_by_user(&username, pool);
         // 验证结果
-        futures::try_join!(mongo_delete, sql_delete, folder_delete)?;
+        futures::try_join!(mongo_delete, sql_delete, folder_delete, object_delete)?;
         Ok(Response::new(Empty {}))
     }
     async fn get_bucket_list(

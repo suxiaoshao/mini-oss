@@ -9,18 +9,21 @@ use proto::{
     },
     Request, Response, Status,
 };
+use utils::database::object::ObjectModal;
 use utils::database::{folder::FolderModal, Pool, Postgres};
+use utils::mongo::Mongo;
 
 use crate::utils::check::check_path;
 
 #[derive(Clone)]
 pub struct FolderGreeter {
     pool: Arc<Pool<Postgres>>,
+    mongo: Arc<Mongo>,
 }
 
 impl FolderGreeter {
-    pub fn new(pool: Arc<Pool<Postgres>>) -> Self {
-        Self { pool }
+    pub fn new(pool: Arc<Pool<Postgres>>, mongo: Arc<Mongo>) -> Self {
+        Self { pool, mongo }
     }
 }
 #[async_trait]
@@ -51,6 +54,47 @@ impl Folder for FolderGreeter {
         let folder = FolderModal::create(&path, access, &bucket_name, &father_path, pool).await?;
         Ok(Response::new(folder.into()))
     }
+    async fn delete_folder(
+        &self,
+        request: Request<DeleteFolderRequest>,
+    ) -> Result<Response<Empty>, Status> {
+        let pool = &self.pool;
+        let DeleteFolderRequest {
+            path,
+            bucket_name,
+            auth,
+        } = request.into_inner();
+        // 判断文件夹
+        check_path(&auth, &bucket_name, &path, pool).await?;
+        // 获取所有文件夹下的文件夹
+        let delete_names = FolderModal::recursive_names_by_path(&path, &bucket_name, pool).await?;
+        let delete_objects = ObjectModal::find_by_paths(&bucket_name, &delete_names, pool).await?;
+        // 删除 sql 中 object
+        let delete_object_sql = futures::future::try_join_all(delete_objects.iter().map(
+            |ObjectModal {
+                 filename,
+                 path,
+                 bucket_name,
+                 ..
+             }| ObjectModal::delete(path, bucket_name, filename, pool),
+        ));
+        // 删除 mongo 中对象
+        let delete_object_mongo = futures::future::try_join_all(delete_objects.iter().map(
+            |ObjectModal {
+                 object_id,
+                 bucket_name,
+                 ..
+             }| self.mongo.delete_file(bucket_name.clone(), object_id),
+        ));
+        // 删除 folder
+        let delete_folders = futures::future::try_join_all(
+            delete_names
+                .iter()
+                .map(|path| FolderModal::delete(path, &bucket_name, pool)),
+        );
+        futures::future::try_join3(delete_object_sql, delete_object_mongo, delete_folders).await?;
+        Ok(Response::new(Empty {}))
+    }
     async fn update_folder(
         &self,
         request: Request<UpdateFolderRequest>,
@@ -67,28 +111,6 @@ impl Folder for FolderGreeter {
         check_path(&auth, &bucket_name, &path, pool).await?;
         let updated = FolderModal::update(&path, access, &bucket_name, pool).await?;
         Ok(Response::new(updated.into()))
-    }
-    async fn delete_folder(
-        &self,
-        request: Request<DeleteFolderRequest>,
-    ) -> Result<Response<Empty>, Status> {
-        let pool = &self.pool;
-        let DeleteFolderRequest {
-            path,
-            bucket_name,
-            auth,
-        } = request.into_inner();
-        // 判断文件夹
-        check_path(&auth, &bucket_name, &path, pool).await?;
-        // 获取所有文件夹下的文件夹
-        let delete_names = FolderModal::recursive_names_by_path(&path, &bucket_name, pool).await?;
-        futures::future::try_join_all(
-            delete_names
-                .iter()
-                .map(|path| FolderModal::delete(path, &bucket_name, pool)),
-        )
-        .await?;
-        Ok(Response::new(Empty {}))
     }
 
     async fn get_folder_list(
