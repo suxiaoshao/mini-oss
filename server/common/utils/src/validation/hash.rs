@@ -29,6 +29,7 @@ pub fn validate_password_hash(pre_hash: &str, hashed: &str) -> Result<(), Status
         .to_status()
 }
 
+#[cfg(feature = "mongo")]
 /// 文件 hash
 pub fn file_hash(source: &[u8]) -> String {
     blake3::hash(source).to_string()
