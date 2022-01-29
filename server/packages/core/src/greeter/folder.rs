@@ -7,11 +7,12 @@ use proto::{
         folder_server::Folder, CreateFolderRequest, DeleteFolderRequest, FolderInfo,
         GetFolderListReply, GetFolderListRequest, UpdateFolderRequest,
     },
+    validation::Validate,
     Request, Response, Status,
 };
-use utils::database::object::ObjectModal;
 use utils::database::{folder::FolderModal, Pool, Postgres};
 use utils::mongo::Mongo;
+use utils::{database::object::ObjectModal, errors::grpc::ToStatusResult};
 
 use crate::utils::check::check_path;
 
@@ -32,6 +33,8 @@ impl Folder for FolderGreeter {
         &self,
         request: Request<CreateFolderRequest>,
     ) -> Result<Response<FolderInfo>, Status> {
+        // 验证
+        request.get_ref().validate().to_status()?;
         let pool = &self.pool;
         let access = request.get_ref().access();
         let CreateFolderRequest {

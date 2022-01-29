@@ -72,7 +72,7 @@ pub struct BucketInfo {
     #[prost(string, tag = "5")]
     pub username: ::prost::alloc::string::String,
 }
-#[derive(Clone, PartialEq, ::prost::Message, Validate, Deserialize)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetFolderListRequest {
     /// 获取多少数据
     #[prost(uint32, tag = "1")]
@@ -85,7 +85,6 @@ pub struct GetFolderListRequest {
     pub auth: ::prost::alloc::string::String,
     /// 路径
     #[prost(string, tag = "4")]
-    #[validate(custom = "validate_folder")]
     pub path: ::prost::alloc::string::String,
     /// bucket 名
     #[prost(string, tag = "5")]
@@ -127,10 +126,11 @@ pub struct DeleteFolderRequest {
     #[prost(string, tag = "3")]
     pub auth: ::prost::alloc::string::String,
 }
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message, Validate, Deserialize)]
 pub struct CreateFolderRequest {
     /// 路径
     #[prost(string, tag = "1")]
+    #[validate(custom = "validate_folder")]
     pub path: ::prost::alloc::string::String,
     /// bucket 名
     #[prost(string, tag = "2")]
@@ -175,13 +175,14 @@ pub struct GetObjectListReply {
     #[prost(int64, tag = "2")]
     pub total: i64,
 }
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message, Validate, Deserialize)]
 pub struct CreateObjectRequest {
     /// 路径
     #[prost(string, tag = "1")]
     pub path: ::prost::alloc::string::String,
     /// 文件名
     #[prost(string, tag = "2")]
+    #[validate(custom = "validate_folder")]
     pub filename: ::prost::alloc::string::String,
     /// bucket 名
     #[prost(string, tag = "3")]
@@ -211,7 +212,7 @@ pub struct DeleteObjectRequest {
     #[prost(string, tag = "4")]
     pub auth: ::prost::alloc::string::String,
 }
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message, Validate, Deserialize)]
 pub struct UpdateObjectRequest {
     /// 路径
     #[prost(string, tag = "1")]
@@ -227,6 +228,7 @@ pub struct UpdateObjectRequest {
     pub access: i32,
     /// 新文件名
     #[prost(string, tag = "6")]
+    #[validate(custom = "validate_folder")]
     pub new_filename: ::prost::alloc::string::String,
     /// 访问控制
     #[prost(string, tag = "7")]

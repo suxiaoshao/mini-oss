@@ -1,8 +1,18 @@
 use validator::ValidationError;
 
 pub fn validate_folder(input: &str) -> Result<(), ValidationError> {
-    if input.chars().any(|x| x == '/') {
-        Err(ValidationError::new("不能含有/"))
+    let len = input.chars().count();
+    if len > 255 {
+        return Err(ValidationError::new("不能大于255字符"));
+    }
+    if len < 1 {
+        return Err(ValidationError::new("不能小于1个字符"));
+    }
+    if input
+        .chars()
+        .any(|x| x == '/' || x == '\n' || x == '\r' || x == '\t')
+    {
+        Err(ValidationError::new("不能含有/和换行符等特殊字符"))
     } else {
         Ok(())
     }

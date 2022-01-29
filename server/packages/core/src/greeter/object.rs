@@ -7,6 +7,7 @@ use proto::{
         object_server::Object, CreateObjectRequest, DeleteObjectRequest, GetFolderListRequest,
         GetObjectListReply, ObjectInfo, UpdateObjectRequest,
     },
+    validation::Validate,
     Request, Response, Status,
 };
 use utils::{
@@ -14,6 +15,7 @@ use utils::{
         object::{ObjectCreateInput, ObjectModal},
         Pool, Postgres,
     },
+    errors::grpc::ToStatusResult,
     mongo::Mongo,
     validation::hash::file_hash,
 };
@@ -40,6 +42,8 @@ impl Object for ObjectGreeter {
         &self,
         request: Request<CreateObjectRequest>,
     ) -> Result<Response<ObjectInfo>, Status> {
+        // 验证
+        request.get_ref().validate().to_status()?;
         let access = request.get_ref().access();
         let pool = &self.pool;
         let CreateObjectRequest {
@@ -83,6 +87,8 @@ impl Object for ObjectGreeter {
         &self,
         request: Request<UpdateObjectRequest>,
     ) -> Result<Response<ObjectInfo>, Status> {
+        // 验证
+        request.get_ref().validate().to_status()?;
         let access = request.get_ref().access();
         let pool = &self.pool;
         let UpdateObjectRequest {
