@@ -1,6 +1,11 @@
 use async_graphql::InputObject;
 
 use proto::core::{self, Header, ObjectAccess};
+#[derive(InputObject)]
+pub struct HeaderType {
+    pub key: String,
+    pub value: String,
+}
 
 #[derive(InputObject)]
 pub struct UpdateObjectRequest {
@@ -17,7 +22,7 @@ pub struct UpdateObjectRequest {
     /// 访问控制
     pub auth: String,
     /// 自定义 header
-    pub headers: Vec<Header>,
+    pub headers: Vec<HeaderType>,
 }
 
 #[allow(clippy::from_over_into)]
@@ -39,7 +44,10 @@ impl Into<core::UpdateObjectRequest> for UpdateObjectRequest {
             auth,
             bucket_name,
             filename,
-            headers,
+            headers: headers
+                .into_iter()
+                .map(|HeaderType { key, value }| Header { key, value })
+                .collect(),
         };
         request.set_access(access);
         request
