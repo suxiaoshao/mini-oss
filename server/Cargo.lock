@@ -58,9 +58,9 @@ checksum = "71938f30533e4d95a6d17aa530939da3842c2ab6f4f84b9dae68447e4129f74a"
 
 [[package]]
 name = "async-graphql"
-version = "3.0.26"
+version = "3.0.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1bbf3f7c64d566b321a2175826fdf5ba809b63f9f14d99ab0474d825e9ac0bc0"
+checksum = "ce1b92ce50a9e7a9a4d571e0988715d40468361ec66a5013d7d9e890f46ce5ba"
 dependencies = [
  "async-graphql-derive",
  "async-graphql-parser",
@@ -88,9 +88,9 @@ dependencies = [
 
 [[package]]
 name = "async-graphql-axum"
-version = "3.0.26"
+version = "3.0.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "16c090f9ba197fc08a8a94ba7cbb91a76d77bd4d1ea324db40d4fb14c8ae5735"
+checksum = "2eab3e61a11aff816fcab35a2faf11c589f72b7a2b1effdd958e202b5e957f9e"
 dependencies = [
  "async-graphql",
  "async-trait",
@@ -106,9 +106,9 @@ dependencies = [
 
 [[package]]
 name = "async-graphql-derive"
-version = "3.0.26"
+version = "3.0.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a4508f7d83df2bf72bf04c4b59393f4231602bdbe561a5788577beeed7de5a7d"
+checksum = "c98da5e8c6bbb70d43db36d27b76cc19e84e3029980b734a81b679fb6dae0a00"
 dependencies = [
  "Inflector",
  "async-graphql-parser",
@@ -122,9 +122,9 @@ dependencies = [
 
 [[package]]
 name = "async-graphql-parser"
-version = "3.0.26"
+version = "3.0.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bd7fcd1c27a6334b3741556d0791c34260e811b4c3ff74f39cdc0b2a91da071b"
+checksum = "8c7a1025d329db8c7080337a32c8056ffb0c7c98e8ee8a7cc78260c55fb207d1"
 dependencies = [
  "async-graphql-value",
  "pest",
@@ -135,9 +135,9 @@ dependencies = [
 
 [[package]]
 name = "async-graphql-value"
-version = "3.0.26"
+version = "3.0.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b7c9c16da97af60446835abae360bf58dae9595315e301c9c5bbed6ea98c5540"
+checksum = "8da25b10dd085879d6227967bc6932bea8fed95735873ac82fa2ec65b2cc89ba"
 dependencies = [
  "bytes",
  "indexmap",
@@ -2412,9 +2412,9 @@ checksum = "cda74da7e1a664f795bb1f8a87ec406fb89a02522cf6e50620d016add6dbbf5c"
 
 [[package]]
 name = "tokio"
-version = "1.15.0"
+version = "1.16.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fbbf1c778ec206785635ce8ad57fe52b3009ae9e0c9f574a728f3049d3e55838"
+checksum = "0c27a64b625de6d309e8c57716ba93021dccf1b3b5c97edd6d3dd2d2135afc0a"
 dependencies = [
  "bytes",
  "libc",

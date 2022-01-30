@@ -48,7 +48,7 @@ spec:
   # it's apisix.
   ingressClassName: apisix
   rules:
-    - host: api.mini-oss.top
+    - host: api.sushao.me
       http:
         paths:
           - backend:
@@ -58,3 +58,20 @@ spec:
                   number: 80
             path: /
             pathType: Prefix
+---
+apiVersion: apisix.apache.org/v2alpha1
+kind: ApisixRoute
+metadata:
+  name: graphql-route
+  namespace: mini-oss
+spec:
+  http:
+    - name: graphql
+      match:
+        hosts:
+          - api.sushao.me
+        paths:
+          - "/*"
+      backend:
+        serviceName: graphql-service
+        servicePort: 80

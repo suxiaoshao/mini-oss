@@ -1,7 +1,9 @@
-use crate::validation::{folder::validate_folder, name::validate_name};
-use async_graphql::InputObject;
+use async_graphql::{Enum, InputObject, SimpleObject};
 use serde::{Deserialize, Serialize};
 use validator::Validate;
+
+use crate::validation::{folder::validate_folder, name::validate_name};
+
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetBucketListReply {
     /// 数据
@@ -72,7 +74,7 @@ pub struct BucketInfo {
     #[prost(string, tag = "5")]
     pub username: ::prost::alloc::string::String,
 }
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message, InputObject)]
 pub struct GetFolderListRequest {
     /// 获取多少数据
     #[prost(uint32, tag = "1")]
@@ -99,7 +101,7 @@ pub struct GetFolderListReply {
     #[prost(int64, tag = "2")]
     pub total: i64,
 }
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message, InputObject)]
 pub struct UpdateFolderRequest {
     /// 路径
     #[prost(string, tag = "1")]
@@ -114,7 +116,7 @@ pub struct UpdateFolderRequest {
     #[prost(enumeration = "ObjectAccess", tag = "4")]
     pub access: i32,
 }
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message, InputObject)]
 pub struct DeleteFolderRequest {
     /// 名字
     #[prost(string, tag = "1")]
@@ -126,7 +128,7 @@ pub struct DeleteFolderRequest {
     #[prost(string, tag = "3")]
     pub auth: ::prost::alloc::string::String,
 }
-#[derive(Clone, PartialEq, ::prost::Message, Validate, Deserialize)]
+#[derive(Clone, PartialEq, ::prost::Message, Validate, Deserialize, InputObject)]
 pub struct CreateFolderRequest {
     /// 路径
     #[prost(string, tag = "1")]
@@ -175,7 +177,7 @@ pub struct GetObjectListReply {
     #[prost(int64, tag = "2")]
     pub total: i64,
 }
-#[derive(Clone, PartialEq, ::prost::Message, Validate, Deserialize)]
+#[derive(Clone, PartialEq, ::prost::Message, Validate, Deserialize, InputObject)]
 pub struct CreateObjectRequest {
     /// 路径
     #[prost(string, tag = "1")]
@@ -197,7 +199,7 @@ pub struct CreateObjectRequest {
     #[prost(string, tag = "6")]
     pub auth: ::prost::alloc::string::String,
 }
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message, InputObject)]
 pub struct DeleteObjectRequest {
     /// 路径
     #[prost(string, tag = "1")]
@@ -212,7 +214,7 @@ pub struct DeleteObjectRequest {
     #[prost(string, tag = "4")]
     pub auth: ::prost::alloc::string::String,
 }
-#[derive(Clone, PartialEq, ::prost::Message, Validate, Deserialize)]
+#[derive(Clone, PartialEq, ::prost::Message, Validate, Deserialize, InputObject)]
 pub struct UpdateObjectRequest {
     /// 路径
     #[prost(string, tag = "1")]
@@ -267,7 +269,7 @@ pub struct ObjectInfo {
     #[prost(message, repeated, tag = "9")]
     pub headers: ::prost::alloc::vec::Vec<Header>,
 }
-#[derive(Clone, PartialEq, ::prost::Message, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, ::prost::Message, Serialize, Deserialize, InputObject, SimpleObject)]
 pub struct Header {
     #[prost(string, tag = "1")]
     pub key: ::prost::alloc::string::String,
@@ -275,18 +277,7 @@ pub struct Header {
     pub value: ::prost::alloc::string::String,
 }
 /// 访问权限类型
-#[derive(
-    async_graphql::Enum,
-    Clone,
-    Copy,
-    Debug,
-    PartialEq,
-    Eq,
-    Hash,
-    PartialOrd,
-    Ord,
-    ::prost::Enumeration,
-)]
+#[derive(Enum, Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum BucketAccess {
     /// 开放
@@ -296,7 +287,7 @@ pub enum BucketAccess {
     /// 不开放
     Private = 2,
 }
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration, Enum)]
 #[repr(i32)]
 pub enum ObjectAccess {
     /// 开放
@@ -309,7 +300,9 @@ pub enum ObjectAccess {
 #[doc = r" Generated client implementations."]
 pub mod bucket_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+
     use tonic::codegen::*;
+
     #[derive(Debug, Clone)]
     pub struct BucketClient<T> {
         inner: tonic::client::Grpc<T>,
@@ -446,7 +439,9 @@ pub mod bucket_client {
 #[doc = r" Generated client implementations."]
 pub mod folder_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+
     use tonic::codegen::*;
+
     #[derive(Debug, Clone)]
     pub struct FolderClient<T> {
         inner: tonic::client::Grpc<T>,
@@ -568,7 +563,9 @@ pub mod folder_client {
 #[doc = r" Generated client implementations."]
 pub mod object_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+
     use tonic::codegen::*;
+
     #[derive(Debug, Clone)]
     pub struct ObjectClient<T> {
         inner: tonic::client::Grpc<T>,
@@ -690,7 +687,9 @@ pub mod object_client {
 #[doc = r" Generated server implementations."]
 pub mod bucket_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+
     use tonic::codegen::*;
+
     #[doc = "Generated trait containing gRPC methods that should be implemented for use with BucketServer."]
     #[async_trait]
     pub trait Bucket: Send + Sync + 'static {
@@ -954,7 +953,9 @@ pub mod bucket_server {
 #[doc = r" Generated server implementations."]
 pub mod folder_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+
     use tonic::codegen::*;
+
     #[doc = "Generated trait containing gRPC methods that should be implemented for use with FolderServer."]
     #[async_trait]
     pub trait Folder: Send + Sync + 'static {
@@ -1180,7 +1181,9 @@ pub mod folder_server {
 #[doc = r" Generated server implementations."]
 pub mod object_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+
     use tonic::codegen::*;
+
     #[doc = "Generated trait containing gRPC methods that should be implemented for use with ObjectServer."]
     #[async_trait]
     pub trait Object: Send + Sync + 'static {

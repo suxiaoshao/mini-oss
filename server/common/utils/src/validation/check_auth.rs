@@ -7,9 +7,7 @@ use crate::errors::grpc::ToStatusResult;
 
 /// 验证管理员身份
 pub async fn check_manager(auth: &str) -> Result<(), Status> {
-    let mut client = CheckClient::connect("http://auth-service:80")
-        .await
-        .to_status()?;
+    let mut client = CheckClient::connect("http://auth:80").await.to_status()?;
     let check_request = Request::new(CheckRequest {
         auth: auth.to_string(),
     });
@@ -19,9 +17,7 @@ pub async fn check_manager(auth: &str) -> Result<(), Status> {
 
 /// 验证用户身份
 pub async fn check_user(auth: &str) -> Result<String, Status> {
-    let mut client = CheckClient::connect("http://auth-service:80")
-        .await
-        .to_status()?;
+    let mut client = CheckClient::connect("http://auth:80").await.to_status()?;
     let check_request = Request::new(CheckRequest {
         auth: auth.to_string(),
     });
