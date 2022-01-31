@@ -44,3 +44,16 @@ impl ToField for tonic::transport::Error {
         }
     }
 }
+
+impl ToField for std::io::Error {
+    fn to_field(self) -> FieldError {
+        let mut extensions = ErrorExtensionValues::default();
+        extensions.set("code", 3);
+        extensions.set("source", format!("{self:#?}"));
+        FieldError {
+            message: "文件获取错误".to_string(),
+            source: Some(Arc::new(self)),
+            extensions: Some(extensions),
+        }
+    }
+}

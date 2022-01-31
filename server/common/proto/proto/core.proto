@@ -13,7 +13,7 @@ service Bucket {
   rpc DeleteBuckets (DeleteBucketsRequest) returns (auth.Empty) {}
   // 修改 Bucket
   rpc UpdateBucket (UpdateBucketRequest) returns (BucketInfo) {}
-  // 获取用户 bucker 列表
+  // 获取用户 bucket 列表
   rpc GetBucketList(user.GetListRequest) returns (GetBucketListReply){}
 }
 
@@ -88,6 +88,22 @@ service Folder {
   rpc UpdateFolder (UpdateFolderRequest) returns (FolderInfo) {}
   // 获取path列表
   rpc GetFolderList(GetFolderListRequest) returns (GetFolderListReply){}
+  // 获取 path 总数
+  rpc GetFolderCount(GetFolderCountRequest) returns (CountReply){}
+}
+
+message GetFolderCountRequest{
+  // 身份验证
+  string auth = 3;
+  // 路径
+  string path = 4;
+  // bucket 名
+  string bucket_name = 5;
+}
+
+message CountReply{
+  // 总数
+  int64 total = 1;
 }
 
 message GetFolderListRequest{
@@ -101,7 +117,6 @@ message GetFolderListRequest{
   string path = 4;
   // bucket 名
   string bucket_name = 5;
-
 }
 
 message GetFolderListReply{
@@ -179,6 +194,8 @@ service Object {
   rpc UpdateObject (UpdateObjectRequest) returns (ObjectInfo) {}
   // 获取path列表
   rpc GetObjectList(GetFolderListRequest) returns (GetObjectListReply){}
+  // 获取 object 总数
+  rpc GetObjectCount(GetFolderCountRequest) returns (CountReply){}
 }
 
 message GetObjectListReply{
@@ -190,54 +207,54 @@ message GetObjectListReply{
 
 message CreateObjectRequest{
   // 路径
-  string path=1;
+  string path = 1;
   // 文件名
-  string filename=2;
+  string filename = 2;
   // bucket 名
-  string bucket_name=3;
+  string bucket_name = 3;
   // 访问控制
   ObjectAccess access = 4;
   // 内容
-  bytes content =5;
+  bytes content = 5;
   // 访问控制
   string auth = 6;
 }
 
 message DeleteObjectRequest{
   // 路径
-  string path=1;
+  string path = 1;
   // 文件名
-  string filename=2;
+  string filename = 2;
   // bucket 名
-  string bucket_name=3;
+  string bucket_name = 3;
   // 访问控制
   string auth = 4;
 }
 
 message UpdateObjectRequest{
   // 路径
-  string path=1;
+  string path = 1;
   // 旧文件名
-  string filename=2;
+  string filename = 2;
   // bucket 名
-  string bucket_name=3;
+  string bucket_name = 3;
   // 访问控制
   ObjectAccess access = 4;
   // 新文件名
-  string new_filename=6;
+  string new_filename = 6;
   // 访问控制
   string auth = 7;
   // 自定义 header
-  repeated Header headers=8;
+  repeated Header headers = 8;
 }
 
 message ObjectInfo {
   // 路径
-  string path=1;
+  string path = 1;
   // 文件名
-  string filename=2;
+  string filename = 2;
   // bucket 名
-  string bucket_name=3;
+  string bucket_name = 3;
   // 访问控制
   ObjectAccess access = 4;
   // 创建时间
@@ -245,14 +262,14 @@ message ObjectInfo {
   // 创建时间
   int64 updateTime = 6;
   // 大小
-  int64 size=7;
+  int64 size = 7;
   // 摘要
-  string blake3=8;
+  string blake3 = 8;
   // 自定义 header
-  repeated Header headers=9;
+  repeated Header headers = 9;
 }
 
 message Header{
-  string key =1;
-  string value=2;
+  string key = 1;
+  string value = 2;
 }

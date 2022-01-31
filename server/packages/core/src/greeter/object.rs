@@ -10,6 +10,7 @@ use proto::{
     validation::Validate,
     Request, Response, Status,
 };
+use proto::core::{CountReply, GetFolderCountRequest};
 use utils::{
     database::{
         object::{ObjectCreateInput, ObjectModal},
@@ -83,6 +84,28 @@ impl Object for ObjectGreeter {
         let data = ObjectModal::create(input, pool).await?;
         Ok(Response::new(data.try_into()?))
     }
+    async fn delete_object(
+        &self,
+        request: Request<DeleteObjectRequest>,
+    ) -> Result<Response<Empty>, Status> {
+        let pool = &self.pool;
+        let DeleteObjectRequest {
+            path,
+            filename,
+            bucket_name,
+            auth,
+        } = request.into_inner();
+        // 判断对象是否存在
+        check_object(&auth, &bucket_name, &path, &filename, pool).await?;
+        let ObjectModal { object_id, .. } =
+            ObjectModal::find_one(&path, &bucket_name, &filename, pool).await?;
+        futures::future::try_join(
+            ObjectModal::delete(&path, &bucket_name, &filename, pool),
+            self.mongo.delete_file(bucket_name.clone(), &object_id),
+        )
+        .await?;
+        Ok(Response::new(Empty {}))
+    }
     async fn update_object(
         &self,
         request: Request<UpdateObjectRequest>,
@@ -121,28 +144,6 @@ impl Object for ObjectGreeter {
         .await?;
         Ok(Response::new(data.try_into()?))
     }
-    async fn delete_object(
-        &self,
-        request: Request<DeleteObjectRequest>,
-    ) -> Result<Response<Empty>, Status> {
-        let pool = &self.pool;
-        let DeleteObjectRequest {
-            path,
-            filename,
-            bucket_name,
-            auth,
-        } = request.into_inner();
-        // 判断对象是否存在
-        check_object(&auth, &bucket_name, &path, &filename, pool).await?;
-        let ObjectModal { object_id, .. } =
-            ObjectModal::find_one(&path, &bucket_name, &filename, pool).await?;
-        futures::future::try_join(
-            ObjectModal::delete(&path, &bucket_name, &filename, pool),
-            self.mongo.delete_file(bucket_name.clone(), &object_id),
-        )
-        .await?;
-        Ok(Response::new(Empty {}))
-    }
 
     async fn get_object_list(
         &self,
@@ -171,5 +172,18 @@ impl Object for ObjectGreeter {
             data.push(item.try_into()?)
         }
         Ok(Response::new(GetObjectListReply { data, total: count }))
+    }
+
+    async fn get_object_count(&self, request: Request<GetFolderCountRequest>) -> Result<Response<CountReply>, Status> {
+        let pool = &self.pool;
+        let GetFolderCountRequest {
+            path,
+            bucket_name,
+            auth,
+        } = request.into_inner();
+        // 判断文件夹
+        check_path(&auth, &bucket_name, &path, pool).await?;
+        let count = ObjectModal::count_by_father_path(&bucket_name, &path, pool).await?;
+        Ok(Response::new(CountReply { total: count }))
     }
 }

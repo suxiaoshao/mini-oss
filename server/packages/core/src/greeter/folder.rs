@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use proto::core::{CountReply, GetFolderCountRequest};
 use proto::{
     async_trait,
     auth::Empty,
@@ -142,5 +143,21 @@ impl Folder for FolderGreeter {
             data: data.into_iter().map(|x| x.into()).collect(),
             total: count,
         }))
+    }
+
+    async fn get_folder_count(
+        &self,
+        request: Request<GetFolderCountRequest>,
+    ) -> Result<Response<CountReply>, Status> {
+        let pool = &self.pool;
+        let GetFolderCountRequest {
+            path,
+            bucket_name,
+            auth,
+        } = request.into_inner();
+        // 判断文件夹
+        check_path(&auth, &bucket_name, &path, pool).await?;
+        let count = FolderModal::count_by_father_path(&bucket_name, &path, pool).await?;
+        Ok(Response::new(CountReply { total: count }))
     }
 }

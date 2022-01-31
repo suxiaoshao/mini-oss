@@ -826,6 +826,7 @@ dependencies = [
  "async-graphql",
  "async-graphql-axum",
  "axum",
+ "futures",
  "proto",
  "tokio",
  "tower-http",

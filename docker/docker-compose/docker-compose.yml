@@ -5,9 +5,11 @@ services:
     ports:
       - "80:80"
     restart: always
+    container_name: web
   graphql:
     image: suxiaoshao/graphql:latest
     restart: always
+    container_name: graphql
   auth:
     image: suxiaoshao/auth:latest
     restart: always
@@ -15,6 +17,7 @@ services:
       - postgres
     env_file:
       - .env
+    container_name: auth
   user:
     image: suxiaoshao/user:latest
     restart: always
@@ -22,6 +25,7 @@ services:
       - .env
     depends_on:
       - postgres
+    container_name: user
   core:
     image: suxiaoshao/core:latest
     restart: always
@@ -30,6 +34,7 @@ services:
     depends_on:
       - postgres
       - mongo
+    container_name: core
   mongo:
     image: mongo:latest
     restart: always
@@ -38,8 +43,10 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: "sushao"
       MONGO_INITDB_ROOT_PASSWORD: "sushao"
+    container_name: mongo
   postgres:
     image: suxiaoshao/postgres:latest
     restart: always
     ports:
       - "5432:5432"
+    container_name: postgres

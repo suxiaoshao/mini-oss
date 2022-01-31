@@ -2,9 +2,13 @@ use std::io::Read;
 
 use async_graphql::{Context, FieldResult, Object, Upload};
 
+use crate::schema::folder::folder_list::FolderList;
 use ::utils::errors::graphql::ToFieldResult;
 use proto::core::object_client::ObjectClient;
-use proto::core::DeleteObjectRequest;
+use proto::core::{
+    CountReply, DeleteObjectRequest, GetFolderCountRequest, GetFolderListReply,
+    GetFolderListRequest,
+};
 use proto::{
     auth::{login_client::LoginClient, LoginReply, LoginRequest},
     core::{
@@ -85,6 +89,117 @@ impl QueryRoot {
         let request = Request::new(data);
         let res = client.get_bucket_list(request).await.to_field()?;
         Ok(BucketList::from(res.into_inner()))
+    }
+    /// 文件夹列表
+    async fn folder_list(&self, data: GetFolderListRequest) -> FieldResult<FolderList> {
+        let GetFolderListRequest {
+            limit,
+            offset,
+            auth,
+            path,
+            bucket_name,
+        } = &data;
+        let require_count = limit + offset;
+
+        // 获取文件夹总数
+        let mut folder_client = FolderClient::connect("http://core:80").await.to_field()?;
+        let request = Request::new(GetFolderCountRequest {
+            auth: auth.clone(),
+            path: path.clone(),
+            bucket_name: bucket_name.clone(),
+        });
+        let CountReply {
+            total: folder_count,
+        } = folder_client
+            .get_folder_count(request)
+            .await
+            .to_field()?
+            .into_inner();
+
+        // 获取对象总数
+        let mut object_client = ObjectClient::connect("http://core:80").await.to_field()?;
+        let request = Request::new(GetFolderCountRequest {
+            auth: auth.clone(),
+            path: path.clone(),
+            bucket_name: bucket_name.clone(),
+        });
+        let CountReply {
+            total: object_count,
+        } = object_client
+            .get_object_count(request)
+            .await
+            .to_field()?
+            .into_inner();
+        let total = object_count + folder_count;
+        // 如果文件夹总数大于需要的总数
+        if folder_count > require_count as i64 {
+            let request = Request::new(data);
+            let GetFolderListReply { data, .. } = folder_client
+                .get_folder_list(request)
+                .await
+                .to_field()?
+                .into_inner();
+            Ok(FolderList {
+                total,
+                data: data
+                    .into_iter()
+                    .map(|x| FolderInfo::from(x).into())
+                    .collect(),
+            })
+            // 如果需要两种
+        } else if folder_count > *offset as i64 && folder_count < require_count as i64 {
+            let folder_limit = require_count - folder_count as u32;
+            let object_limit = limit - folder_limit;
+            let folder_request = Request::new(GetFolderListRequest {
+                limit: folder_limit,
+                offset: *offset,
+                auth: auth.to_string(),
+                path: path.to_string(),
+                bucket_name: bucket_name.to_string(),
+            });
+            let object_request = Request::new(GetFolderListRequest {
+                limit: object_limit,
+                offset: 0,
+                auth: auth.to_string(),
+                path: path.to_string(),
+                bucket_name: bucket_name.to_string(),
+            });
+            let (folder_data, object_data) = futures::future::try_join(
+                folder_client.get_folder_list(folder_request),
+                object_client.get_object_list(object_request),
+            )
+            .await?;
+            let mut data = vec![];
+            folder_data
+                .into_inner()
+                .data
+                .into_iter()
+                .for_each(|x| data.push(FolderInfo::from(x).into()));
+            object_data
+                .into_inner()
+                .data
+                .into_iter()
+                .for_each(|x| data.push(ObjectInfo::from(x).into()));
+            Ok(FolderList { total, data })
+        } else {
+            let object_request = Request::new(GetFolderListRequest {
+                limit: *limit,
+                offset: offset - folder_count as u32,
+                auth: auth.to_string(),
+                path: path.to_string(),
+                bucket_name: bucket_name.to_string(),
+            });
+            let data = object_client
+                .get_object_list(object_request)
+                .await
+                .to_field()?
+                .into_inner()
+                .data
+                .into_iter()
+                .map(|x| ObjectInfo::from(x).into())
+                .collect();
+            Ok(FolderList { data, total })
+        }
     }
 }
 pub struct MutationRoot;
@@ -192,11 +307,11 @@ impl MutationRoot {
         let mut client = ObjectClient::connect("http://core:80").await.to_field()?;
 
         // 获取文件数据
-        let file = file.value(ctx)?;
+        let file = file.value(ctx).to_field()?;
         let filename = file.filename;
         let mut content = vec![];
         let mut file = file.content;
-        file.read_to_end(&mut content)?;
+        file.read_to_end(&mut content).to_field()?;
         // 获取输入数据
         let CreateObjectRequest {
             path,
