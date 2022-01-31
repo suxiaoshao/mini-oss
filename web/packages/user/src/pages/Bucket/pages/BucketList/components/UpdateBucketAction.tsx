@@ -13,7 +13,7 @@ import {
   Radio,
   RadioGroup,
 } from '@mui/material';
-import { Access, useUpdateBucketMutation } from 'graphql';
+import { BucketAccess, useUpdateBucketMutation } from 'graphql';
 import { useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 
@@ -25,11 +25,11 @@ export interface UpdateBucketActionProps {
   /** 修改的 bucket 名 */
   name: string;
   /** 之前的描述 */
-  access: Access;
+  access: BucketAccess;
 }
 
 export interface UpdateBucketForm {
-  access: Access;
+  access: BucketAccess;
 }
 
 export default function UpdateBucketAction({ refetch, menuClose, access, name }: UpdateBucketActionProps): JSX.Element {
@@ -65,9 +65,19 @@ export default function UpdateBucketAction({ refetch, menuClose, access, name }:
                 <FormControl sx={{ marginTop: (theme) => theme.spacing(1) }}>
                   <FormLabel>访问权限</FormLabel>
                   <RadioGroup name={name} value={value} onBlur={onBlur} onChange={onChange} row>
-                    <FormControlLabel inputRef={ref} value={Access.Private} control={<Radio />} label="私有读写" />
-                    <FormControlLabel inputRef={ref} value={Access.Open} control={<Radio />} label="共有读写" />
-                    <FormControlLabel inputRef={ref} value={Access.ReadOpen} control={<Radio />} label="共有读私有写" />
+                    <FormControlLabel
+                      inputRef={ref}
+                      value={BucketAccess.Private}
+                      control={<Radio />}
+                      label="私有读写"
+                    />
+                    <FormControlLabel inputRef={ref} value={BucketAccess.Open} control={<Radio />} label="共有读写" />
+                    <FormControlLabel
+                      inputRef={ref}
+                      value={BucketAccess.ReadOpen}
+                      control={<Radio />}
+                      label="共有读私有写"
+                    />
                   </RadioGroup>
                 </FormControl>
               )}

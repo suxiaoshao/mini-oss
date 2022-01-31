@@ -16,7 +16,7 @@ import {
   RadioGroup,
 } from '@mui/material';
 import { object, string } from 'common';
-import { Access, CreateBucketMutationVariables, useCreateBucketMutation } from 'graphql';
+import { BucketAccess, CreateBucketMutationVariables, useCreateBucketMutation } from 'graphql';
 import { useState } from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 
@@ -24,14 +24,14 @@ export type CreateBucketForm = Omit<CreateBucketMutationVariables['data'], 'auth
 
 export interface CreateBucketFabProps {
   /** 表格重新刷新 */
-  refetch: () => void;
+  reFetch: () => void;
 }
 
 const createBucketSchema = object({
   name: string().name(),
 });
 
-export default function CreateBucketButton({ refetch }: CreateBucketFabProps): JSX.Element {
+export default function CreateBucketButton({ reFetch }: CreateBucketFabProps): JSX.Element {
   const [open, setOpen] = useState(false);
   const handleClose = () => {
     setOpen(false);
@@ -43,14 +43,14 @@ export default function CreateBucketButton({ refetch }: CreateBucketFabProps): J
     control,
     formState: { errors },
   } = useForm<CreateBucketForm>({
-    defaultValues: { access: Access.Private },
+    defaultValues: { access: BucketAccess.Private },
     resolver: yupResolver(createBucketSchema),
   });
   const auth = useAppSelector((state) => state.auth.value) ?? '';
   const username = useAppSelector((state) => state.userInfo.name);
   const onSubmit: SubmitHandler<CreateBucketForm> = async (formData) => {
     await createBucket({ variables: { data: { auth, ...formData } } });
-    refetch();
+    reFetch();
     handleClose();
   };
 
@@ -82,9 +82,19 @@ export default function CreateBucketButton({ refetch }: CreateBucketFabProps): J
                 <FormControl sx={{ marginTop: (theme) => theme.spacing(1) }}>
                   <FormLabel>访问权限</FormLabel>
                   <RadioGroup name={name} value={value} onBlur={onBlur} onChange={onChange} row>
-                    <FormControlLabel inputRef={ref} value={Access.Private} control={<Radio />} label="私有读写" />
-                    <FormControlLabel inputRef={ref} value={Access.Open} control={<Radio />} label="共有读写" />
-                    <FormControlLabel inputRef={ref} value={Access.ReadOpen} control={<Radio />} label="共有读私有写" />
+                    <FormControlLabel
+                      inputRef={ref}
+                      value={BucketAccess.Private}
+                      control={<Radio />}
+                      label="私有读写"
+                    />
+                    <FormControlLabel inputRef={ref} value={BucketAccess.Open} control={<Radio />} label="共有读写" />
+                    <FormControlLabel
+                      inputRef={ref}
+                      value={BucketAccess.ReadOpen}
+                      control={<Radio />}
+                      label="共有读私有写"
+                    />
                   </RadioGroup>
                 </FormControl>
               )}

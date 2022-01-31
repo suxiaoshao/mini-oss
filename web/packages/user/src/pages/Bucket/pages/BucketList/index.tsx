@@ -69,7 +69,7 @@ export default function BucketList(): JSX.Element {
       }}
     >
       <Box sx={{ flex: '0 0 auto', marginBottom: (theme) => theme.spacing(2), display: 'flex' }}>
-        <CreateBucketButton refetch={refetch} />
+        <CreateBucketButton reFetch={refetch} />
         <IconButton sx={{ marginLeft: 'auto' }} onClick={() => refetch()}>
           <Refresh />
         </IconButton>
