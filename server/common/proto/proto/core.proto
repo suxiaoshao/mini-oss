@@ -15,6 +15,15 @@ service Bucket {
   rpc UpdateBucket (UpdateBucketRequest) returns (BucketInfo) {}
   // 获取用户 bucket 列表
   rpc GetBucketList(user.GetListRequest) returns (GetBucketListReply){}
+  // 获取某个 bucket 信息
+  rpc GetBucket(GetBucketRequest) returns(BucketInfo){}
+}
+
+message GetBucketRequest{
+  // 身份验证
+  string auth = 1;
+  // bucket 名
+  string bucket_name = 2;
 }
 
 message GetBucketListReply{
@@ -90,15 +99,26 @@ service Folder {
   rpc GetFolderList(GetFolderListRequest) returns (GetFolderListReply){}
   // 获取 path 总数
   rpc GetFolderCount(GetFolderCountRequest) returns (CountReply){}
+  // 获取 path 信息
+  rpc GetFolder(GetFolderRequest) returns (FolderInfo){}
+}
+
+message GetFolderRequest{
+  // 身份验证
+  string auth = 1;
+  // bucket 名
+  string bucket_name = 2;
+  // 路径
+  string path = 3;
 }
 
 message GetFolderCountRequest{
   // 身份验证
-  string auth = 3;
+  string auth = 1;
   // 路径
-  string path = 4;
+  string path = 2;
   // bucket 名
-  string bucket_name = 5;
+  string bucket_name = 3;
 }
 
 message CountReply{
@@ -196,6 +216,19 @@ service Object {
   rpc GetObjectList(GetFolderListRequest) returns (GetObjectListReply){}
   // 获取 object 总数
   rpc GetObjectCount(GetFolderCountRequest) returns (CountReply){}
+  // 获取 object 信息
+  rpc GetObject(GetObjectRequest) returns (ObjectInfo){}
+}
+
+message GetObjectRequest{
+  // 身份验证
+  string auth = 1;
+  // bucket 名
+  string bucket_name = 2;
+  // 路径
+  string path = 3;
+  // 文件名
+  string filename = 4;
 }
 
 message GetObjectListReply{

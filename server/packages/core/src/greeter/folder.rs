@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use proto::core::{CountReply, GetFolderCountRequest};
+use proto::core::{CountReply, GetFolderCountRequest, GetFolderRequest};
 use proto::{
     async_trait,
     auth::Empty,
@@ -15,7 +15,7 @@ use utils::database::{folder::FolderModal, Pool, Postgres};
 use utils::mongo::Mongo;
 use utils::{database::object::ObjectModal, errors::grpc::ToStatusResult};
 
-use crate::utils::check::check_path;
+use crate::utils::check::check_folder;
 
 #[derive(Clone)]
 pub struct FolderGreeter {
@@ -46,7 +46,7 @@ impl Folder for FolderGreeter {
             ..
         } = request.into_inner();
         // 判断父文件夹是否存在
-        check_path(&auth, &bucket_name, &father_path, pool).await?;
+        check_folder(&auth, &bucket_name, &father_path, pool).await?;
         let path = format!("{father_path}/{path}");
         // 判断该文件夹是否存在
         if FolderModal::exist(&path, &bucket_name, &self.pool)
@@ -69,7 +69,7 @@ impl Folder for FolderGreeter {
             auth,
         } = request.into_inner();
         // 判断文件夹
-        check_path(&auth, &bucket_name, &path, pool).await?;
+        check_folder(&auth, &bucket_name, &path, pool).await?;
         // 获取所有文件夹下的文件夹
         let delete_names = FolderModal::recursive_names_by_path(&path, &bucket_name, pool).await?;
         let delete_objects = ObjectModal::find_by_paths(&bucket_name, &delete_names, pool).await?;
@@ -112,7 +112,7 @@ impl Folder for FolderGreeter {
             ..
         } = request.into_inner();
         // 判断文件夹
-        check_path(&auth, &bucket_name, &path, pool).await?;
+        check_folder(&auth, &bucket_name, &path, pool).await?;
         let updated = FolderModal::update(&path, access, &bucket_name, pool).await?;
         Ok(Response::new(updated.into()))
     }
@@ -133,7 +133,7 @@ impl Folder for FolderGreeter {
         let limit = if limit > &50 { &50 } else { limit };
         let offset = &offset;
         // 判断文件夹
-        check_path(&auth, &bucket_name, &path, pool).await?;
+        check_folder(&auth, &bucket_name, &path, pool).await?;
         let (count, data) = futures::future::try_join(
             FolderModal::count_by_father_path(&bucket_name, &path, pool),
             FolderModal::find_many_by_father_path(*limit, *offset, &path, &bucket_name, pool),
@@ -156,8 +156,23 @@ impl Folder for FolderGreeter {
             auth,
         } = request.into_inner();
         // 判断文件夹
-        check_path(&auth, &bucket_name, &path, pool).await?;
+        check_folder(&auth, &bucket_name, &path, pool).await?;
         let count = FolderModal::count_by_father_path(&bucket_name, &path, pool).await?;
         Ok(Response::new(CountReply { total: count }))
+    }
+
+    async fn get_folder(
+        &self,
+        request: Request<GetFolderRequest>,
+    ) -> Result<Response<FolderInfo>, Status> {
+        let pool = &self.pool;
+        let GetFolderRequest {
+            auth,
+            bucket_name,
+            path,
+        } = request.into_inner();
+        check_folder(&auth, &bucket_name, &path, pool).await?;
+        let folder = FolderModal::find_one(&path, &bucket_name, pool).await?;
+        Ok(Response::new(folder.into()))
     }
 }

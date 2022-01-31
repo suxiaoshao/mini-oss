@@ -24,7 +24,7 @@ pub async fn check_bucket(
     }
     Ok(())
 }
-pub async fn check_path(
+pub async fn check_folder(
     auth: &str,
     bucket_name: &str,
     path: &str,
@@ -46,7 +46,7 @@ pub async fn check_object(
     pool: &Pool<Postgres>,
 ) -> Result<(), Status> {
     // 判断 目录
-    check_path(auth, bucket_name, path, pool).await?;
+    check_folder(auth, bucket_name, path, pool).await?;
     // 判断父文件夹是否存在
     ObjectModal::exist(path, bucket_name, filename, pool)
         .await

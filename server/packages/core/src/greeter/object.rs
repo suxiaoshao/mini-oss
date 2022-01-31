@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use proto::core::{CountReply, GetFolderCountRequest, GetObjectRequest};
 use proto::{
     async_trait,
     auth::Empty,
@@ -10,7 +11,6 @@ use proto::{
     validation::Validate,
     Request, Response, Status,
 };
-use proto::core::{CountReply, GetFolderCountRequest};
 use utils::{
     database::{
         object::{ObjectCreateInput, ObjectModal},
@@ -22,7 +22,7 @@ use utils::{
 };
 
 use crate::utils::{
-    check::{check_object, check_path},
+    check::{check_folder, check_object},
     headers::headers_from,
 };
 
@@ -56,7 +56,7 @@ impl Object for ObjectGreeter {
             ..
         } = request.into_inner();
         // 验证文件夹
-        check_path(&auth, &bucket_name, &path, pool).await?;
+        check_folder(&auth, &bucket_name, &path, pool).await?;
         // 判断该文件是否存在
         if ObjectModal::exist(&path, &bucket_name, &filename, &self.pool)
             .await
@@ -161,7 +161,7 @@ impl Object for ObjectGreeter {
         let limit = if limit > &50 { &50 } else { limit };
         let offset = &offset;
         // 判断文件夹
-        check_path(&auth, &bucket_name, &path, pool).await?;
+        check_folder(&auth, &bucket_name, &path, pool).await?;
         let (count, list) = futures::future::try_join(
             ObjectModal::count_by_father_path(&bucket_name, &path, pool),
             ObjectModal::find_many_by_path(*limit, *offset, &path, &bucket_name, pool),
@@ -174,7 +174,10 @@ impl Object for ObjectGreeter {
         Ok(Response::new(GetObjectListReply { data, total: count }))
     }
 
-    async fn get_object_count(&self, request: Request<GetFolderCountRequest>) -> Result<Response<CountReply>, Status> {
+    async fn get_object_count(
+        &self,
+        request: Request<GetFolderCountRequest>,
+    ) -> Result<Response<CountReply>, Status> {
         let pool = &self.pool;
         let GetFolderCountRequest {
             path,
@@ -182,8 +185,24 @@ impl Object for ObjectGreeter {
             auth,
         } = request.into_inner();
         // 判断文件夹
-        check_path(&auth, &bucket_name, &path, pool).await?;
+        check_folder(&auth, &bucket_name, &path, pool).await?;
         let count = ObjectModal::count_by_father_path(&bucket_name, &path, pool).await?;
         Ok(Response::new(CountReply { total: count }))
+    }
+
+    async fn get_object(
+        &self,
+        request: Request<GetObjectRequest>,
+    ) -> Result<Response<ObjectInfo>, Status> {
+        let pool = &self.pool;
+        let GetObjectRequest {
+            auth,
+            bucket_name,
+            path,
+            filename,
+        } = request.into_inner();
+        check_folder(&auth, &bucket_name, &path, pool).await?;
+        let object = ObjectModal::find_one(&path, &bucket_name, &filename, pool).await?;
+        Ok(Response::new(object.try_into()?))
     }
 }

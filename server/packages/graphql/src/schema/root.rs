@@ -6,8 +6,8 @@ use crate::schema::folder::folder_list::FolderList;
 use ::utils::errors::graphql::ToFieldResult;
 use proto::core::object_client::ObjectClient;
 use proto::core::{
-    CountReply, DeleteObjectRequest, GetFolderCountRequest, GetFolderListReply,
-    GetFolderListRequest,
+    CountReply, DeleteObjectRequest, GetBucketRequest, GetFolderCountRequest, GetFolderListReply,
+    GetFolderListRequest, GetFolderRequest, GetObjectRequest,
 };
 use proto::{
     auth::{login_client::LoginClient, LoginReply, LoginRequest},
@@ -200,6 +200,27 @@ impl QueryRoot {
                 .collect();
             Ok(FolderList { data, total })
         }
+    }
+    /// 获取存储桶信息
+    async fn bucket_info(&self, data: GetBucketRequest) -> FieldResult<BucketInfo> {
+        let mut client = BucketClient::connect("http://core:80").await.to_field()?;
+        let request = Request::new(data);
+        let res = client.get_bucket(request).await.to_field()?.into_inner();
+        Ok(res.into())
+    }
+    /// 获取文件夹信息
+    async fn folder_info(&self, data: GetFolderRequest) -> FieldResult<FolderInfo> {
+        let mut client = FolderClient::connect("http://core:80").await.to_field()?;
+        let request = Request::new(data);
+        let res = client.get_folder(request).await.to_field()?.into_inner();
+        Ok(res.into())
+    }
+    /// 获取对象信息
+    async fn object_info(&self, data: GetObjectRequest) -> FieldResult<ObjectInfo> {
+        let mut client = ObjectClient::connect("http://core:80").await.to_field()?;
+        let request = Request::new(data);
+        let res = client.get_object(request).await.to_field()?.into_inner();
+        Ok(res.into())
     }
 }
 pub struct MutationRoot;

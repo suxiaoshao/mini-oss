@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use proto::core::GetBucketRequest;
 use proto::{
     async_trait,
     auth::Empty,
@@ -57,19 +58,6 @@ impl Bucket for BucketGreeter {
         FolderModal::create("/", ObjectAccess::Bucket, &bucket.name, "", &self.pool).await?;
         Ok(Response::new(bucket.into()))
     }
-    async fn update_bucket(
-        &self,
-        request: Request<UpdateBucketRequest>,
-    ) -> Result<Response<BucketInfo>, Status> {
-        let pool = &self.pool;
-        let access = request.get_ref().access();
-        let UpdateBucketRequest { name, auth, .. } = request.into_inner();
-        // 判断该存储桶是否存在和权限
-        check_bucket(&auth, &name, pool).await?;
-        let access: bucket::BucketAccess = bucket::BucketAccess::from(access);
-        let updated = BucketModal::update(&name, &access, &self.pool).await?;
-        Ok(Response::new(updated.into()))
-    }
     async fn delete_bucket(
         &self,
         request: Request<DeleteBucketRequest>,
@@ -115,6 +103,19 @@ impl Bucket for BucketGreeter {
         futures::try_join!(mongo_delete, sql_delete, folder_delete, object_delete)?;
         Ok(Response::new(Empty {}))
     }
+    async fn update_bucket(
+        &self,
+        request: Request<UpdateBucketRequest>,
+    ) -> Result<Response<BucketInfo>, Status> {
+        let pool = &self.pool;
+        let access = request.get_ref().access();
+        let UpdateBucketRequest { name, auth, .. } = request.into_inner();
+        // 判断该存储桶是否存在和权限
+        check_bucket(&auth, &name, pool).await?;
+        let access: bucket::BucketAccess = bucket::BucketAccess::from(access);
+        let updated = BucketModal::update(&name, &access, &self.pool).await?;
+        Ok(Response::new(updated.into()))
+    }
     async fn get_bucket_list(
         &self,
         request: Request<GetListRequest>,
@@ -137,5 +138,17 @@ impl Bucket for BucketGreeter {
             data: data?.into_iter().map(|x| x.into()).collect(),
             total: count?,
         }))
+    }
+
+    async fn get_bucket(
+        &self,
+        request: Request<GetBucketRequest>,
+    ) -> Result<Response<BucketInfo>, Status> {
+        let pool = &self.pool;
+        let GetBucketRequest { auth, bucket_name } = request.into_inner();
+        // 判断权限
+        check_bucket(&auth, &bucket_name, pool).await?;
+        let bucket = BucketModal::find_one(&bucket_name, pool).await?;
+        Ok(Response::new(bucket.into()))
     }
 }
