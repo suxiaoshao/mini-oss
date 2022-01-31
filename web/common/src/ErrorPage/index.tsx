@@ -5,6 +5,7 @@ import imgSrc from './monkey.png';
 export interface ErrorPageProps {
   to: To;
 }
+
 export function ErrorPage({ to }: ErrorPageProps): JSX.Element {
   return (
     <Box
@@ -17,7 +18,7 @@ export function ErrorPage({ to }: ErrorPageProps): JSX.Element {
         justifyContent: 'center',
       }}
     >
-      <img src={imgSrc} />
+      <img src={imgSrc} alt="错误" />
       <Typography sx={{ marginTop: (theme) => theme.spacing(2) }} variant="subtitle1">
         进入了错误页面
         <Link sx={{ marginX: '0.2em' }} to={to} component={RouterLink}>

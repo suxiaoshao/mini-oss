@@ -139,6 +139,27 @@ export type FolderInfo = {
   updateTime: Scalars['Int'];
 };
 
+export type FolderItem = FolderInfo | ObjectInfo;
+
+export type FolderList = {
+  __typename?: 'FolderList';
+  data: Array<FolderItem>;
+  total: Scalars['Int'];
+};
+
+export type GetFolderListRequest = {
+  /** 身份验证 */
+  auth: Scalars['String'];
+  /** bucket 名 */
+  bucketName: Scalars['String'];
+  /** 获取多少数据 */
+  limit: Scalars['Int'];
+  /** 偏移量 */
+  offset: Scalars['Int'];
+  /** 路径 */
+  path: Scalars['String'];
+};
+
 export type GetListRequest = {
   /** 身份验证 */
   auth: Scalars['String'];
@@ -302,6 +323,8 @@ export type QueryRoot = {
   __typename?: 'QueryRoot';
   /** 用户存储桶列表 */
   bucketList: BucketList;
+  /** 文件夹列表 */
+  folderList: FolderList;
   /** 管理员登陆 */
   managerLogin: Scalars['String'];
   /** 获取自身用户信息 */
@@ -316,6 +339,10 @@ export type QueryRoot = {
 
 export type QueryRootBucketListArgs = {
   data: GetListRequest;
+};
+
+export type QueryRootFolderListArgs = {
+  data: GetFolderListRequest;
 };
 
 export type QueryRootManagerLoginArgs = {
@@ -483,6 +510,39 @@ export type DeleteFolderMutationVariables = Exact<{
 }>;
 
 export type DeleteFolderMutation = { __typename?: 'MutationRoot'; deleteFolder: boolean };
+
+export type FolderListQueryVariables = Exact<{
+  data: GetFolderListRequest;
+}>;
+
+export type FolderListQuery = {
+  __typename?: 'QueryRoot';
+  folderList: {
+    __typename?: 'FolderList';
+    total: number;
+    data: Array<
+      | {
+          __typename?: 'FolderInfo';
+          path: string;
+          createTime: number;
+          updateTime: number;
+          bucketName: string;
+          access: ObjectAccess;
+          fatherPath: string;
+        }
+      | {
+          __typename?: 'ObjectInfo';
+          path: string;
+          filename: string;
+          bucketName: string;
+          access: ObjectAccess;
+          createTime: number;
+          updateTime: number;
+          size: number;
+        }
+    >;
+  };
+};
 
 export type UserLoginQueryVariables = Exact<{
   data: LoginRequest;
@@ -873,6 +933,62 @@ export type DeleteFolderMutationOptions = Apollo.BaseMutationOptions<
   DeleteFolderMutation,
   DeleteFolderMutationVariables
 >;
+export const FolderListDocument = gql`
+  query folderList($data: GetFolderListRequest!) {
+    folderList(data: $data) {
+      total
+      data {
+        ... on FolderInfo {
+          path
+          createTime
+          updateTime
+          bucketName
+          access
+          fatherPath
+        }
+        ... on ObjectInfo {
+          path
+          filename
+          bucketName
+          access
+          createTime
+          updateTime
+          size
+        }
+      }
+    }
+  }
+`;
+
+/**
+ * __useFolderListQuery__
+ *
+ * To run a query within a React component, call `useFolderListQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFolderListQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFolderListQuery({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useFolderListQuery(baseOptions: Apollo.QueryHookOptions<FolderListQuery, FolderListQueryVariables>) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<FolderListQuery, FolderListQueryVariables>(FolderListDocument, options);
+}
+export function useFolderListLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<FolderListQuery, FolderListQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<FolderListQuery, FolderListQueryVariables>(FolderListDocument, options);
+}
+export type FolderListQueryHookResult = ReturnType<typeof useFolderListQuery>;
+export type FolderListLazyQueryHookResult = ReturnType<typeof useFolderListLazyQuery>;
+export type FolderListQueryResult = Apollo.QueryResult<FolderListQuery, FolderListQueryVariables>;
 export const UserLoginDocument = gql`
   query userLogin($data: LoginRequest!) {
     userLogin(data: $data)

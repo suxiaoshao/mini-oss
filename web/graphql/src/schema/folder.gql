@@ -11,3 +11,27 @@ mutation updateFolder($data: UpdateFolderRequest!) {
 mutation deleteFolder($data: DeleteFolderRequest!) {
   deleteFolder(data: $data)
 }
+query folderList($data: GetFolderListRequest!) {
+  folderList(data: $data) {
+    total
+    data {
+      ... on FolderInfo {
+        path
+        createTime
+        updateTime
+        bucketName
+        access
+        fatherPath
+      }
+      ... on ObjectInfo {
+        path
+        filename
+        bucketName
+        access
+        createTime
+        updateTime
+        size
+      }
+    }
+  }
+}

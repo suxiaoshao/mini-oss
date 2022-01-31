@@ -3,7 +3,7 @@ import BucketList from '@/pages/Bucket/pages/BucketList';
 import { ErrorPage } from 'common';
 import { useEffect } from 'react';
 import { createSearchParams, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import Home from '../pages/Home';
 import Login from '../pages/Login';
 import Setting from '../pages/Setting';
@@ -18,7 +18,9 @@ export default function AppRouter(): JSX.Element {
   useEffect(() => {
     if (auth === null) {
       const url = pathname + search + hash;
-      navigate({ pathname: '/login', search: createSearchParams({ from: url }).toString() });
+      if (pathname !== '/login') {
+        navigate({ pathname: '/login', search: createSearchParams({ from: url }).toString() });
+      }
     } else {
       dispatch(updateUserInfo(auth));
     }

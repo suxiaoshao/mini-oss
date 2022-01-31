@@ -1,6 +1,6 @@
 import { useAppSelector } from '@/app/hooks';
 import { Refresh } from '@mui/icons-material';
-import { Box, IconButton } from '@mui/material';
+import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material';
 import { CustomColumnArray, CustomTable, format, useCustomTable, usePage, TableActions } from 'common';
 import { BucketListQuery, useBucketListQuery, useDeleteBucketMutation } from 'graphql';
 import { useMemo } from 'react';
@@ -46,7 +46,7 @@ export default function BucketList(): JSX.Element {
                 onClick: async () => {
                   await deleteBucket({ variables: { data: { auth: auth ?? '', name } } });
                   onClose();
-                  refetch();
+                  await refetch();
                 },
               },
               <UpdateBucketAction key={2} refetch={refetch} menuClose={onClose} name={name} access={access} />,
@@ -59,22 +59,30 @@ export default function BucketList(): JSX.Element {
   );
   const tableInstance = useCustomTable({ columns, data: data?.bucketList.data ?? [] });
   return (
-    <Box
-      sx={{
-        width: '100',
-        height: '100%',
-        padding: (theme) => theme.spacing(2),
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
-      <Box sx={{ flex: '0 0 auto', marginBottom: (theme) => theme.spacing(2), display: 'flex' }}>
-        <CreateBucketButton reFetch={refetch} />
-        <IconButton sx={{ marginLeft: 'auto' }} onClick={() => refetch()}>
-          <Refresh />
-        </IconButton>
+    <Box sx={{ display: 'flex', width: '100%', height: '100%', flexDirection: 'column' }}>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}>
+            存储桶列表
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Box
+        sx={{
+          padding: (theme) => theme.spacing(2),
+          display: 'flex',
+          flexDirection: 'column',
+          flex: '0 0 1',
+        }}
+      >
+        <Box sx={{ flex: '0 0 auto', marginBottom: (theme) => theme.spacing(2), display: 'flex' }}>
+          <CreateBucketButton reFetch={refetch} />
+          <IconButton sx={{ marginLeft: 'auto' }} onClick={() => refetch()}>
+            <Refresh />
+          </IconButton>
+        </Box>
+        <CustomTable tableInstance={tableInstance} />
       </Box>
-      <CustomTable tableInstance={tableInstance} />
     </Box>
   );
 }
