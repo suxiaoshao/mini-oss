@@ -1,4 +1,4 @@
-schema: http://api.mini-oss.top:30002
+schema: http://api.mini-oss.top:80
 documents:
   - "./src/**/*.graphql"
   - "./src/**/*.gql"

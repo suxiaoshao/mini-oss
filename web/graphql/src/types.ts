@@ -5,7 +5,7 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-const defaultOptions = {};
+const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -13,10 +13,11 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  Upload: any;
 };
 
 /** 访问权限类型 */
-export enum Access {
+export enum BucketAccess {
   /** 开放 */
   Open = 'OPEN',
   /** 不开放 */
@@ -28,7 +29,7 @@ export enum Access {
 export type BucketInfo = {
   __typename?: 'BucketInfo';
   /** 访问权限 */
-  access: Access;
+  access: BucketAccess;
   /** 创建时间 */
   createTime: Scalars['Int'];
   /** 名字 */
@@ -36,7 +37,7 @@ export type BucketInfo = {
   /** 更新时间 */
   updateTime: Scalars['Int'];
   /** 用户名 */
-  userName: Scalars['String'];
+  username: Scalars['String'];
 };
 
 export type BucketList = {
@@ -48,9 +49,33 @@ export type BucketList = {
 };
 
 export type CreateBucketRequest = {
-  access: Access;
+  access: BucketAccess;
   auth: Scalars['String'];
   name: Scalars['String'];
+};
+
+export type CreateFolderRequest = {
+  /** 访问控制 */
+  access: ObjectAccess;
+  /** 用户凭证 */
+  auth: Scalars['String'];
+  /** bucket 名 */
+  bucketName: Scalars['String'];
+  /** 路径 */
+  fatherPath: Scalars['String'];
+  /** 路径 */
+  path: Scalars['String'];
+};
+
+export type CreateObjectRequest = {
+  /** 访问控制 */
+  access: ObjectAccess;
+  /** 访问控制 */
+  auth: Scalars['String'];
+  /** bucket 名 */
+  bucketName: Scalars['String'];
+  /** 路径 */
+  path: Scalars['String'];
 };
 
 export type CreateUserRequest = {
@@ -71,11 +96,47 @@ export type DeleteBucketRequest = {
   name: Scalars['String'];
 };
 
+export type DeleteFolderRequest = {
+  /** 用户凭证 */
+  auth: Scalars['String'];
+  /** bucket 名 */
+  bucketName: Scalars['String'];
+  /** 名字 */
+  path: Scalars['String'];
+};
+
+export type DeleteObjectRequest = {
+  /** 访问控制 */
+  auth: Scalars['String'];
+  /** bucket 名 */
+  bucketName: Scalars['String'];
+  /** 文件名 */
+  filename: Scalars['String'];
+  /** 路径 */
+  path: Scalars['String'];
+};
+
 export type DeleteUserRequest = {
   /** 身份验证 */
   auth: Scalars['String'];
   /** 账号 */
   name: Scalars['String'];
+};
+
+export type FolderInfo = {
+  __typename?: 'FolderInfo';
+  /** 访问控制 */
+  access: ObjectAccess;
+  /** bucket 名 */
+  bucketName: Scalars['String'];
+  /** 创建时间 */
+  createTime: Scalars['Int'];
+  /** 路径 */
+  fatherPath: Scalars['String'];
+  /** 路径 */
+  path: Scalars['String'];
+  /** 创建时间 */
+  updateTime: Scalars['Int'];
 };
 
 export type GetListRequest = {
@@ -99,6 +160,17 @@ export type GetUserRequest = {
   name: Scalars['String'];
 };
 
+export type Header = {
+  __typename?: 'Header';
+  key: Scalars['String'];
+  value: Scalars['String'];
+};
+
+export type HeaderType = {
+  key: Scalars['String'];
+  value: Scalars['String'];
+};
+
 export type LoginRequest = {
   /** 账号 */
   name: Scalars['String'];
@@ -110,8 +182,16 @@ export type MutationRoot = {
   __typename?: 'MutationRoot';
   /** 创建存储桶 */
   createBucket: BucketInfo;
+  /** 创建目录 */
+  createFolder: FolderInfo;
+  /** 创建对象 */
+  createObject: ObjectInfo;
   /** 删除存储桶 */
   deleteBucket: Scalars['Boolean'];
+  /** 删除目录 */
+  deleteFolder: Scalars['Boolean'];
+  /** 删除对象 */
+  deleteObject: Scalars['Boolean'];
   /** 用户创建 */
   manageUserCreate: UserInfo;
   /** 用户删除 */
@@ -120,8 +200,12 @@ export type MutationRoot = {
   manageUserUpdate: UserInfo;
   /** 更新存储桶 */
   updateBucket: BucketInfo;
+  /** 更新目录 */
+  updateFolder: FolderInfo;
   /** 用户更新信息 */
   updateInfo: UserInfo;
+  /** 更新对象 */
+  updateObject: ObjectInfo;
   /** 用户更新密码 */
   updatePassword: Scalars['String'];
 };
@@ -130,8 +214,25 @@ export type MutationRootCreateBucketArgs = {
   data: CreateBucketRequest;
 };
 
+export type MutationRootCreateFolderArgs = {
+  data: CreateFolderRequest;
+};
+
+export type MutationRootCreateObjectArgs = {
+  data: CreateObjectRequest;
+  file: Scalars['Upload'];
+};
+
 export type MutationRootDeleteBucketArgs = {
   data: DeleteBucketRequest;
+};
+
+export type MutationRootDeleteFolderArgs = {
+  data: DeleteFolderRequest;
+};
+
+export type MutationRootDeleteObjectArgs = {
+  data: DeleteObjectRequest;
 };
 
 export type MutationRootManageUserCreateArgs = {
@@ -150,12 +251,51 @@ export type MutationRootUpdateBucketArgs = {
   data: UpdateBucketRequest;
 };
 
+export type MutationRootUpdateFolderArgs = {
+  data: UpdateFolderRequest;
+};
+
 export type MutationRootUpdateInfoArgs = {
   data: UpdateUserInfoRequest;
 };
 
+export type MutationRootUpdateObjectArgs = {
+  data: UpdateObjectRequest;
+};
+
 export type MutationRootUpdatePasswordArgs = {
   data: UpdatePasswordRequest;
+};
+
+export enum ObjectAccess {
+  /** 开放 */
+  BucketObject = 'BUCKET_OBJECT',
+  /** 不开放 */
+  PrivateObject = 'PRIVATE_OBJECT',
+  /** 读开放 */
+  ReadOpenObject = 'READ_OPEN_OBJECT',
+}
+
+export type ObjectInfo = {
+  __typename?: 'ObjectInfo';
+  /** 访问控制 */
+  access: ObjectAccess;
+  /** 摘要 */
+  blake3: Scalars['String'];
+  /** bucket 名 */
+  bucketName: Scalars['String'];
+  /** 创建时间 */
+  createTime: Scalars['Int'];
+  /** 文件名 */
+  filename: Scalars['String'];
+  /** 自定义 header */
+  headers: Array<Header>;
+  /** 路径 */
+  path: Scalars['String'];
+  /** 大小 */
+  size: Scalars['Int'];
+  /** 创建时间 */
+  updateTime: Scalars['Int'];
 };
 
 export type QueryRoot = {
@@ -199,9 +339,37 @@ export type QueryRootUserLoginArgs = {
 };
 
 export type UpdateBucketRequest = {
-  access: Access;
+  access: BucketAccess;
   auth: Scalars['String'];
   name: Scalars['String'];
+};
+
+export type UpdateFolderRequest = {
+  /** 访问控制 */
+  access: ObjectAccess;
+  /** 用户凭证 */
+  auth: Scalars['String'];
+  /** bucket 名 */
+  bucketName: Scalars['String'];
+  /** 路径 */
+  path: Scalars['String'];
+};
+
+export type UpdateObjectRequest = {
+  /** 访问控制 */
+  access: ObjectAccess;
+  /** 访问控制 */
+  auth: Scalars['String'];
+  /** bucket 名 */
+  bucketName: Scalars['String'];
+  /** 旧文件名 */
+  filename: Scalars['String'];
+  /** 自定义 header */
+  headers: Array<HeaderType>;
+  /** 新文件名 */
+  newFilename: Scalars['String'];
+  /** 路径 */
+  path: Scalars['String'];
 };
 
 export type UpdatePasswordRequest = {
@@ -258,7 +426,13 @@ export type BucketListQuery = {
   bucketList: {
     __typename?: 'BucketList';
     total: number;
-    data: Array<{ __typename?: 'BucketInfo'; name: string; createTime: number; updateTime: number; access: Access }>;
+    data: Array<{
+      __typename?: 'BucketInfo';
+      name: string;
+      createTime: number;
+      updateTime: number;
+      access: BucketAccess;
+    }>;
   };
 };
 
@@ -285,6 +459,30 @@ export type DeleteBucketMutationVariables = Exact<{
 }>;
 
 export type DeleteBucketMutation = { __typename?: 'MutationRoot'; deleteBucket: boolean };
+
+export type CreateFolderMutationVariables = Exact<{
+  data: CreateFolderRequest;
+}>;
+
+export type CreateFolderMutation = {
+  __typename?: 'MutationRoot';
+  createFolder: { __typename?: 'FolderInfo'; path: string };
+};
+
+export type UpdateFolderMutationVariables = Exact<{
+  data: UpdateFolderRequest;
+}>;
+
+export type UpdateFolderMutation = {
+  __typename?: 'MutationRoot';
+  updateFolder: { __typename?: 'FolderInfo'; path: string };
+};
+
+export type DeleteFolderMutationVariables = Exact<{
+  data: DeleteFolderRequest;
+}>;
+
+export type DeleteFolderMutation = { __typename?: 'MutationRoot'; deleteFolder: boolean };
 
 export type UserLoginQueryVariables = Exact<{
   data: LoginRequest;
@@ -355,6 +553,31 @@ export type UserDeleteMutationVariables = Exact<{
 }>;
 
 export type UserDeleteMutation = { __typename?: 'MutationRoot'; manageUserDelete: boolean };
+
+export type CreateObjectMutationVariables = Exact<{
+  data: CreateObjectRequest;
+  file: Scalars['Upload'];
+}>;
+
+export type CreateObjectMutation = {
+  __typename?: 'MutationRoot';
+  createObject: { __typename?: 'ObjectInfo'; path: string };
+};
+
+export type UpdateObjectMutationVariables = Exact<{
+  data: UpdateObjectRequest;
+}>;
+
+export type UpdateObjectMutation = {
+  __typename?: 'MutationRoot';
+  updateObject: { __typename?: 'ObjectInfo'; path: string };
+};
+
+export type DeleteObjectMutationVariables = Exact<{
+  data: DeleteObjectRequest;
+}>;
+
+export type DeleteObjectMutation = { __typename?: 'MutationRoot'; deleteObject: boolean };
 
 export type SelfUserInfoQueryVariables = Exact<{
   data: GetUserInfoRequest;
@@ -537,6 +760,118 @@ export type DeleteBucketMutationResult = Apollo.MutationResult<DeleteBucketMutat
 export type DeleteBucketMutationOptions = Apollo.BaseMutationOptions<
   DeleteBucketMutation,
   DeleteBucketMutationVariables
+>;
+export const CreateFolderDocument = gql`
+  mutation createFolder($data: CreateFolderRequest!) {
+    createFolder(data: $data) {
+      path
+    }
+  }
+`;
+export type CreateFolderMutationFn = Apollo.MutationFunction<CreateFolderMutation, CreateFolderMutationVariables>;
+
+/**
+ * __useCreateFolderMutation__
+ *
+ * To run a mutation, you first call `useCreateFolderMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateFolderMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createFolderMutation, { data, loading, error }] = useCreateFolderMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useCreateFolderMutation(
+  baseOptions?: Apollo.MutationHookOptions<CreateFolderMutation, CreateFolderMutationVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<CreateFolderMutation, CreateFolderMutationVariables>(CreateFolderDocument, options);
+}
+export type CreateFolderMutationHookResult = ReturnType<typeof useCreateFolderMutation>;
+export type CreateFolderMutationResult = Apollo.MutationResult<CreateFolderMutation>;
+export type CreateFolderMutationOptions = Apollo.BaseMutationOptions<
+  CreateFolderMutation,
+  CreateFolderMutationVariables
+>;
+export const UpdateFolderDocument = gql`
+  mutation updateFolder($data: UpdateFolderRequest!) {
+    updateFolder(data: $data) {
+      path
+    }
+  }
+`;
+export type UpdateFolderMutationFn = Apollo.MutationFunction<UpdateFolderMutation, UpdateFolderMutationVariables>;
+
+/**
+ * __useUpdateFolderMutation__
+ *
+ * To run a mutation, you first call `useUpdateFolderMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateFolderMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateFolderMutation, { data, loading, error }] = useUpdateFolderMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useUpdateFolderMutation(
+  baseOptions?: Apollo.MutationHookOptions<UpdateFolderMutation, UpdateFolderMutationVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<UpdateFolderMutation, UpdateFolderMutationVariables>(UpdateFolderDocument, options);
+}
+export type UpdateFolderMutationHookResult = ReturnType<typeof useUpdateFolderMutation>;
+export type UpdateFolderMutationResult = Apollo.MutationResult<UpdateFolderMutation>;
+export type UpdateFolderMutationOptions = Apollo.BaseMutationOptions<
+  UpdateFolderMutation,
+  UpdateFolderMutationVariables
+>;
+export const DeleteFolderDocument = gql`
+  mutation deleteFolder($data: DeleteFolderRequest!) {
+    deleteFolder(data: $data)
+  }
+`;
+export type DeleteFolderMutationFn = Apollo.MutationFunction<DeleteFolderMutation, DeleteFolderMutationVariables>;
+
+/**
+ * __useDeleteFolderMutation__
+ *
+ * To run a mutation, you first call `useDeleteFolderMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteFolderMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteFolderMutation, { data, loading, error }] = useDeleteFolderMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useDeleteFolderMutation(
+  baseOptions?: Apollo.MutationHookOptions<DeleteFolderMutation, DeleteFolderMutationVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<DeleteFolderMutation, DeleteFolderMutationVariables>(DeleteFolderDocument, options);
+}
+export type DeleteFolderMutationHookResult = ReturnType<typeof useDeleteFolderMutation>;
+export type DeleteFolderMutationResult = Apollo.MutationResult<DeleteFolderMutation>;
+export type DeleteFolderMutationOptions = Apollo.BaseMutationOptions<
+  DeleteFolderMutation,
+  DeleteFolderMutationVariables
 >;
 export const UserLoginDocument = gql`
   query userLogin($data: LoginRequest!) {
@@ -792,6 +1127,119 @@ export function useUserDeleteMutation(
 export type UserDeleteMutationHookResult = ReturnType<typeof useUserDeleteMutation>;
 export type UserDeleteMutationResult = Apollo.MutationResult<UserDeleteMutation>;
 export type UserDeleteMutationOptions = Apollo.BaseMutationOptions<UserDeleteMutation, UserDeleteMutationVariables>;
+export const CreateObjectDocument = gql`
+  mutation createObject($data: CreateObjectRequest!, $file: Upload!) {
+    createObject(data: $data, file: $file) {
+      path
+    }
+  }
+`;
+export type CreateObjectMutationFn = Apollo.MutationFunction<CreateObjectMutation, CreateObjectMutationVariables>;
+
+/**
+ * __useCreateObjectMutation__
+ *
+ * To run a mutation, you first call `useCreateObjectMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateObjectMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createObjectMutation, { data, loading, error }] = useCreateObjectMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *      file: // value for 'file'
+ *   },
+ * });
+ */
+export function useCreateObjectMutation(
+  baseOptions?: Apollo.MutationHookOptions<CreateObjectMutation, CreateObjectMutationVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<CreateObjectMutation, CreateObjectMutationVariables>(CreateObjectDocument, options);
+}
+export type CreateObjectMutationHookResult = ReturnType<typeof useCreateObjectMutation>;
+export type CreateObjectMutationResult = Apollo.MutationResult<CreateObjectMutation>;
+export type CreateObjectMutationOptions = Apollo.BaseMutationOptions<
+  CreateObjectMutation,
+  CreateObjectMutationVariables
+>;
+export const UpdateObjectDocument = gql`
+  mutation updateObject($data: UpdateObjectRequest!) {
+    updateObject(data: $data) {
+      path
+    }
+  }
+`;
+export type UpdateObjectMutationFn = Apollo.MutationFunction<UpdateObjectMutation, UpdateObjectMutationVariables>;
+
+/**
+ * __useUpdateObjectMutation__
+ *
+ * To run a mutation, you first call `useUpdateObjectMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateObjectMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateObjectMutation, { data, loading, error }] = useUpdateObjectMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useUpdateObjectMutation(
+  baseOptions?: Apollo.MutationHookOptions<UpdateObjectMutation, UpdateObjectMutationVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<UpdateObjectMutation, UpdateObjectMutationVariables>(UpdateObjectDocument, options);
+}
+export type UpdateObjectMutationHookResult = ReturnType<typeof useUpdateObjectMutation>;
+export type UpdateObjectMutationResult = Apollo.MutationResult<UpdateObjectMutation>;
+export type UpdateObjectMutationOptions = Apollo.BaseMutationOptions<
+  UpdateObjectMutation,
+  UpdateObjectMutationVariables
+>;
+export const DeleteObjectDocument = gql`
+  mutation deleteObject($data: DeleteObjectRequest!) {
+    deleteObject(data: $data)
+  }
+`;
+export type DeleteObjectMutationFn = Apollo.MutationFunction<DeleteObjectMutation, DeleteObjectMutationVariables>;
+
+/**
+ * __useDeleteObjectMutation__
+ *
+ * To run a mutation, you first call `useDeleteObjectMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteObjectMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteObjectMutation, { data, loading, error }] = useDeleteObjectMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useDeleteObjectMutation(
+  baseOptions?: Apollo.MutationHookOptions<DeleteObjectMutation, DeleteObjectMutationVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<DeleteObjectMutation, DeleteObjectMutationVariables>(DeleteObjectDocument, options);
+}
+export type DeleteObjectMutationHookResult = ReturnType<typeof useDeleteObjectMutation>;
+export type DeleteObjectMutationResult = Apollo.MutationResult<DeleteObjectMutation>;
+export type DeleteObjectMutationOptions = Apollo.BaseMutationOptions<
+  DeleteObjectMutation,
+  DeleteObjectMutationVariables
+>;
 export const SelfUserInfoDocument = gql`
   query selfUserInfo($data: GetUserInfoRequest!) {
     selfUserInfo(data: $data) {

@@ -1,0 +1,12 @@
+{
+  "name": "Remote Schema",
+  "schemaPath": "remote-schema.graphql",
+  "extensions": {
+    "endpoints": {
+      "Remote SWAPI GraphQL Endpoint": {
+        "url": "http://api.mini-oss.top/",
+        "introspect": true
+      }
+    }
+  }
+}

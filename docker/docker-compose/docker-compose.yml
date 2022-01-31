@@ -1,0 +1,45 @@
+version: "3.9"
+services:
+  web:
+    image: suxiaoshao/web:latest
+    ports:
+      - "80:80"
+    restart: always
+  graphql:
+    image: suxiaoshao/graphql:latest
+    restart: always
+  auth:
+    image: suxiaoshao/auth:latest
+    restart: always
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+  user:
+    image: suxiaoshao/user:latest
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+  core:
+    image: suxiaoshao/core:latest
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - mongo
+  mongo:
+    image: mongo:latest
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "sushao"
+      MONGO_INITDB_ROOT_PASSWORD: "sushao"
+  postgres:
+    image: suxiaoshao/postgres:latest
+    restart: always
+    ports:
+      - "5432:5432"

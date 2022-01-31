@@ -1,8 +1,0 @@
-version: "3.9"
-services:
-  web:
-    image: suxiaoshao/web:latest
-    ports:
-      - "80:80"
-  graphql:
-    image: suxiaoshao/graphql:latest

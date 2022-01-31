@@ -1,0 +1,13 @@
+mutation createFolder($data: CreateFolderRequest!) {
+  createFolder(data: $data) {
+    path
+  }
+}
+mutation updateFolder($data: UpdateFolderRequest!) {
+  updateFolder(data: $data) {
+    path
+  }
+}
+mutation deleteFolder($data: DeleteFolderRequest!) {
+  deleteFolder(data: $data)
+}

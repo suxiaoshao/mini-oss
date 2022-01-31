@@ -6,3 +6,5 @@ dist-ssr
 *.local
 target
 *.pnpm-debug.log
+.env
+remote-schema.graphql

@@ -1,0 +1,13 @@
+mutation createObject($data: CreateObjectRequest!, $file: Upload!) {
+  createObject(data: $data, file: $file) {
+    path
+  }
+}
+mutation updateObject($data: UpdateObjectRequest!) {
+  updateObject(data: $data) {
+    path
+  }
+}
+mutation deleteObject($data: DeleteObjectRequest!) {
+  deleteObject(data: $data)
+}

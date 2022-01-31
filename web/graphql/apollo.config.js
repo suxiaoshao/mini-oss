@@ -1,7 +1,7 @@
 module.exports = {
   client: {
     service: {
-      url: 'http://api.mini-oss.top:30002',
+      url: 'http://api.mini-oss.top:80',
       name: 'graphql',
     },
     excludes: ['./src/types.ts'],
