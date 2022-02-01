@@ -1,7 +1,9 @@
-use async_graphql::SimpleObject;
+use async_graphql::{ComplexObject, FieldResult, SimpleObject};
 use proto::core::ObjectAccess;
+use utils::errors::graphql::ToFieldResult;
 
 #[derive(SimpleObject)]
+#[graphql(complex)]
 pub struct FolderInfo {
     /// 路径
     pub path: String,
@@ -16,6 +18,17 @@ pub struct FolderInfo {
     /// 路径
     pub father_path: String,
 }
+#[ComplexObject]
+impl FolderInfo {
+    async fn folder_name(&self) -> FieldResult<String> {
+        self.path
+            .split('/')
+            .last()
+            .map(|x| x.to_string())
+            .to_field()
+    }
+}
+
 impl From<proto::core::FolderInfo> for FolderInfo {
     fn from(folder: proto::core::FolderInfo) -> Self {
         let access = folder.access();

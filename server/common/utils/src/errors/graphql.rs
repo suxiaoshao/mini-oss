@@ -6,6 +6,25 @@ use tonic::Status;
 pub trait ToFieldResult<T> {
     fn to_field(self) -> FieldResult<T>;
 }
+
+impl ToFieldResult<String> for Option<String> {
+    fn to_field(self) -> FieldResult<String> {
+        match self {
+            None => {
+                let mut extensions = ErrorExtensionValues::default();
+                extensions.set("code", 3);
+                extensions.set("source", format!("{self:#?}"));
+                Err(FieldError {
+                    message: "内部错误".to_string(),
+                    source: Some(Arc::new(self)),
+                    extensions: Some(extensions),
+                })
+            }
+            Some(value) => Ok(value),
+        }
+    }
+}
+
 pub trait ToField {
     fn to_field(self) -> FieldError;
 }
