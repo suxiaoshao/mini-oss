@@ -2,7 +2,7 @@ use async_graphql::{Enum, InputObject, SimpleObject};
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use crate::validation::{folder::validate_folder, name::validate_name};
+use crate::validation::{bucket::validate_bucket, folder::validate_folder};
 #[derive(Clone, PartialEq, ::prost::Message, InputObject)]
 pub struct GetBucketRequest {
     /// 身份验证
@@ -55,7 +55,7 @@ pub struct DeleteBucketsRequest {
 pub struct CreateBucketRequest {
     /// 名字
     #[prost(string, tag = "1")]
-    #[validate(custom = "validate_name")]
+    #[validate(custom = "validate_bucket")]
     pub name: ::prost::alloc::string::String,
     /// 访问控制
     #[prost(enumeration = "BucketAccess", tag = "2")]

@@ -8,6 +8,12 @@ pub fn validate_folder(input: &str) -> Result<(), ValidationError> {
     if len < 1 {
         return Err(ValidationError::new("不能小于1个字符"));
     }
+    if input == "." || input == ".." {
+        return Err(ValidationError::new("不能为\"..\" \".\""));
+    }
+    if input.chars().all(|x| x == ' ') {
+        return Err(ValidationError::new("不能为空"));
+    }
     if input
         .chars()
         .any(|x| x == '/' || x == '\n' || x == '\r' || x == '\t')
@@ -17,6 +23,7 @@ pub fn validate_folder(input: &str) -> Result<(), ValidationError> {
         Ok(())
     }
 }
+
 #[cfg(test)]
 mod test {
     use super::validate_folder;
@@ -37,5 +44,11 @@ mod test {
         assert!(validate_folder(input).is_err());
         let input = "asGk22_Q";
         assert!(validate_folder(input).is_ok());
+        let input = ".";
+        assert!(validate_folder(input).is_err());
+        let input = "..";
+        assert!(validate_folder(input).is_err());
+        let input = "   ";
+        assert!(validate_folder(input).is_err());
     }
 }
