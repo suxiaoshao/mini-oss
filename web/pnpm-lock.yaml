@@ -24,6 +24,7 @@ importers:
       eslint-plugin-react-hooks: ^4.3.0
       form-data: ^4.0.0
       prettier: ^2.5.1
+      pretty-bytes: ^5.6.0
       react: ^17.0.2
       react-dom: ^17.0.2
       react-hook-form: ^7.25.3
@@ -39,6 +40,7 @@ importers:
       '@mui/icons-material': registry.npmmirror.com/@mui/icons-material/5.3.1_2abdd7c2bf12d1ce6b28eb21ec7a52a6
       '@mui/material': registry.npmmirror.com/@mui/material/5.3.1_f5341c4d41f1e34c3a73251df9f98a19
       '@reduxjs/toolkit': registry.npmmirror.com/@reduxjs/toolkit/1.7.1_react-redux@7.2.6+react@17.0.2
+      pretty-bytes: registry.npmmirror.com/pretty-bytes/5.6.0
       react: registry.npmmirror.com/react/17.0.2
       react-dom: registry.npmmirror.com/react-dom/17.0.2_react@17.0.2
       react-hook-form: registry.npmmirror.com/react-hook-form/7.25.3_react@17.0.2
@@ -5729,6 +5731,13 @@ packages:
     engines: {node: '>=10.13.0'}
     hasBin: true
     dev: true
+
+  registry.npmmirror.com/pretty-bytes/5.6.0:
+    resolution: {integrity: sha512-FFw039TmrBqFK8ma/7OL3sDz/VytdtJr044/QUJtH0wK9lb9jLq9tJyIxUwtQJHwar2BqtiA4iCWSwo9JLkzFg==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/pretty-bytes/-/pretty-bytes-5.6.0.tgz}
+    name: pretty-bytes
+    version: 5.6.0
+    engines: {node: '>=6'}
+    dev: false
 
   registry.npmmirror.com/promise/7.3.1:
     resolution: {integrity: sha512-nolQXZ/4L+bP/UGlkfaIujX9BKxGwmQ9OT4mOt5yvy8iK1h3wqTEJCijzGANTCCl9nWjY41juyAn2K3Q1hLLTg==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/promise/-/promise-7.3.1.tgz}

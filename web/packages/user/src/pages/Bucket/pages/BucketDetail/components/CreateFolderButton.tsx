@@ -1,78 +1,82 @@
-import { useAppSelector } from '@/app/hooks';
-import { yupResolver } from '@hookform/resolvers/yup';
 import {
-  Dialog,
   Box,
-  DialogTitle,
-  DialogContent,
-  TextField,
-  DialogActions,
   Button,
-  InputAdornment,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   FormControl,
   FormControlLabel,
   FormLabel,
   Radio,
   RadioGroup,
+  TextField,
 } from '@mui/material';
-import { object, string } from 'common';
-import { BucketAccess, CreateBucketMutationVariables, useCreateBucketMutation } from 'graphql';
+import { CreateFolderMutationVariables, ObjectAccess, useCreateFolderMutation } from 'graphql';
 import { useState } from 'react';
-import { useForm, SubmitHandler, Controller } from 'react-hook-form';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { object, string } from 'common';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useAppSelector } from '@/app/hooks';
 
-export type CreateBucketForm = Omit<CreateBucketMutationVariables['data'], 'auth'>;
+export type CreateFolderForm = Pick<CreateFolderMutationVariables['data'], 'access' | 'path'>;
 
-export interface CreateBucketFabProps {
+export interface CreateFolderButtonProps {
+  fatherPath: string;
+  bucketName: string;
   /** 表格重新刷新 */
   reFetch: () => void;
 }
 
-const createBucketSchema = object({
-  name: string().bucketName(),
+const createFolderSchema = object({
+  path: string().folderName(),
 });
 
-export default function CreateBucketButton({ reFetch }: CreateBucketFabProps): JSX.Element {
+export default function CreateFolderButton({ fatherPath, bucketName, reFetch }: CreateFolderButtonProps): JSX.Element {
   const [open, setOpen] = useState(false);
   const handleClose = () => {
     setOpen(false);
   };
-  const [createBucket] = useCreateBucketMutation();
+  const [createFolder] = useCreateFolderMutation();
+
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<CreateBucketForm>({
-    defaultValues: { access: BucketAccess.Private },
-    resolver: yupResolver(createBucketSchema),
+  } = useForm<CreateFolderForm>({
+    defaultValues: { access: ObjectAccess.BucketObject },
+    resolver: yupResolver(createFolderSchema),
   });
   const auth = useAppSelector((state) => state.auth.value) ?? '';
-  const username = useAppSelector((state) => state.userInfo.name);
-  const onSubmit: SubmitHandler<CreateBucketForm> = async (formData) => {
-    await createBucket({ variables: { data: { auth, ...formData } } });
+  const onSubmit: SubmitHandler<CreateFolderForm> = async (formData) => {
+    await createFolder({ variables: { data: { auth, fatherPath, bucketName, ...formData } } });
     reFetch();
     handleClose();
   };
-
   return (
     <>
-      <Button color="primary" size="large" variant="contained" onClick={() => setOpen(true)}>
-        创建存储桶
+      <Button
+        onClick={() => setOpen(true)}
+        variant="outlined"
+        sx={{ marginLeft: (theme) => theme.spacing(1) }}
+        size="large"
+      >
+        添加文件夹
       </Button>
       <Dialog open={open} onClose={handleClose}>
         <Box sx={{ width: 500 }} onSubmit={handleSubmit(onSubmit)} component="form">
-          <DialogTitle>新建存储桶</DialogTitle>
+          <DialogTitle>新建文件夹</DialogTitle>
           <DialogContent>
             <TextField
               variant="standard"
               required
               sx={{ marginTop: (theme) => theme.spacing(1) }}
               fullWidth
-              label="名字"
-              InputProps={{ endAdornment: <InputAdornment position="end"> -{username}</InputAdornment> }}
-              {...register('name', { required: true })}
-              error={errors.name !== undefined}
-              helperText={errors.name?.message}
+              label="文件夹名"
+              {...register('path', { required: true })}
+              error={errors.path !== undefined}
+              helperText={errors.path?.message}
             />
             <Controller
               name="access"
@@ -84,14 +88,19 @@ export default function CreateBucketButton({ reFetch }: CreateBucketFabProps): J
                   <RadioGroup name={name} value={value} onBlur={onBlur} onChange={onChange} row>
                     <FormControlLabel
                       inputRef={ref}
-                      value={BucketAccess.Private}
+                      value={ObjectAccess.BucketObject}
+                      control={<Radio />}
+                      label="继承权限"
+                    />
+                    <FormControlLabel
+                      inputRef={ref}
+                      value={ObjectAccess.PrivateObject}
                       control={<Radio />}
                       label="私有读写"
                     />
-                    <FormControlLabel inputRef={ref} value={BucketAccess.Open} control={<Radio />} label="共有读写" />
                     <FormControlLabel
                       inputRef={ref}
-                      value={BucketAccess.ReadOpen}
+                      value={ObjectAccess.ReadOpenObject}
                       control={<Radio />}
                       label="共有读私有写"
                     />

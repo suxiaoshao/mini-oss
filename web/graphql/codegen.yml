@@ -11,4 +11,4 @@ generates:
     config:
       withHooks: true
       scalars:
-        Upload: "[File]"
+        Upload: "File"

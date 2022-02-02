@@ -12,7 +12,7 @@ create table if not exists folder
     path        text               not null,
     create_time timestamp          not null,
     update_time timestamp          not null,
-    bucket_name varchar(255)       not null unique,
+    bucket_name varchar(255)       not null,
     access      object_access_type not null,
     father_path text               not null,
     primary key (path, bucket_name)
@@ -28,6 +28,6 @@ create table if not exists object
     blake3      varchar(64)        not null,
     size        bigint             not null,
     access      object_access_type not null,
-    headers     jsonb[]      not null,
+    headers     jsonb[]            not null,
     primary key (path, filename, bucket_name)
 );

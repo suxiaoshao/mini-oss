@@ -22,6 +22,8 @@ query folderList($data: GetFolderListRequest!) {
         bucketName
         access
         fatherPath
+        folderName
+        __typename
       }
       ... on ObjectInfo {
         path
@@ -31,6 +33,7 @@ query folderList($data: GetFolderListRequest!) {
         createTime
         updateTime
         size
+        __typename
       }
     }
   }

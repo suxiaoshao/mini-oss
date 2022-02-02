@@ -9,6 +9,14 @@ query bucketList($data: GetListRequest!) {
     total
   }
 }
+query bucketInfo($data: GetBucketRequest!) {
+  bucketInfo(data: $data) {
+    name
+    updateTime
+    createTime
+    access
+  }
+}
 mutation createBucket($data: CreateBucketRequest!) {
   createBucket(data: $data) {
     name

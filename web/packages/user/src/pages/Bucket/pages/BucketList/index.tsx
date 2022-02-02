@@ -1,9 +1,10 @@
 import { useAppSelector } from '@/app/hooks';
 import { Refresh } from '@mui/icons-material';
-import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, IconButton, Link, Toolbar, Typography } from '@mui/material';
 import { CustomColumnArray, CustomTable, format, useCustomTable, usePage, TableActions } from 'common';
 import { BucketListQuery, useBucketListQuery, useDeleteBucketMutation } from 'graphql';
 import { useMemo } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import AccessFormat from '../../components/AccessFormat';
 import CreateBucketButton from './components/CreateBucketButton';
 import UpdateBucketAction from './components/UpdateBucketAction';
@@ -18,7 +19,11 @@ export default function BucketList(): JSX.Element {
       {
         Header: '名字',
         id: 'name',
-        accessor: 'name',
+        accessor: ({ name }) => (
+          <Link component={RouterLink} underline="none" to={`/bucket/detail/${name}`}>
+            {name}
+          </Link>
+        ),
       },
       {
         Header: '访问',

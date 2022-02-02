@@ -3,7 +3,12 @@ import { addMethod, string, StringSchema } from 'yup';
 declare module 'yup' {
   interface StringSchema {
     password(): StringSchema;
+
     name(): StringSchema;
+
+    bucketName(): StringSchema;
+
+    folderName(): StringSchema;
   }
 }
 
@@ -27,10 +32,7 @@ addMethod<StringSchema>(string, 'password', function password() {
           return false;
         }
       }
-      if (numExist + otherExist + alphaExist <= 1) {
-        return false;
-      }
-      return true;
+      return numExist + otherExist + alphaExist > 1;
     });
 });
 
@@ -41,6 +43,23 @@ addMethod<StringSchema>(string, 'name', function password() {
     .max(25, '最长长度为25')
     .matches(/^[a-zA-Z]/, '必须以字母开头')
     .matches(/^[a-zA-Z_0-9]{4,25}$/, '只能包含大小写字母,数字,_');
+});
+addMethod<StringSchema>(string, 'bucketName', function password() {
+  return this.required()
+    .required()
+    .min(1, '最小长度为1')
+    .max(60, '最长长度为60')
+    .matches(/^[a-z-0-9]+$/, '仅支持小写字母、数字和 - 的组合');
+});
+
+addMethod<StringSchema>(string, 'folderName', function password() {
+  return this.required()
+    .required()
+    .min(1, '最小长度为1')
+    .max(225, '最长长度为225')
+    .test('folder', '不能为 "." ".."', (value) => value !== '.' && value !== '..')
+    .test('folder', '不能包括 "/"', (value) => !value?.includes('/'))
+    .test('folder', '不能为空', (value) => !/^ *$/.test(value ?? ''));
 });
 
 export * from 'yup';

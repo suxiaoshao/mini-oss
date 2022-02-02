@@ -8,6 +8,9 @@ import Home from '../pages/Home';
 import Login from '../pages/Login';
 import Setting from '../pages/Setting';
 import AppDrawer from './AppDrawer';
+import BucketDetail from '@/pages/Bucket/pages/BucketDetail';
+import FolderList from '@/pages/Bucket/pages/BucketDetail/pages/FolderList';
+import Statistical from '@/pages/Bucket/pages/BucketDetail/pages/Statistical';
 
 export default function AppRouter(): JSX.Element {
   const auth = useAppSelector((state) => state.auth.value);
@@ -32,7 +35,11 @@ export default function AppRouter(): JSX.Element {
       <Route path="/" element={<AppDrawer />}>
         <Route index element={<Home />} />
         <Route path="bucket">
-          <Route index element={<BucketList />} />
+          <Route path="list" element={<BucketList />} />
+          <Route path="detail/:bucketName" element={<BucketDetail />}>
+            <Route index element={<Statistical />} />
+            <Route path="fileList" element={<FolderList />} />
+          </Route>
         </Route>
         <Route path="setting" element={<Setting />} />
         <Route path="*" element={<ErrorPage to={'/'} />} />

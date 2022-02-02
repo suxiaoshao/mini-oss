@@ -13,7 +13,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
-  Upload: [File];
+  Upload: File;
 };
 
 /** 访问权限类型 */
@@ -133,6 +133,7 @@ export type FolderInfo = {
   createTime: Scalars['Int'];
   /** 路径 */
   fatherPath: Scalars['String'];
+  folderName: Scalars['String'];
   /** 路径 */
   path: Scalars['String'];
   /** 创建时间 */
@@ -145,6 +146,13 @@ export type FolderList = {
   __typename?: 'FolderList';
   data: Array<FolderItem>;
   total: Scalars['Int'];
+};
+
+export type GetBucketRequest = {
+  /** 身份验证 */
+  auth: Scalars['String'];
+  /** bucket 名 */
+  bucketName: Scalars['String'];
 };
 
 export type GetFolderListRequest = {
@@ -160,6 +168,15 @@ export type GetFolderListRequest = {
   path: Scalars['String'];
 };
 
+export type GetFolderRequest = {
+  /** 身份验证 */
+  auth: Scalars['String'];
+  /** bucket 名 */
+  bucketName: Scalars['String'];
+  /** 路径 */
+  path: Scalars['String'];
+};
+
 export type GetListRequest = {
   /** 身份验证 */
   auth: Scalars['String'];
@@ -167,6 +184,17 @@ export type GetListRequest = {
   limit: Scalars['Int'];
   /** 偏移量 */
   offset: Scalars['Int'];
+};
+
+export type GetObjectRequest = {
+  /** 身份验证 */
+  auth: Scalars['String'];
+  /** bucket 名 */
+  bucketName: Scalars['String'];
+  /** 文件名 */
+  filename: Scalars['String'];
+  /** 路径 */
+  path: Scalars['String'];
 };
 
 export type GetUserInfoRequest = {
@@ -321,12 +349,18 @@ export type ObjectInfo = {
 
 export type QueryRoot = {
   __typename?: 'QueryRoot';
+  /** 获取存储桶信息 */
+  bucketInfo: BucketInfo;
   /** 用户存储桶列表 */
   bucketList: BucketList;
+  /** 获取文件夹信息 */
+  folderInfo: FolderInfo;
   /** 文件夹列表 */
   folderList: FolderList;
   /** 管理员登陆 */
   managerLogin: Scalars['String'];
+  /** 获取对象信息 */
+  objectInfo: ObjectInfo;
   /** 获取自身用户信息 */
   selfUserInfo: UserInfo;
   /** 用户信息 */
@@ -337,8 +371,16 @@ export type QueryRoot = {
   userLogin: Scalars['String'];
 };
 
+export type QueryRootBucketInfoArgs = {
+  data: GetBucketRequest;
+};
+
 export type QueryRootBucketListArgs = {
   data: GetListRequest;
+};
+
+export type QueryRootFolderInfoArgs = {
+  data: GetFolderRequest;
 };
 
 export type QueryRootFolderListArgs = {
@@ -347,6 +389,10 @@ export type QueryRootFolderListArgs = {
 
 export type QueryRootManagerLoginArgs = {
   data: LoginRequest;
+};
+
+export type QueryRootObjectInfoArgs = {
+  data: GetObjectRequest;
 };
 
 export type QueryRootSelfUserInfoArgs = {
@@ -463,6 +509,15 @@ export type BucketListQuery = {
   };
 };
 
+export type BucketInfoQueryVariables = Exact<{
+  data: GetBucketRequest;
+}>;
+
+export type BucketInfoQuery = {
+  __typename?: 'QueryRoot';
+  bucketInfo: { __typename?: 'BucketInfo'; name: string; updateTime: number; createTime: number; access: BucketAccess };
+};
+
 export type CreateBucketMutationVariables = Exact<{
   data: CreateBucketRequest;
 }>;
@@ -522,16 +577,17 @@ export type FolderListQuery = {
     total: number;
     data: Array<
       | {
-          __typename?: 'FolderInfo';
+          __typename: 'FolderInfo';
           path: string;
           createTime: number;
           updateTime: number;
           bucketName: string;
           access: ObjectAccess;
           fatherPath: string;
+          folderName: string;
         }
       | {
-          __typename?: 'ObjectInfo';
+          __typename: 'ObjectInfo';
           path: string;
           filename: string;
           bucketName: string;
@@ -709,6 +765,46 @@ export function useBucketListLazyQuery(
 export type BucketListQueryHookResult = ReturnType<typeof useBucketListQuery>;
 export type BucketListLazyQueryHookResult = ReturnType<typeof useBucketListLazyQuery>;
 export type BucketListQueryResult = Apollo.QueryResult<BucketListQuery, BucketListQueryVariables>;
+export const BucketInfoDocument = gql`
+  query bucketInfo($data: GetBucketRequest!) {
+    bucketInfo(data: $data) {
+      name
+      updateTime
+      createTime
+      access
+    }
+  }
+`;
+
+/**
+ * __useBucketInfoQuery__
+ *
+ * To run a query within a React component, call `useBucketInfoQuery` and pass it any options that fit your needs.
+ * When your component renders, `useBucketInfoQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useBucketInfoQuery({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useBucketInfoQuery(baseOptions: Apollo.QueryHookOptions<BucketInfoQuery, BucketInfoQueryVariables>) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<BucketInfoQuery, BucketInfoQueryVariables>(BucketInfoDocument, options);
+}
+export function useBucketInfoLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<BucketInfoQuery, BucketInfoQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<BucketInfoQuery, BucketInfoQueryVariables>(BucketInfoDocument, options);
+}
+export type BucketInfoQueryHookResult = ReturnType<typeof useBucketInfoQuery>;
+export type BucketInfoLazyQueryHookResult = ReturnType<typeof useBucketInfoLazyQuery>;
+export type BucketInfoQueryResult = Apollo.QueryResult<BucketInfoQuery, BucketInfoQueryVariables>;
 export const CreateBucketDocument = gql`
   mutation createBucket($data: CreateBucketRequest!) {
     createBucket(data: $data) {
@@ -945,6 +1041,8 @@ export const FolderListDocument = gql`
           bucketName
           access
           fatherPath
+          folderName
+          __typename
         }
         ... on ObjectInfo {
           path
@@ -954,6 +1052,7 @@ export const FolderListDocument = gql`
           createTime
           updateTime
           size
+          __typename
         }
       }
     }
