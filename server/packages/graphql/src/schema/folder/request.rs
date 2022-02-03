@@ -1,5 +1,5 @@
 use async_graphql::InputObject;
-use proto::core::{self, ObjectAccess};
+use proto::core::{self, FolderAccess};
 #[derive(InputObject)]
 pub struct UpdateFolderRequest {
     /// 路径
@@ -9,7 +9,7 @@ pub struct UpdateFolderRequest {
     /// 用户凭证
     pub auth: String,
     /// 访问控制
-    pub access: ObjectAccess,
+    pub access: FolderAccess,
 }
 
 #[allow(clippy::from_over_into)]
@@ -42,7 +42,7 @@ pub struct CreateFolderRequest {
     /// 用户凭证
     pub auth: String,
     /// 访问控制
-    pub access: ObjectAccess,
+    pub access: FolderAccess,
 }
 
 #[allow(clippy::from_over_into)]

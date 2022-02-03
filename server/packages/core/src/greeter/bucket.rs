@@ -12,10 +12,11 @@ use proto::{
     validation::Validate,
     Request, Response, Status,
 };
+use utils::database::folder::FolderAccess;
 use utils::{
     database::{
         bucket::{self, BucketModal},
-        folder::{FolderModal, ObjectAccess},
+        folder::FolderModal,
         object::ObjectModal,
         Pool, Postgres,
     },
@@ -55,7 +56,7 @@ impl Bucket for BucketGreeter {
         // 创建存储桶
         let bucket = BucketModal::create(&name, access, &username, &self.pool).await?;
         // 创建存储桶下第一个文件夹
-        FolderModal::create("/", ObjectAccess::Bucket, &bucket.name, "", &self.pool).await?;
+        FolderModal::create("/", FolderAccess::Inheritance, &bucket.name, "", &self.pool).await?;
         Ok(Response::new(bucket.into()))
     }
     async fn delete_bucket(

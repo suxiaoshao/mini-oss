@@ -670,16 +670,6 @@ export type UserDeleteMutationVariables = Exact<{
 
 export type UserDeleteMutation = { __typename?: 'MutationRoot'; manageUserDelete: boolean };
 
-export type CreateObjectMutationVariables = Exact<{
-  data: CreateObjectRequest;
-  file: Scalars['Upload'];
-}>;
-
-export type CreateObjectMutation = {
-  __typename?: 'MutationRoot';
-  createObject: { __typename?: 'ObjectInfo'; path: string };
-};
-
 export type UpdateObjectMutationVariables = Exact<{
   data: UpdateObjectRequest;
 }>;
@@ -1342,45 +1332,6 @@ export function useUserDeleteMutation(
 export type UserDeleteMutationHookResult = ReturnType<typeof useUserDeleteMutation>;
 export type UserDeleteMutationResult = Apollo.MutationResult<UserDeleteMutation>;
 export type UserDeleteMutationOptions = Apollo.BaseMutationOptions<UserDeleteMutation, UserDeleteMutationVariables>;
-export const CreateObjectDocument = gql`
-  mutation createObject($data: CreateObjectRequest!, $file: Upload!) {
-    createObject(data: $data, file: $file) {
-      path
-    }
-  }
-`;
-export type CreateObjectMutationFn = Apollo.MutationFunction<CreateObjectMutation, CreateObjectMutationVariables>;
-
-/**
- * __useCreateObjectMutation__
- *
- * To run a mutation, you first call `useCreateObjectMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateObjectMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [createObjectMutation, { data, loading, error }] = useCreateObjectMutation({
- *   variables: {
- *      data: // value for 'data'
- *      file: // value for 'file'
- *   },
- * });
- */
-export function useCreateObjectMutation(
-  baseOptions?: Apollo.MutationHookOptions<CreateObjectMutation, CreateObjectMutationVariables>,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<CreateObjectMutation, CreateObjectMutationVariables>(CreateObjectDocument, options);
-}
-export type CreateObjectMutationHookResult = ReturnType<typeof useCreateObjectMutation>;
-export type CreateObjectMutationResult = Apollo.MutationResult<CreateObjectMutation>;
-export type CreateObjectMutationOptions = Apollo.BaseMutationOptions<
-  CreateObjectMutation,
-  CreateObjectMutationVariables
->;
 export const UpdateObjectDocument = gql`
   mutation updateObject($data: UpdateObjectRequest!) {
     updateObject(data: $data) {

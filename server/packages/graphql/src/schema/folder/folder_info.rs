@@ -1,5 +1,5 @@
 use async_graphql::{ComplexObject, FieldResult, SimpleObject};
-use proto::core::ObjectAccess;
+use proto::core::FolderAccess;
 use utils::errors::graphql::ToFieldResult;
 
 #[derive(SimpleObject)]
@@ -14,7 +14,7 @@ pub struct FolderInfo {
     /// bucket 名
     pub bucket_name: String,
     /// 访问控制
-    pub access: ObjectAccess,
+    pub access: FolderAccess,
     /// 路径
     pub father_path: String,
 }

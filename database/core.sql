@@ -13,7 +13,7 @@ create table if not exists folder
     create_time timestamp          not null,
     update_time timestamp          not null,
     bucket_name varchar(255)       not null,
-    access      object_access_type not null,
+    access      folder_access_type not null,
     father_path text               not null,
     primary key (path, bucket_name)
 );

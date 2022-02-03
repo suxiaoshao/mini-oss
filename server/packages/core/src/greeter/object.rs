@@ -1,16 +1,17 @@
 use std::sync::Arc;
 
-use proto::core::{CountReply, GetFolderCountRequest, GetObjectRequest};
+use proto::core::{CountReply, GetFolderCountRequest, GetObjectRequest, UploadFile};
 use proto::{
     async_trait,
     auth::Empty,
     core::{
-        object_server::Object, CreateObjectRequest, DeleteObjectRequest, GetFolderListRequest,
+        object_server::Object, CreateObjectsRequest, DeleteObjectRequest, GetFolderListRequest,
         GetObjectListReply, ObjectInfo, UpdateObjectRequest,
     },
     validation::Validate,
     Request, Response, Status,
 };
+use utils::database::object::ObjectAccess;
 use utils::{
     database::{
         object::{ObjectCreateInput, ObjectModal},
@@ -39,50 +40,30 @@ impl ObjectGreeter {
 }
 #[async_trait]
 impl Object for ObjectGreeter {
-    async fn create_object(
+    async fn create_objects(
         &self,
-        request: Request<CreateObjectRequest>,
-    ) -> Result<Response<ObjectInfo>, Status> {
+        request: Request<CreateObjectsRequest>,
+    ) -> Result<Response<Empty>, Status> {
         // 验证
         request.get_ref().validate().to_status()?;
         let access = request.get_ref().access();
         let pool = &self.pool;
-        let CreateObjectRequest {
+        let CreateObjectsRequest {
             path,
-            filename,
             bucket_name,
-            content,
             auth,
+            files,
             ..
         } = request.into_inner();
         // 验证文件夹
         check_folder(&auth, &bucket_name, &path, pool).await?;
-        // 判断该文件是否存在
-        if ObjectModal::exist(&path, &bucket_name, &filename, &self.pool)
-            .await
-            .is_ok()
-        {
-            return Err(Status::already_exists("文件名重复"));
-        }
-        // 获取数据
-        let blake3 = file_hash(content.as_slice());
-        let size = content.len();
-        let object_id = self
-            .mongo
-            .upload_file(bucket_name.clone(), &filename, content.as_slice())
-            .await?;
-        let input = ObjectCreateInput {
-            path: &path,
-            access: &access.into(),
-            bucket_name: &bucket_name,
-            filename: &filename,
-            blake3: &blake3,
-            object_id: &object_id,
-            size: size as i64,
-            headers: &headers_from(&filename),
-        };
-        let data = ObjectModal::create(input, pool).await?;
-        Ok(Response::new(data.try_into()?))
+        let create_many = files
+            .as_slice()
+            .iter()
+            .map(|file| create_object(&path, &bucket_name, file, access, pool, &self.mongo))
+            .collect::<Vec<_>>();
+        futures::future::try_join_all(create_many).await?;
+        Ok(Response::new(Empty {}))
     }
     async fn delete_object(
         &self,
@@ -205,4 +186,40 @@ impl Object for ObjectGreeter {
         let object = ObjectModal::find_one(&path, &bucket_name, &filename, pool).await?;
         Ok(Response::new(object.try_into()?))
     }
+}
+
+async fn create_object(
+    path: &str,
+    bucket_name: &str,
+    file: &UploadFile,
+    access: impl Into<ObjectAccess>,
+    pool: &Pool<Postgres>,
+    mongo: &Mongo,
+) -> Result<(), Status> {
+    let UploadFile { filename, content } = file;
+    // 判断该文件是否存在
+    if ObjectModal::exist(path, bucket_name, filename, pool)
+        .await
+        .is_ok()
+    {
+        return Err(Status::already_exists("文件名重复"));
+    }
+    // 获取数据
+    let blake3 = file_hash(content.as_slice());
+    let size = content.len();
+    let object_id = mongo
+        .upload_file(bucket_name.to_string(), filename, content.as_slice())
+        .await?;
+    let input = ObjectCreateInput {
+        path,
+        access: &access.into(),
+        bucket_name,
+        filename,
+        blake3: &blake3,
+        object_id: &object_id,
+        size: size as i64,
+        headers: &headers_from(filename),
+    };
+    ObjectModal::create(input, pool).await?;
+    Ok(())
 }

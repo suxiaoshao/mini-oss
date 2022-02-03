@@ -9,18 +9,21 @@ use crate::errors::grpc::ToStatusResult;
 use async_recursion::async_recursion;
 
 #[derive(sqlx::Type, Debug)]
-#[sqlx(type_name = "object_access_type")]
-pub enum ObjectAccess {
-    Bucket,
+#[sqlx(type_name = "folder_access_type")]
+pub enum FolderAccess {
+    Inheritance,
     ReadOpen,
     Private,
+    Open,
 }
-impl From<proto::core::ObjectAccess> for ObjectAccess {
-    fn from(access: proto::core::ObjectAccess) -> Self {
-        match access {
-            proto::core::ObjectAccess::BucketObject => Self::Bucket,
-            proto::core::ObjectAccess::ReadOpenObject => Self::ReadOpen,
-            proto::core::ObjectAccess::PrivateObject => Self::Private,
+
+impl From<proto::core::FolderAccess> for FolderAccess {
+    fn from(value: proto::core::FolderAccess) -> Self {
+        match value {
+            proto::core::FolderAccess::InheritanceFolder => Self::Inheritance,
+            proto::core::FolderAccess::ReadOpenFolder => Self::ReadOpen,
+            proto::core::FolderAccess::PrivateFolder => Self::Private,
+            proto::core::FolderAccess::OpenFolder => Self::Open,
         }
     }
 }
@@ -34,7 +37,7 @@ pub struct FolderModal {
     /// 更新时间
     pub update_time: PrimitiveDateTime,
     /// 访问权限
-    pub access: ObjectAccess,
+    pub access: FolderAccess,
     /// bucket 名
     pub bucket_name: String,
     /// 父名字
@@ -44,12 +47,12 @@ impl FolderModal {
     /// 创建
     pub async fn create(
         path: &str,
-        access: impl Into<ObjectAccess>,
+        access: impl Into<FolderAccess>,
         bucket_name: &str,
         father_path: &str,
         pool: &Pool<Postgres>,
     ) -> Result<Self, Status> {
-        let access: ObjectAccess = access.into();
+        let access: FolderAccess = access.into();
         // 获取现在时间
         let time = PrimitiveDateTime::from(SystemTime::now());
         sqlx::query("insert into folder(path, create_time, update_time, access,bucket_name,father_path) values ($1,$2,$3,$4,$5,$6)")
@@ -80,7 +83,7 @@ impl FolderModal {
     /// 更新
     pub async fn update(
         path: &str,
-        access: impl Into<ObjectAccess>,
+        access: impl Into<FolderAccess>,
         bucket_name: &str,
         pool: &Pool<Postgres>,
     ) -> Result<Self, Status> {
@@ -229,9 +232,10 @@ impl Into<FolderInfo> for FolderModal {
             ..
         } = self;
         let access: i32 = match access {
-            ObjectAccess::Bucket => 0,
-            ObjectAccess::ReadOpen => 1,
-            ObjectAccess::Private => 2,
+            FolderAccess::Inheritance => 0,
+            FolderAccess::ReadOpen => 1,
+            FolderAccess::Private => 2,
+            FolderAccess::Open => 3,
         };
         let create_time = (create_time.assume_utc().unix_timestamp_nanos() / 1000000) as i64;
         let update_time = (update_time.assume_utc().unix_timestamp_nanos() / 1000000) as i64;

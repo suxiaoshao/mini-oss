@@ -1,6 +1,4 @@
-use std::io::Read;
-
-use async_graphql::{Context, FieldResult, Object, Upload};
+use async_graphql::{FieldResult, Object};
 
 use crate::schema::folder::folder_list::FolderList;
 use ::utils::errors::graphql::ToFieldResult;
@@ -24,7 +22,7 @@ use proto::{
 };
 
 use crate::schema::object::object_info::ObjectInfo;
-use crate::schema::object::request::{CreateObjectRequest, UpdateObjectRequest};
+use crate::schema::object::request::UpdateObjectRequest;
 
 use super::{
     bucket::{
@@ -317,41 +315,6 @@ impl MutationRoot {
         let request = Request::new(data);
         client.delete_folder(request).await.to_field()?;
         Ok(true)
-    }
-    /// 创建对象
-    async fn create_object(
-        &self,
-        ctx: &Context<'_>,
-        data: CreateObjectRequest,
-        file: Upload,
-    ) -> FieldResult<ObjectInfo> {
-        let mut client = ObjectClient::connect("http://core:80").await.to_field()?;
-
-        // 获取文件数据
-        let file = file.value(ctx).to_field()?;
-        let filename = file.filename;
-        let mut content = vec![];
-        let mut file = file.content;
-        file.read_to_end(&mut content).to_field()?;
-        // 获取输入数据
-        let CreateObjectRequest {
-            path,
-            bucket_name,
-            access,
-            auth,
-        } = data;
-        let mut message = proto::core::CreateObjectRequest {
-            path,
-            filename,
-            bucket_name,
-            access: 0,
-            content,
-            auth,
-        };
-        message.set_access(access);
-        let request = Request::new(message);
-        let res = client.create_object(request).await.to_field()?;
-        Ok(res.into_inner().into())
     }
     /// 更新对象
     async fn update_object(&self, data: UpdateObjectRequest) -> FieldResult<ObjectInfo> {

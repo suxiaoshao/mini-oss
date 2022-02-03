@@ -9,7 +9,23 @@ use proto::{
 
 use crate::errors::grpc::ToStatusResult;
 
-use super::folder::ObjectAccess;
+#[derive(sqlx::Type, Debug)]
+#[sqlx(type_name = "object_access_type")]
+pub enum ObjectAccess {
+    Inheritance,
+    ReadOpen,
+    Private,
+}
+
+impl From<proto::core::ObjectAccess> for ObjectAccess {
+    fn from(access: proto::core::ObjectAccess) -> Self {
+        match access {
+            proto::core::ObjectAccess::InheritanceObject => Self::Inheritance,
+            proto::core::ObjectAccess::ReadOpenObject => Self::ReadOpen,
+            proto::core::ObjectAccess::PrivateObject => Self::Private,
+        }
+    }
+}
 
 #[derive(FromRow, Debug)]
 pub struct ObjectModal {
@@ -258,7 +274,7 @@ impl TryInto<ObjectInfo> for ObjectModal {
             ..
         } = self;
         let access: i32 = match access {
-            ObjectAccess::Bucket => 0,
+            ObjectAccess::Inheritance => 0,
             ObjectAccess::ReadOpen => 1,
             ObjectAccess::Private => 2,
         };

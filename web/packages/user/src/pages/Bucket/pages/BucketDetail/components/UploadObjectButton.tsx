@@ -18,12 +18,12 @@ import {
   TextField,
 } from '@mui/material';
 import { useState } from 'react';
-import { CreateObjectMutationVariables, ObjectAccess } from 'graphql';
+import { ObjectAccess } from 'graphql';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import prettyBytes from 'pretty-bytes';
 import { Delete } from '@mui/icons-material';
 
-export type CreateObjectForm = Pick<CreateObjectMutationVariables['data'], 'access'> & { file: FileList };
+export type CreateObjectForm = { file: FileList; access: ObjectAccess };
 
 export interface UploadObjectButtonProps {
   path: string;

@@ -103,6 +103,18 @@ service Folder {
   rpc GetFolder(GetFolderRequest) returns (FolderInfo){}
 }
 
+// 访问权限类型
+enum FolderAccess {
+  // 继承
+  InheritanceFolder = 0;
+  // 读开放
+  READ_OPEN_Folder = 1;
+  // 不开放
+  PRIVATE_Folder = 2;
+  // 开放
+  OpenFolder = 3;
+}
+
 message GetFolderRequest{
   // 身份验证
   string auth = 1;
@@ -154,7 +166,7 @@ message UpdateFolderRequest{
   // 用户凭证
   string auth = 3;
   // 访问控制
-  ObjectAccess access = 4;
+  FolderAccess access = 4;
 }
 
 message DeleteFolderRequest{
@@ -177,7 +189,7 @@ message CreateFolderRequest{
   // 用户凭证
   string auth = 4;
   // 访问控制
-  ObjectAccess access = 5;
+  FolderAccess access = 5;
 }
 
 message FolderInfo{
@@ -190,15 +202,15 @@ message FolderInfo{
   // bucket 名
   string bucket_name = 4;
   // 访问控制
-  ObjectAccess access = 5;
+  FolderAccess access = 5;
   // 路径
   string father_path = 6;
 }
 
 // 访问权限类型
 enum ObjectAccess {
-  // 开放
-  Bucket_Object = 0;
+  // 继承
+  InheritanceObject = 0;
   // 读开放
   READ_OPEN_Object = 1;
   // 不开放
@@ -207,7 +219,7 @@ enum ObjectAccess {
 
 service Object {
   // 创建文件夹
-  rpc CreateObject (CreateObjectRequest) returns (ObjectInfo) {}
+  rpc CreateObjects (CreateObjectsRequest) returns (auth.Empty) {}
   // 删除文件夹
   rpc DeleteObject (DeleteObjectRequest) returns (auth.Empty) {}
   // 修改文件夹
@@ -238,19 +250,24 @@ message GetObjectListReply{
   int64 total = 2;
 }
 
-message CreateObjectRequest{
+message CreateObjectsRequest{
   // 路径
   string path = 1;
-  // 文件名
-  string filename = 2;
   // bucket 名
-  string bucket_name = 3;
+  string bucket_name = 2;
   // 访问控制
-  ObjectAccess access = 4;
+  ObjectAccess access = 3;
+  // 访问控制
+  string auth = 4;
+  // 上传的文件
+  repeated UploadFile files = 5;
+}
+
+message UploadFile{
+  // 文件名
+  string filename = 1;
   // 内容
-  bytes content = 5;
-  // 访问控制
-  string auth = 6;
+  bytes content = 2;
 }
 
 message DeleteObjectRequest{
