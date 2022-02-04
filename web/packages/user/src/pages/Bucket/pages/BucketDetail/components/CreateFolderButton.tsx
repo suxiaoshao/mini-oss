@@ -1,23 +1,11 @@
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Radio,
-  RadioGroup,
-  TextField,
-} from '@mui/material';
-import { CreateFolderMutationVariables, ObjectAccess, useCreateFolderMutation } from 'graphql';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
+import { CreateFolderMutationVariables, FolderAccess, useCreateFolderMutation } from 'graphql';
 import { useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { object, string } from 'common';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useAppSelector } from '@/app/hooks';
+import ControllerRadioGroup from '@/components/ControllerRadioGroup';
 
 export type CreateFolderForm = Pick<CreateFolderMutationVariables['data'], 'access' | 'path'>;
 
@@ -45,7 +33,7 @@ export default function CreateFolderButton({ fatherPath, bucketName, reFetch }: 
     control,
     formState: { errors },
   } = useForm<CreateFolderForm>({
-    defaultValues: { access: ObjectAccess.BucketObject },
+    defaultValues: { access: FolderAccess.InheritanceFolder },
     resolver: yupResolver(createFolderSchema),
   });
   const auth = useAppSelector((state) => state.auth.value) ?? '';
@@ -82,30 +70,21 @@ export default function CreateFolderButton({ fatherPath, bucketName, reFetch }: 
               name="access"
               control={control}
               rules={{ required: true }}
-              render={({ field: { onChange, onBlur, value, name, ref } }) => (
-                <FormControl sx={{ marginTop: (theme) => theme.spacing(1) }}>
-                  <FormLabel>访问权限</FormLabel>
-                  <RadioGroup name={name} value={value} onBlur={onBlur} onChange={onChange} row>
-                    <FormControlLabel
-                      inputRef={ref}
-                      value={ObjectAccess.BucketObject}
-                      control={<Radio />}
-                      label="继承权限"
-                    />
-                    <FormControlLabel
-                      inputRef={ref}
-                      value={ObjectAccess.PrivateObject}
-                      control={<Radio />}
-                      label="私有读写"
-                    />
-                    <FormControlLabel
-                      inputRef={ref}
-                      value={ObjectAccess.ReadOpenObject}
-                      control={<Radio />}
-                      label="共有读私有写"
-                    />
-                  </RadioGroup>
-                </FormControl>
+              render={({ field }) => (
+                <ControllerRadioGroup<FolderAccess> {...field} label={'访问权限'}>
+                  {[
+                    { label: '继承权限', value: FolderAccess.InheritanceFolder },
+                    {
+                      label: '私有读写',
+                      value: FolderAccess.PrivateFolder,
+                    },
+                    { label: '共有读私有写', value: FolderAccess.ReadOpenFolder },
+                    {
+                      label: '共有读写',
+                      value: FolderAccess.OpenFolder,
+                    },
+                  ]}
+                </ControllerRadioGroup>
               )}
             />
           </DialogContent>

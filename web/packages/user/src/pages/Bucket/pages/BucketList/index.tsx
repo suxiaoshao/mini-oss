@@ -5,7 +5,7 @@ import { CustomColumnArray, CustomTable, format, useCustomTable, usePage, TableA
 import { BucketListQuery, useBucketListQuery, useDeleteBucketMutation } from 'graphql';
 import { useMemo } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import AccessFormat from '../../components/AccessFormat';
+import AccessFormat from '../../../../components/AccessFormat';
 import CreateBucketButton from './components/CreateBucketButton';
 import UpdateBucketAction from './components/UpdateBucketAction';
 

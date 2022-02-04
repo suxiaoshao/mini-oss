@@ -9,16 +9,12 @@ import {
   DialogActions,
   Button,
   InputAdornment,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Radio,
-  RadioGroup,
 } from '@mui/material';
 import { object, string } from 'common';
 import { BucketAccess, CreateBucketMutationVariables, useCreateBucketMutation } from 'graphql';
 import { useState } from 'react';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
+import ControllerRadioGroup from '@/components/ControllerRadioGroup';
 
 export type CreateBucketForm = Omit<CreateBucketMutationVariables['data'], 'auth'>;
 
@@ -78,25 +74,20 @@ export default function CreateBucketButton({ reFetch }: CreateBucketFabProps): J
               name="access"
               control={control}
               rules={{ required: true }}
-              render={({ field: { onChange, onBlur, value, name, ref } }) => (
-                <FormControl sx={{ marginTop: (theme) => theme.spacing(1) }}>
-                  <FormLabel>访问权限</FormLabel>
-                  <RadioGroup name={name} value={value} onBlur={onBlur} onChange={onChange} row>
-                    <FormControlLabel
-                      inputRef={ref}
-                      value={BucketAccess.Private}
-                      control={<Radio />}
-                      label="私有读写"
-                    />
-                    <FormControlLabel inputRef={ref} value={BucketAccess.Open} control={<Radio />} label="共有读写" />
-                    <FormControlLabel
-                      inputRef={ref}
-                      value={BucketAccess.ReadOpen}
-                      control={<Radio />}
-                      label="共有读私有写"
-                    />
-                  </RadioGroup>
-                </FormControl>
+              render={({ field }) => (
+                <ControllerRadioGroup {...field} label={'访问权限'}>
+                  {[
+                    {
+                      label: '私有读写',
+                      value: BucketAccess.Private,
+                    },
+                    { label: '共有读私有写', value: BucketAccess.ReadOpen },
+                    {
+                      label: '共有读写',
+                      value: BucketAccess.Open,
+                    },
+                  ]}
+                </ControllerRadioGroup>
               )}
             />
           </DialogContent>

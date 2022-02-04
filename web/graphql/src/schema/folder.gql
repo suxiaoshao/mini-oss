@@ -29,7 +29,7 @@ query folderList($data: GetFolderListRequest!) {
         path
         filename
         bucketName
-        access
+        objectAccess: access
         createTime
         updateTime
         size

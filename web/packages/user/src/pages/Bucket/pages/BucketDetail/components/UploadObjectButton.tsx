@@ -5,16 +5,11 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
   IconButton,
   List,
   ListItem,
   ListItemSecondaryAction,
   ListItemText,
-  Radio,
-  RadioGroup,
   TextField,
 } from '@mui/material';
 import { useState } from 'react';
@@ -22,6 +17,7 @@ import { ObjectAccess } from 'graphql';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import prettyBytes from 'pretty-bytes';
 import { Delete } from '@mui/icons-material';
+import ControllerRadioGroup from '@/components/ControllerRadioGroup';
 
 export type CreateObjectForm = { file: FileList; access: ObjectAccess };
 
@@ -38,7 +34,7 @@ export default function UploadObjectButton({ reFetch }: UploadObjectButtonProps)
     setOpen(false);
   };
   const { register, handleSubmit, control, getValues } = useForm<CreateObjectForm>({
-    defaultValues: { access: ObjectAccess.BucketObject },
+    defaultValues: { access: ObjectAccess.InheritanceObject },
   });
   const onSubmit: SubmitHandler<CreateObjectForm> = async () => {
     reFetch();
@@ -78,30 +74,20 @@ export default function UploadObjectButton({ reFetch }: UploadObjectButtonProps)
               name="access"
               control={control}
               rules={{ required: true }}
-              render={({ field: { onChange, onBlur, value, name, ref } }) => (
-                <FormControl sx={{ marginTop: (theme) => theme.spacing(1) }}>
-                  <FormLabel>访问权限</FormLabel>
-                  <RadioGroup name={name} value={value} onBlur={onBlur} onChange={onChange} row>
-                    <FormControlLabel
-                      inputRef={ref}
-                      value={ObjectAccess.BucketObject}
-                      control={<Radio />}
-                      label="继承权限"
-                    />
-                    <FormControlLabel
-                      inputRef={ref}
-                      value={ObjectAccess.PrivateObject}
-                      control={<Radio />}
-                      label="私有读写"
-                    />
-                    <FormControlLabel
-                      inputRef={ref}
-                      value={ObjectAccess.ReadOpenObject}
-                      control={<Radio />}
-                      label="共有读私有写"
-                    />
-                  </RadioGroup>
-                </FormControl>
+              render={({ field }) => (
+                <ControllerRadioGroup {...field} label={'访问权限'}>
+                  {[
+                    {
+                      label: '继承权限',
+                      value: ObjectAccess.InheritanceObject,
+                    },
+                    {
+                      label: '私有读写',
+                      value: ObjectAccess.PrivateObject,
+                    },
+                    { label: '共有读私有写', value: ObjectAccess.ReadOpenObject },
+                  ]}
+                </ControllerRadioGroup>
               )}
             />
           </DialogContent>

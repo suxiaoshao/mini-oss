@@ -7,7 +7,7 @@ import { createSearchParams, Link as RouterLink, useParams, useSearchParams } fr
 import parsePath from '@/pages/Bucket/pages/BucketDetail/utils/parsePath';
 import { Folder, Refresh } from '@mui/icons-material';
 import CreateFolderButton from '@/pages/Bucket/pages/BucketDetail/components/CreateFolderButton';
-import AccessFormat from '@/pages/Bucket/components/AccessFormat';
+import AccessFormat from '@/components/AccessFormat';
 import UploadObjectButton from '@/pages/Bucket/pages/BucketDetail/components/UploadObjectButton';
 
 type FolderTableData = FolderListQuery['folderList']['data'][0];
@@ -49,7 +49,13 @@ export default function FolderList(): JSX.Element {
       {
         Header: '访问权限',
         id: 'access',
-        accessor: ({ access }) => <AccessFormat access={access} />,
+        accessor: (row) => {
+          if (row.__typename === 'FolderInfo') {
+            return <AccessFormat access={row.access} />;
+          } else {
+            return <AccessFormat access={row.objectAccess} />;
+          }
+        },
       },
       {
         Header: '创建时间',

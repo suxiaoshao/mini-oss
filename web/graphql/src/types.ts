@@ -13,7 +13,6 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
-  Upload: File;
 };
 
 /** 访问权限类型 */
@@ -56,24 +55,13 @@ export type CreateBucketRequest = {
 
 export type CreateFolderRequest = {
   /** 访问控制 */
-  access: ObjectAccess;
+  access: FolderAccess;
   /** 用户凭证 */
   auth: Scalars['String'];
   /** bucket 名 */
   bucketName: Scalars['String'];
   /** 路径 */
   fatherPath: Scalars['String'];
-  /** 路径 */
-  path: Scalars['String'];
-};
-
-export type CreateObjectRequest = {
-  /** 访问控制 */
-  access: ObjectAccess;
-  /** 访问控制 */
-  auth: Scalars['String'];
-  /** bucket 名 */
-  bucketName: Scalars['String'];
   /** 路径 */
   path: Scalars['String'];
 };
@@ -123,10 +111,22 @@ export type DeleteUserRequest = {
   name: Scalars['String'];
 };
 
+/** 访问权限类型 */
+export enum FolderAccess {
+  /** 继承 */
+  InheritanceFolder = 'INHERITANCE_FOLDER',
+  /** 开放 */
+  OpenFolder = 'OPEN_FOLDER',
+  /** 不开放 */
+  PrivateFolder = 'PRIVATE_FOLDER',
+  /** 读开放 */
+  ReadOpenFolder = 'READ_OPEN_FOLDER',
+}
+
 export type FolderInfo = {
   __typename?: 'FolderInfo';
   /** 访问控制 */
-  access: ObjectAccess;
+  access: FolderAccess;
   /** bucket 名 */
   bucketName: Scalars['String'];
   /** 创建时间 */
@@ -233,8 +233,6 @@ export type MutationRoot = {
   createBucket: BucketInfo;
   /** 创建目录 */
   createFolder: FolderInfo;
-  /** 创建对象 */
-  createObject: ObjectInfo;
   /** 删除存储桶 */
   deleteBucket: Scalars['Boolean'];
   /** 删除目录 */
@@ -265,11 +263,6 @@ export type MutationRootCreateBucketArgs = {
 
 export type MutationRootCreateFolderArgs = {
   data: CreateFolderRequest;
-};
-
-export type MutationRootCreateObjectArgs = {
-  data: CreateObjectRequest;
-  file: Scalars['Upload'];
 };
 
 export type MutationRootDeleteBucketArgs = {
@@ -317,8 +310,8 @@ export type MutationRootUpdatePasswordArgs = {
 };
 
 export enum ObjectAccess {
-  /** 开放 */
-  BucketObject = 'BUCKET_OBJECT',
+  /** 继承 */
+  InheritanceObject = 'INHERITANCE_OBJECT',
   /** 不开放 */
   PrivateObject = 'PRIVATE_OBJECT',
   /** 读开放 */
@@ -419,7 +412,7 @@ export type UpdateBucketRequest = {
 
 export type UpdateFolderRequest = {
   /** 访问控制 */
-  access: ObjectAccess;
+  access: FolderAccess;
   /** 用户凭证 */
   auth: Scalars['String'];
   /** bucket 名 */
@@ -582,7 +575,7 @@ export type FolderListQuery = {
           createTime: number;
           updateTime: number;
           bucketName: string;
-          access: ObjectAccess;
+          access: FolderAccess;
           fatherPath: string;
           folderName: string;
         }
@@ -591,10 +584,10 @@ export type FolderListQuery = {
           path: string;
           filename: string;
           bucketName: string;
-          access: ObjectAccess;
           createTime: number;
           updateTime: number;
           size: number;
+          objectAccess: ObjectAccess;
         }
     >;
   };
@@ -1038,7 +1031,7 @@ export const FolderListDocument = gql`
           path
           filename
           bucketName
-          access
+          objectAccess: access
           createTime
           updateTime
           size
