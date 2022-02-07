@@ -4,7 +4,7 @@ on:
     branches:
       - main
     paths:
-      - docker/graphql.Dockerfile
+      - docker/packages/graphql.Dockerfile
       - server/packages/graphql/**
       - server/common/**
       - server/.cargo/**

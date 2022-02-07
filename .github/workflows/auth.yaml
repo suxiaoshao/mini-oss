@@ -4,7 +4,7 @@ on:
     branches:
       - main
     paths:
-      - docker/auth.Dockerfile
+      - docker/packages/auth.Dockerfile
       - server/packages/auth/**
       - server/common/**
       - server/.cargo/**

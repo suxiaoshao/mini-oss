@@ -35,6 +35,10 @@ services:
       - postgres
       - mongo
     container_name: core
+  open:
+    image: suxiaoshao/open:latest
+    restart: always
+    container_name: open
   mongo:
     image: mongo:latest
     restart: always

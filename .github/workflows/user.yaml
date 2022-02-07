@@ -4,7 +4,7 @@ on:
     branches:
       - main
     paths:
-      - docker/user.Dockerfile
+      - docker/packages/user.Dockerfile
       - server/packages/user/**
       - server/common/**
       - server/.cargo/**
