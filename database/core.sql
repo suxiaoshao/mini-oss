@@ -5,7 +5,7 @@ create table if not exists bucket
     create_time timestamp                not null,
     update_time timestamp                not null,
     access      bucket_access_type       not null,
-    username    varchar(25)              not null unique
+    username    varchar(25)              not null
 );
 create table if not exists folder
 (
