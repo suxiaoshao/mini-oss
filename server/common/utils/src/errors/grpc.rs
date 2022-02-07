@@ -56,7 +56,7 @@ impl ToStatus for proto::validation::ValidationErrors {
 #[cfg(feature = "mongo")]
 impl ToStatus for mongodb::error::Error {
     fn to_status(self) -> Status {
-        Status::internal(format!("数据库错误:{self}"))
+        Status::internal(format!("mongo 数据库错误:{self}"))
     }
 }
 #[cfg(feature = "mongo")]

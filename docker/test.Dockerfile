@@ -1,0 +1,1 @@
+FROM suxiaoshao/rust:latest
