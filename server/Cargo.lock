@@ -1540,6 +1540,7 @@ dependencies = [
  "thiserror",
  "tokio",
  "tonic",
+ "tower-http",
 ]
 
 [[package]]

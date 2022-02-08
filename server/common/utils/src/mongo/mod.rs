@@ -67,7 +67,7 @@ mod test {
         use mongodb::{options::ClientOptions, Client};
 
         // Parse a connection string into an options struct.
-        let client_options = ClientOptions::parse("mongodb://localhost:27017")
+        let client_options = ClientOptions::parse("mongodb://sushao:sushao@localhost:27017")
             .await
             .to_status()?;
 
@@ -82,7 +82,7 @@ mod test {
             .await
             .to_status()?;
         println!("{id}");
-        // bucket.drop().await.to_status()?;
+        bucket.drop().await.to_status()?;
         Ok(())
     }
 }
