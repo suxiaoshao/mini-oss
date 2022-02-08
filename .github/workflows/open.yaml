@@ -8,7 +8,7 @@ on:
       - server/packages/open/**
       - server/common/**
       - server/.cargo/**
-      - .github/workflows/packages/open.yaml
+      - .github/workflows/open.yaml
 
 jobs:
   build:
