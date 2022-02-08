@@ -224,7 +224,7 @@ pub struct GetObjectListReply {
     pub total: i64,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct CreateObjectsRequest {
+pub struct CreateObjectRequest {
     /// 路径
     #[prost(string, tag = "1")]
     pub path: ::prost::alloc::string::String,
@@ -237,17 +237,11 @@ pub struct CreateObjectsRequest {
     /// 访问控制
     #[prost(string, tag = "4")]
     pub auth: ::prost::alloc::string::String,
-    /// 上传的文件
-    #[prost(message, repeated, tag = "5")]
-    pub files: ::prost::alloc::vec::Vec<UploadFile>,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct UploadFile {
     /// 文件名
-    #[prost(string, tag = "1")]
+    #[prost(string, tag = "5")]
     pub filename: ::prost::alloc::string::String,
     /// 内容
-    #[prost(bytes = "vec", tag = "2")]
+    #[prost(bytes = "vec", tag = "6")]
     pub content: ::prost::alloc::vec::Vec<u8>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -726,9 +720,9 @@ pub mod object_client {
             self
         }
         #[doc = " 创建文件夹"]
-        pub async fn create_objects(
+        pub async fn create_object(
             &mut self,
-            request: impl tonic::IntoRequest<super::CreateObjectsRequest>,
+            request: impl tonic::IntoRequest<super::CreateObjectRequest>,
         ) -> Result<tonic::Response<super::super::auth::Empty>, tonic::Status> {
             self.inner.ready().await.map_err(|e| {
                 tonic::Status::new(
@@ -737,7 +731,7 @@ pub mod object_client {
                 )
             })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/core.Object/CreateObjects");
+            let path = http::uri::PathAndQuery::from_static("/core.Object/CreateObject");
             self.inner.unary(request.into_request(), path, codec).await
         }
         #[doc = " 删除文件夹"]
@@ -1423,9 +1417,9 @@ pub mod object_server {
     #[async_trait]
     pub trait Object: Send + Sync + 'static {
         #[doc = " 创建文件夹"]
-        async fn create_objects(
+        async fn create_object(
             &self,
-            request: tonic::Request<super::CreateObjectsRequest>,
+            request: tonic::Request<super::CreateObjectRequest>,
         ) -> Result<tonic::Response<super::super::auth::Empty>, tonic::Status>;
         #[doc = " 删除文件夹"]
         async fn delete_object(
@@ -1492,18 +1486,18 @@ pub mod object_server {
         fn call(&mut self, req: http::Request<B>) -> Self::Future {
             let inner = self.inner.clone();
             match req.uri().path() {
-                "/core.Object/CreateObjects" => {
+                "/core.Object/CreateObject" => {
                     #[allow(non_camel_case_types)]
-                    struct CreateObjectsSvc<T: Object>(pub Arc<T>);
-                    impl<T: Object> tonic::server::UnaryService<super::CreateObjectsRequest> for CreateObjectsSvc<T> {
+                    struct CreateObjectSvc<T: Object>(pub Arc<T>);
+                    impl<T: Object> tonic::server::UnaryService<super::CreateObjectRequest> for CreateObjectSvc<T> {
                         type Response = super::super::auth::Empty;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::CreateObjectsRequest>,
+                            request: tonic::Request<super::CreateObjectRequest>,
                         ) -> Self::Future {
                             let inner = self.0.clone();
-                            let fut = async move { (*inner).create_objects(request).await };
+                            let fut = async move { (*inner).create_object(request).await };
                             Box::pin(fut)
                         }
                     }
@@ -1512,7 +1506,7 @@ pub mod object_server {
                     let inner = self.inner.clone();
                     let fut = async move {
                         let inner = inner.0;
-                        let method = CreateObjectsSvc(inner);
+                        let method = CreateObjectSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
                             accept_compression_encodings,

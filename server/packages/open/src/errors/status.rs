@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use tonic::{Code, Status};
 
+#[cfg_attr(test, derive(Eq, PartialEq))]
 #[derive(Debug, Serialize, Deserialize)]
 pub(crate) struct OpenStatus {
     code: OpenCode,
@@ -17,6 +18,7 @@ impl From<Status> for OpenStatus {
     }
 }
 
+#[cfg_attr(test, derive(Eq, PartialEq))]
 #[derive(Debug, Serialize, Deserialize)]
 pub enum OpenCode {
     /// The operation completed successfully.

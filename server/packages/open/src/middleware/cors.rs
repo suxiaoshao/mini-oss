@@ -18,7 +18,7 @@ pub fn get_cors() -> Result<CorsLayer, InvalidHeaderName> {
         .allow_headers(vec![
             CONTENT_TYPE,
             AUTHORIZATION,
-            HeaderName::from_str("backet-name")?,
+            HeaderName::from_str("bucket-name")?,
             HeaderName::from_str("object-access")?,
         ])
         .allow_credentials(true))

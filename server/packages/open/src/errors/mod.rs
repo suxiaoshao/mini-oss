@@ -1,4 +1,3 @@
-use axum::extract::multipart::MultipartRejection;
 use axum::response::{IntoResponse, Response};
 use axum::Json;
 use serde::Serialize;
@@ -11,6 +10,7 @@ use self::status::OpenStatus;
 
 pub(crate) mod response;
 mod status;
+#[cfg_attr(test, derive(Eq, PartialEq))]
 #[derive(Error, Debug, Serialize)]
 pub(crate) enum OpenError {
     #[error("没有授权")]
@@ -26,8 +26,8 @@ pub(crate) enum OpenError {
     NoneBucketName,
     #[error("{}不是合法的对象访问权限",.0)]
     NotObjectAccess(String),
-    #[error("必须使用 form-data 形式的上传文件:{}",.0)]
-    NotMultipart(#[serde(skip)] MultipartRejection),
+    #[error("{}不是合法的对象路径",.0)]
+    NotObjectPath(String),
 }
 
 impl From<tonic::transport::Error> for OpenError {
@@ -39,12 +39,6 @@ impl From<tonic::transport::Error> for OpenError {
 impl From<Status> for OpenError {
     fn from(value: Status) -> Self {
         Self::Status(value.into())
-    }
-}
-
-impl From<MultipartRejection> for OpenError {
-    fn from(value: MultipartRejection) -> Self {
-        Self::NotMultipart(value)
     }
 }
 

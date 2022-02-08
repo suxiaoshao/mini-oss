@@ -219,7 +219,7 @@ enum ObjectAccess {
 
 service Object {
   // 创建文件夹
-  rpc CreateObjects (CreateObjectsRequest) returns (auth.Empty) {}
+  rpc CreateObject (CreateObjectRequest) returns (auth.Empty) {}
   // 删除文件夹
   rpc DeleteObject (DeleteObjectRequest) returns (auth.Empty) {}
   // 修改文件夹
@@ -250,7 +250,7 @@ message GetObjectListReply{
   int64 total = 2;
 }
 
-message CreateObjectsRequest{
+message CreateObjectRequest{
   // 路径
   string path = 1;
   // bucket 名
@@ -259,15 +259,10 @@ message CreateObjectsRequest{
   ObjectAccess access = 3;
   // 访问控制
   string auth = 4;
-  // 上传的文件
-  repeated UploadFile files = 5;
-}
-
-message UploadFile{
   // 文件名
-  string filename = 1;
+  string filename = 5;
   // 内容
-  bytes content = 2;
+  bytes content = 6;
 }
 
 message DeleteObjectRequest{
