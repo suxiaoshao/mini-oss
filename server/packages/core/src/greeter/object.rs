@@ -22,8 +22,9 @@ use utils::{
     validation::hash::file_hash,
 };
 
+use crate::utils::check::{check_folder_writeable, check_object_writeable};
 use crate::utils::{
-    check::{check_folder, check_object},
+    check::{check_folder_readable, check_object_readable},
     headers::headers_from,
 };
 
@@ -56,8 +57,8 @@ impl Object for ObjectGreeter {
             filename,
             ..
         } = request.into_inner();
-        // 验证文件夹
-        check_folder(&auth, &bucket_name, &path, pool).await?;
+        // 验证文件夹是否可写
+        check_folder_writeable(&auth, &bucket_name, &path, pool).await?;
         create_object(
             &path,
             &bucket_name,
@@ -81,8 +82,8 @@ impl Object for ObjectGreeter {
             bucket_name,
             auth,
         } = request.into_inner();
-        // 判断对象是否存在
-        check_object(&auth, &bucket_name, &path, &filename, pool).await?;
+        // 判断对象是否可写
+        check_object_writeable(&auth, &bucket_name, &path, &filename, pool).await?;
         let ObjectModal { object_id, .. } =
             ObjectModal::find_one(&path, &bucket_name, &filename, pool).await?;
         futures::future::try_join(
@@ -109,8 +110,8 @@ impl Object for ObjectGreeter {
             headers,
             ..
         } = request.into_inner();
-        // 判断对象是否存在
-        check_object(&auth, &bucket_name, &path, &filename, pool).await?;
+        // 判断对象是否可写
+        check_object_writeable(&auth, &bucket_name, &path, &filename, pool).await?;
         // 判断新文件是否存在
         if ObjectModal::exist(&path, &bucket_name, &new_filename, &self.pool)
             .await
@@ -146,8 +147,8 @@ impl Object for ObjectGreeter {
         let limit = &limit;
         let limit = if limit > &50 { &50 } else { limit };
         let offset = &offset;
-        // 判断文件夹
-        check_folder(&auth, &bucket_name, &path, pool).await?;
+        // 判断文件夹是否可读
+        check_folder_readable(&auth, &bucket_name, &path, pool).await?;
         let (count, list) = futures::future::try_join(
             ObjectModal::count_by_father_path(&bucket_name, &path, pool),
             ObjectModal::find_many_by_path(*limit, *offset, &path, &bucket_name, pool),
@@ -170,8 +171,8 @@ impl Object for ObjectGreeter {
             bucket_name,
             auth,
         } = request.into_inner();
-        // 判断文件夹
-        check_folder(&auth, &bucket_name, &path, pool).await?;
+        // 判断文件夹是否可读
+        check_folder_readable(&auth, &bucket_name, &path, pool).await?;
         let count = ObjectModal::count_by_father_path(&bucket_name, &path, pool).await?;
         Ok(Response::new(CountReply { total: count }))
     }
@@ -187,12 +188,14 @@ impl Object for ObjectGreeter {
             path,
             filename,
         } = request.into_inner();
-        check_folder(&auth, &bucket_name, &path, pool).await?;
+        // 判断对象是否可读
+        check_object_readable(&auth, &bucket_name, &path, &filename, pool).await?;
         let object = ObjectModal::find_one(&path, &bucket_name, &filename, pool).await?;
         Ok(Response::new(object.try_into()?))
     }
 }
 
+/// 创建一个 object
 async fn create_object(
     path: &str,
     bucket_name: &str,

@@ -117,7 +117,7 @@ enum FolderAccess {
 
 message GetFolderRequest{
   // 身份验证
-  string auth = 1;
+  optional string auth = 1;
   // bucket 名
   string bucket_name = 2;
   // 路径
@@ -126,7 +126,7 @@ message GetFolderRequest{
 
 message GetFolderCountRequest{
   // 身份验证
-  string auth = 1;
+  optional string auth = 1;
   // 路径
   string path = 2;
   // bucket 名
@@ -144,7 +144,7 @@ message GetFolderListRequest{
   // 偏移量
   uint32 offset = 2;
   // 身份验证
-  string auth = 3;
+  optional string auth = 3;
   // 路径
   string path = 4;
   // bucket 名
@@ -164,7 +164,7 @@ message UpdateFolderRequest{
   // bucket 名
   string bucket_name = 2;
   // 用户凭证
-  string auth = 3;
+  optional string auth = 3;
   // 访问控制
   FolderAccess access = 4;
 }
@@ -175,7 +175,7 @@ message DeleteFolderRequest{
   // bucket 名
   string bucket_name = 2;
   // 用户凭证
-  string auth = 3;
+  optional string auth = 3;
 }
 
 
@@ -187,7 +187,7 @@ message CreateFolderRequest{
   // 路径
   string father_path = 3;
   // 用户凭证
-  string auth = 4;
+  optional string auth = 4;
   // 访问控制
   FolderAccess access = 5;
 }
@@ -234,7 +234,7 @@ service Object {
 
 message GetObjectRequest{
   // 身份验证
-  string auth = 1;
+  optional string auth = 1;
   // bucket 名
   string bucket_name = 2;
   // 路径
@@ -258,7 +258,7 @@ message CreateObjectRequest{
   // 访问控制
   ObjectAccess access = 3;
   // 访问控制
-  string auth = 4;
+  optional string auth = 4;
   // 文件名
   string filename = 5;
   // 内容
@@ -273,7 +273,7 @@ message DeleteObjectRequest{
   // bucket 名
   string bucket_name = 3;
   // 访问控制
-  string auth = 4;
+  optional string auth = 4;
 }
 
 message UpdateObjectRequest{
@@ -288,7 +288,7 @@ message UpdateObjectRequest{
   // 新文件名
   string new_filename = 6;
   // 访问控制
-  string auth = 7;
+  optional string auth = 7;
   // 自定义 header
   repeated Header headers = 8;
 }

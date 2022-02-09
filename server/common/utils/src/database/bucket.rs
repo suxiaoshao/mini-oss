@@ -153,6 +153,24 @@ impl BucketModal {
             .to_status()?;
         Ok(count)
     }
+    /// 判断读取访问权限
+    pub async fn read_open(bucket_name: &str, pool: &Pool<Postgres>) -> Result<bool, Status> {
+        let Self { access, .. } = Self::find_one(bucket_name, pool).await?;
+        Ok(match access {
+            BucketAccess::Open => true,
+            BucketAccess::ReadOpen => true,
+            BucketAccess::Private => false,
+        })
+    }
+    /// 判断写访问权限
+    pub async fn write_open(bucket_name: &str, pool: &Pool<Postgres>) -> Result<bool, Status> {
+        let Self { access, .. } = Self::find_one(bucket_name, pool).await?;
+        Ok(match access {
+            BucketAccess::Open => true,
+            BucketAccess::ReadOpen => false,
+            BucketAccess::Private => false,
+        })
+    }
 }
 
 #[allow(clippy::from_over_into)]

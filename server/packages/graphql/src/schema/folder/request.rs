@@ -7,7 +7,7 @@ pub struct UpdateFolderRequest {
     /// bucket 名
     pub bucket_name: String,
     /// 用户凭证
-    pub auth: String,
+    pub auth: Option<String>,
     /// 访问控制
     pub access: FolderAccess,
 }
@@ -40,7 +40,7 @@ pub struct CreateFolderRequest {
     /// 路径
     pub father_path: String,
     /// 用户凭证
-    pub auth: String,
+    pub auth: Option<String>,
     /// 访问控制
     pub access: FolderAccess,
 }

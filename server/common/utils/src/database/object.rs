@@ -1,5 +1,7 @@
 use std::time::SystemTime;
 
+#[cfg(feature = "recursion")]
+use async_recursion::async_recursion;
 use sqlx::{types::time::PrimitiveDateTime, FromRow, Pool, Postgres};
 
 use proto::{
@@ -7,6 +9,7 @@ use proto::{
     Status,
 };
 
+use crate::database::folder::FolderModal;
 use crate::errors::grpc::ToStatusResult;
 
 #[derive(sqlx::Type, Debug)]
@@ -256,6 +259,37 @@ impl ObjectModal {
                 .await
                 .to_status()?;
         Ok(count)
+    }
+    /// 判断读取访问权限
+    #[cfg(feature = "recursion")]
+    #[async_recursion]
+    pub async fn read_open(
+        path: &str,
+        bucket_name: &str,
+        filename: &str,
+        pool: &Pool<Postgres>,
+    ) -> Result<bool, Status> {
+        let Self { access, .. } = Self::find_one(path, bucket_name, filename, pool).await?;
+        Ok(match access {
+            ObjectAccess::Inheritance => FolderModal::read_open(path, bucket_name, pool).await?,
+            ObjectAccess::ReadOpen => true,
+            ObjectAccess::Private => false,
+        })
+    }
+    /// 判断读取访问权限
+    #[cfg(feature = "recursion")]
+    #[async_recursion]
+    pub async fn write_open(
+        path: &str,
+        bucket_name: &str,
+        filename: &str,
+        pool: &Pool<Postgres>,
+    ) -> Result<bool, Status> {
+        let Self { access, .. } = Self::find_one(path, bucket_name, filename, pool).await?;
+        Ok(match access {
+            ObjectAccess::Inheritance => FolderModal::write_open(path, bucket_name, pool).await?,
+            _ => false,
+        })
     }
 }
 #[allow(clippy::from_over_into)]

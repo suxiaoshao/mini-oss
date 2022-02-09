@@ -85,8 +85,8 @@ pub struct BucketInfo {
 #[derive(Clone, PartialEq, ::prost::Message, InputObject)]
 pub struct GetFolderRequest {
     /// 身份验证
-    #[prost(string, tag = "1")]
-    pub auth: ::prost::alloc::string::String,
+    #[prost(string, optional, tag = "1")]
+    pub auth: ::core::option::Option<::prost::alloc::string::String>,
     /// bucket 名
     #[prost(string, tag = "2")]
     pub bucket_name: ::prost::alloc::string::String,
@@ -97,8 +97,8 @@ pub struct GetFolderRequest {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetFolderCountRequest {
     /// 身份验证
-    #[prost(string, tag = "1")]
-    pub auth: ::prost::alloc::string::String,
+    #[prost(string, optional, tag = "1")]
+    pub auth: ::core::option::Option<::prost::alloc::string::String>,
     /// 路径
     #[prost(string, tag = "2")]
     pub path: ::prost::alloc::string::String,
@@ -121,8 +121,8 @@ pub struct GetFolderListRequest {
     #[prost(uint32, tag = "2")]
     pub offset: u32,
     /// 身份验证
-    #[prost(string, tag = "3")]
-    pub auth: ::prost::alloc::string::String,
+    #[prost(string, optional, tag = "3")]
+    pub auth: ::core::option::Option<::prost::alloc::string::String>,
     /// 路径
     #[prost(string, tag = "4")]
     pub path: ::prost::alloc::string::String,
@@ -148,8 +148,8 @@ pub struct UpdateFolderRequest {
     #[prost(string, tag = "2")]
     pub bucket_name: ::prost::alloc::string::String,
     /// 用户凭证
-    #[prost(string, tag = "3")]
-    pub auth: ::prost::alloc::string::String,
+    #[prost(string, optional, tag = "3")]
+    pub auth: ::core::option::Option<::prost::alloc::string::String>,
     /// 访问控制
     #[prost(enumeration = "FolderAccess", tag = "4")]
     pub access: i32,
@@ -163,8 +163,8 @@ pub struct DeleteFolderRequest {
     #[prost(string, tag = "2")]
     pub bucket_name: ::prost::alloc::string::String,
     /// 用户凭证
-    #[prost(string, tag = "3")]
-    pub auth: ::prost::alloc::string::String,
+    #[prost(string, optional, tag = "3")]
+    pub auth: ::core::option::Option<::prost::alloc::string::String>,
 }
 #[derive(Clone, PartialEq, ::prost::Message, Validate, Deserialize, InputObject)]
 pub struct CreateFolderRequest {
@@ -179,8 +179,8 @@ pub struct CreateFolderRequest {
     #[prost(string, tag = "3")]
     pub father_path: ::prost::alloc::string::String,
     /// 用户凭证
-    #[prost(string, tag = "4")]
-    pub auth: ::prost::alloc::string::String,
+    #[prost(string, optional, tag = "4")]
+    pub auth: ::core::option::Option<::prost::alloc::string::String>,
     /// 访问控制
     #[prost(enumeration = "FolderAccess", tag = "5")]
     pub access: i32,
@@ -209,8 +209,8 @@ pub struct FolderInfo {
 #[derive(Clone, PartialEq, ::prost::Message, InputObject)]
 pub struct GetObjectRequest {
     /// 身份验证
-    #[prost(string, tag = "1")]
-    pub auth: ::prost::alloc::string::String,
+    #[prost(string, optional, tag = "1")]
+    pub auth: ::core::option::Option<::prost::alloc::string::String>,
     /// bucket 名
     #[prost(string, tag = "2")]
     pub bucket_name: ::prost::alloc::string::String,
@@ -243,8 +243,8 @@ pub struct CreateObjectRequest {
     #[prost(enumeration = "ObjectAccess", tag = "3")]
     pub access: i32,
     /// 访问控制
-    #[prost(string, tag = "4")]
-    pub auth: ::prost::alloc::string::String,
+    #[prost(string, optional, tag = "4")]
+    pub auth: ::core::option::Option<::prost::alloc::string::String>,
     /// 文件名
     #[prost(string, tag = "5")]
     #[validate(custom = "validate_folder")]
@@ -265,8 +265,8 @@ pub struct DeleteObjectRequest {
     #[prost(string, tag = "3")]
     pub bucket_name: ::prost::alloc::string::String,
     /// 访问控制
-    #[prost(string, tag = "4")]
-    pub auth: ::prost::alloc::string::String,
+    #[prost(string, optional, tag = "4")]
+    pub auth: ::core::option::Option<::prost::alloc::string::String>,
 }
 #[derive(Clone, PartialEq, ::prost::Message, Validate, Deserialize, InputObject)]
 pub struct UpdateObjectRequest {
@@ -287,8 +287,8 @@ pub struct UpdateObjectRequest {
     #[validate(custom = "validate_folder")]
     pub new_filename: ::prost::alloc::string::String,
     /// 访问控制
-    #[prost(string, tag = "7")]
-    pub auth: ::prost::alloc::string::String,
+    #[prost(string, optional, tag = "7")]
+    pub auth: ::core::option::Option<::prost::alloc::string::String>,
     /// 自定义 header
     #[prost(message, repeated, tag = "8")]
     pub headers: ::prost::alloc::vec::Vec<Header>,

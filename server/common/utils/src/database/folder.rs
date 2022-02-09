@@ -1,12 +1,13 @@
 use std::time::SystemTime;
 
+#[cfg(feature = "recursion")]
+use async_recursion::async_recursion;
 use sqlx::{types::time::PrimitiveDateTime, FromRow, Pool, Postgres};
 
 use proto::{core::FolderInfo, Status};
 
+use crate::database::bucket::BucketModal;
 use crate::errors::grpc::ToStatusResult;
-#[cfg(all(feature = "recursion", feature = "future"))]
-use async_recursion::async_recursion;
 
 #[derive(sqlx::Type, Debug)]
 #[sqlx(type_name = "folder_access_type")]
@@ -153,6 +154,58 @@ impl FolderModal {
                 .await
                 .to_status()?;
         Ok(names.into_iter().map(|(name,)| name).collect())
+    }
+    /// 判断读取访问权限
+    #[cfg(feature = "recursion")]
+    #[async_recursion]
+    pub async fn read_open(
+        path: &str,
+        bucket_name: &str,
+        pool: &Pool<Postgres>,
+    ) -> Result<bool, Status> {
+        let Self {
+            access,
+            father_path,
+            ..
+        } = Self::find_one(path, bucket_name, pool).await?;
+        Ok(match access {
+            FolderAccess::Inheritance => {
+                if father_path == "/" {
+                    BucketModal::read_open(bucket_name, pool).await?
+                } else {
+                    Self::read_open(&father_path, bucket_name, pool).await?
+                }
+            }
+            FolderAccess::ReadOpen => true,
+            FolderAccess::Private => false,
+            FolderAccess::Open => true,
+        })
+    }
+    /// 判断读取访问权限
+    #[cfg(feature = "recursion")]
+    #[async_recursion]
+    pub async fn write_open(
+        path: &str,
+        bucket_name: &str,
+        pool: &Pool<Postgres>,
+    ) -> Result<bool, Status> {
+        let Self {
+            access,
+            father_path,
+            ..
+        } = Self::find_one(path, bucket_name, pool).await?;
+        Ok(match access {
+            FolderAccess::Inheritance => {
+                if father_path == "/" {
+                    BucketModal::write_open(bucket_name, pool).await?
+                } else {
+                    Self::write_open(&father_path, bucket_name, pool).await?
+                }
+            }
+            FolderAccess::ReadOpen => false,
+            FolderAccess::Private => false,
+            FolderAccess::Open => true,
+        })
     }
 
     /// 递归获取列表名

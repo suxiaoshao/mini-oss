@@ -20,7 +20,7 @@ pub struct UpdateObjectRequest {
     /// 新文件名
     pub new_filename: String,
     /// 访问控制
-    pub auth: String,
+    pub auth: Option<String>,
     /// 自定义 header
     pub headers: Vec<HeaderType>,
 }
@@ -62,5 +62,5 @@ pub struct CreateObjectRequest {
     /// 访问控制
     pub access: ObjectAccess,
     /// 访问控制
-    pub auth: String,
+    pub auth: Option<String>,
 }

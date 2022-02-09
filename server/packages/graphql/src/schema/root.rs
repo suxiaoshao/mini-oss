@@ -151,14 +151,14 @@ impl QueryRoot {
             let folder_request = Request::new(GetFolderListRequest {
                 limit: folder_limit,
                 offset: *offset,
-                auth: auth.to_string(),
+                auth: auth.clone(),
                 path: path.to_string(),
                 bucket_name: bucket_name.to_string(),
             });
             let object_request = Request::new(GetFolderListRequest {
                 limit: object_limit,
                 offset: 0,
-                auth: auth.to_string(),
+                auth: auth.clone(),
                 path: path.to_string(),
                 bucket_name: bucket_name.to_string(),
             });
@@ -183,7 +183,7 @@ impl QueryRoot {
             let object_request = Request::new(GetFolderListRequest {
                 limit: *limit,
                 offset: offset - folder_count as u32,
-                auth: auth.to_string(),
+                auth: auth.clone(),
                 path: path.to_string(),
                 bucket_name: bucket_name.to_string(),
             });
