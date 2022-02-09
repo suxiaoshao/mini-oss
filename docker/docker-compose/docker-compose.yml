@@ -44,9 +44,8 @@ services:
     restart: always
     ports:
       - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: "sushao"
-      MONGO_INITDB_ROOT_PASSWORD: "sushao"
+    env_file:
+      - .env
     container_name: mongo
     volumes:
       - mongodb:/data/db
@@ -56,6 +55,8 @@ services:
     ports:
       - "5432:5432"
     container_name: postgres
+    env_file:
+      - .env
     environment:
       PGDATA: "/var/lib/postgresql/data/pgdata"
     volumes:
