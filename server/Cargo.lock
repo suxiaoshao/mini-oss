@@ -1533,6 +1533,7 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "axum-extra",
+ "nom",
  "proto",
  "serde",
  "serde_json",

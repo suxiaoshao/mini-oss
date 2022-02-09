@@ -13,8 +13,6 @@ mod status;
 #[cfg_attr(test, derive(Eq, PartialEq))]
 #[derive(Error, Debug, Serialize)]
 pub(crate) enum OpenError {
-    #[error("没有授权")]
-    NoneAuthorization,
     #[error("内部连接错误")]
     TransportError,
     #[error("{}",.0.message)]
