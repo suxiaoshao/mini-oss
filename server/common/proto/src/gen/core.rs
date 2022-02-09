@@ -2,7 +2,7 @@ use async_graphql::{Enum, InputObject, SimpleObject};
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use crate::validation::{bucket::validate_bucket, folder::validate_folder};
+use crate::validation::{bucket::validate_bucket, folder::validate_folder, path::validate_path};
 #[derive(Clone, PartialEq, ::prost::Message, InputObject)]
 pub struct GetBucketRequest {
     /// 身份验证
@@ -139,10 +139,11 @@ pub struct GetFolderListReply {
     #[prost(int64, tag = "2")]
     pub total: i64,
 }
-#[derive(Clone, PartialEq, ::prost::Message, InputObject)]
+#[derive(Clone, PartialEq, ::prost::Message, InputObject, Validate, Deserialize)]
 pub struct UpdateFolderRequest {
     /// 路径
     #[prost(string, tag = "1")]
+    #[validate(custom = "validate_path")]
     pub path: ::prost::alloc::string::String,
     /// bucket 名
     #[prost(string, tag = "2")]
@@ -154,10 +155,11 @@ pub struct UpdateFolderRequest {
     #[prost(enumeration = "FolderAccess", tag = "4")]
     pub access: i32,
 }
-#[derive(Clone, PartialEq, ::prost::Message, InputObject)]
+#[derive(Clone, PartialEq, ::prost::Message, InputObject, Validate, Deserialize)]
 pub struct DeleteFolderRequest {
     /// 名字
     #[prost(string, tag = "1")]
+    #[validate(custom = "validate_path")]
     pub path: ::prost::alloc::string::String,
     /// bucket 名
     #[prost(string, tag = "2")]

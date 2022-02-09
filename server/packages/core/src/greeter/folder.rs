@@ -66,6 +66,8 @@ impl Folder for FolderGreeter {
         &self,
         request: Request<DeleteFolderRequest>,
     ) -> Result<Response<Empty>, Status> {
+        // 验证
+        request.get_ref().validate().to_status()?;
         let pool = &self.pool;
         let DeleteFolderRequest {
             path,
@@ -107,6 +109,8 @@ impl Folder for FolderGreeter {
         &self,
         request: Request<UpdateFolderRequest>,
     ) -> Result<Response<FolderInfo>, Status> {
+        // 验证
+        request.get_ref().validate().to_status()?;
         let pool = &self.pool;
         let access = request.get_ref().access();
         let UpdateFolderRequest {
