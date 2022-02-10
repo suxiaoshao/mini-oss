@@ -57,11 +57,14 @@ impl Mongo {
     pub async fn read_file(&self, bucket_name: String, id: &str) -> Result<Vec<u8>, Status> {
         let id = ObjectId::from_str(id).to_status()?;
         let bucket = self.bucket(bucket_name);
-        let mut content = bucket.open_download_stream(id).await.to_status()?;
-        let content = content
-            .next()
-            .await
-            .ok_or_else(|| Status::internal("mongo 数据库错误: 读取失败".to_string()))?;
+        let stream = bucket.open_download_stream(id).await.to_status()?;
+        let mut content = vec![];
+        stream
+            .for_each(|mut x| {
+                content.append(&mut x);
+                futures::future::ready(())
+            })
+            .await;
         Ok(content)
     }
 }
@@ -74,7 +77,7 @@ mod test {
     use crate::errors::grpc::ToStatusResult;
 
     #[tokio::test]
-    async fn test() -> Result<(), Status> {
+    async fn test_write() -> Result<(), Status> {
         use mongodb::{options::ClientOptions, Client};
 
         // Parse a connection string into an options struct.
