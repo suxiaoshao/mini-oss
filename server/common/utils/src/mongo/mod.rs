@@ -1,6 +1,6 @@
 use std::{env::var, str::FromStr};
 
-use futures::AsyncRead;
+use futures::{AsyncRead, StreamExt};
 use mongodb::{bson::oid::ObjectId, options::ClientOptions, Client, Database};
 use mongodb_gridfs::{options::GridFSBucketOptions, GridFSBucket};
 use proto::Status;
@@ -52,6 +52,17 @@ impl Mongo {
         let bucket = self.bucket(bucket_name);
         bucket.delete(id).await.to_status()?;
         Ok(())
+    }
+    /// 读取文件内容
+    pub async fn read_file(&self, bucket_name: String, id: &str) -> Result<Vec<u8>, Status> {
+        let id = ObjectId::from_str(id).to_status()?;
+        let bucket = self.bucket(bucket_name);
+        let mut content = bucket.open_download_stream(id).await.to_status()?;
+        let content = content
+            .next()
+            .await
+            .ok_or_else(|| Status::internal("mongo 数据库错误: 读取失败".to_string()))?;
+        Ok(content)
     }
 }
 

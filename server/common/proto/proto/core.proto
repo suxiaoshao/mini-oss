@@ -230,6 +230,8 @@ service Object {
   rpc GetObjectCount(GetFolderCountRequest) returns (CountReply){}
   // 获取 object 信息
   rpc GetObject(GetObjectRequest) returns (ObjectInfo){}
+  // 获取文件内容
+  rpc GetObjectContent(GetObjectRequest) returns (GetObjectContentReply){}
 }
 
 message GetObjectRequest{
@@ -241,6 +243,10 @@ message GetObjectRequest{
   string path = 3;
   // 文件名
   string filename = 4;
+}
+
+message GetObjectContentReply{
+  bytes content = 6;
 }
 
 message GetObjectListReply{

@@ -4,8 +4,8 @@ use self::root::{MutationRoot, QueryRoot};
 
 mod bucket;
 mod folder;
+mod object;
 pub mod root;
 mod user_info;
-mod object;
 
 pub type RootSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;

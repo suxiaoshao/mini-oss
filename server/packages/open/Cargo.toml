@@ -14,5 +14,6 @@ serde = { version = "1.0.136", features = ["derive"] }
 serde_json = "1.0.78"
 tonic = "0.6.2"
 proto = { path = "../../common/proto", features = ["core", "auth", "user"] }
-tower-http = { version = "0.2.1", features = ["cors"] }
+tower-http = { version = "0.2.2", features = ["cors"] }
 nom = "7.1.0"
+futures = "0.3.21"

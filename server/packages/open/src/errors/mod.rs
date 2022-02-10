@@ -41,17 +41,6 @@ impl From<Status> for OpenError {
 }
 
 pub(crate) type OpenResult<T> = Result<T, OpenError>;
-pub(crate) trait ToOpen<T> {
-    fn to_open(self) -> OpenResult<T>;
-}
-impl<T, E: Into<OpenError>> ToOpen<T> for Result<T, E> {
-    fn to_open(self) -> OpenResult<T> {
-        match self {
-            Ok(e) => Ok(e),
-            Err(err) => Err(err.into()),
-        }
-    }
-}
 
 impl IntoResponse for OpenError {
     fn into_response(self) -> Response {

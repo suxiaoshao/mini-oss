@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use proto::core::{CountReply, GetFolderCountRequest, GetObjectRequest};
+use proto::core::{CountReply, GetFolderCountRequest, GetObjectContentReply, GetObjectRequest};
 use proto::{
     async_trait,
     auth::Empty,
@@ -192,6 +192,25 @@ impl Object for ObjectGreeter {
         check_object_readable(&auth, &bucket_name, &path, &filename, pool).await?;
         let object = ObjectModal::find_one(&path, &bucket_name, &filename, pool).await?;
         Ok(Response::new(object.try_into()?))
+    }
+
+    async fn get_object_content(
+        &self,
+        request: Request<GetObjectRequest>,
+    ) -> Result<Response<GetObjectContentReply>, Status> {
+        let pool = &self.pool;
+        let GetObjectRequest {
+            auth,
+            bucket_name,
+            path,
+            filename,
+        } = request.into_inner();
+        // 判断对象是否可读
+        check_object_readable(&auth, &bucket_name, &path, &filename, pool).await?;
+        let ObjectModal { object_id, .. } =
+            ObjectModal::find_one(&path, &bucket_name, &filename, pool).await?;
+        let content = self.mongo.read_file(bucket_name, &object_id).await?;
+        Ok(Response::new(GetObjectContentReply { content }))
     }
 }
 
