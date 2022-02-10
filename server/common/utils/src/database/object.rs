@@ -1,7 +1,5 @@
 use std::time::SystemTime;
 
-#[cfg(feature = "recursion")]
-use async_recursion::async_recursion;
 use sqlx::{types::time::PrimitiveDateTime, FromRow, Pool, Postgres};
 
 use proto::{
@@ -261,8 +259,6 @@ impl ObjectModal {
         Ok(count)
     }
     /// 判断读取访问权限
-    #[cfg(feature = "recursion")]
-    #[async_recursion]
     pub async fn read_open(
         path: &str,
         bucket_name: &str,
@@ -277,8 +273,6 @@ impl ObjectModal {
         })
     }
     /// 判断读取访问权限
-    #[cfg(feature = "recursion")]
-    #[async_recursion]
     pub async fn write_open(
         path: &str,
         bucket_name: &str,

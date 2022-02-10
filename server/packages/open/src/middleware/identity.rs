@@ -50,7 +50,7 @@ mod test {
         assert!(parse_bucket_name(input).is_err());
         let input = ".sdasf.open.mini-oss.top";
         assert!(parse_bucket_name(input).is_err());
-        let input = "sdasf.open.mini-oss.top";
+        let input = "as-sdasf.open.mini-oss.top";
         assert!(parse_bucket_name(input).is_ok());
         let input = "sdasf.open.mini-oss.sushao.me";
         assert!(parse_bucket_name(input).is_ok());

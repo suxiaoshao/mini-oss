@@ -163,19 +163,16 @@ impl FolderModal {
         bucket_name: &str,
         pool: &Pool<Postgres>,
     ) -> Result<bool, Status> {
+        if path == "/" {
+            return BucketModal::read_open(bucket_name, pool).await;
+        }
         let Self {
             access,
             father_path,
             ..
         } = Self::find_one(path, bucket_name, pool).await?;
         Ok(match access {
-            FolderAccess::Inheritance => {
-                if father_path == "/" {
-                    BucketModal::read_open(bucket_name, pool).await?
-                } else {
-                    Self::read_open(&father_path, bucket_name, pool).await?
-                }
-            }
+            FolderAccess::Inheritance => Self::read_open(&father_path, bucket_name, pool).await?,
             FolderAccess::ReadOpen => true,
             FolderAccess::Private => false,
             FolderAccess::Open => true,
@@ -189,19 +186,16 @@ impl FolderModal {
         bucket_name: &str,
         pool: &Pool<Postgres>,
     ) -> Result<bool, Status> {
+        if path == "/" {
+            return BucketModal::write_open(bucket_name, pool).await;
+        }
         let Self {
             access,
             father_path,
             ..
         } = Self::find_one(path, bucket_name, pool).await?;
         Ok(match access {
-            FolderAccess::Inheritance => {
-                if father_path == "/" {
-                    BucketModal::write_open(bucket_name, pool).await?
-                } else {
-                    Self::write_open(&father_path, bucket_name, pool).await?
-                }
-            }
+            FolderAccess::Inheritance => Self::write_open(&father_path, bucket_name, pool).await?,
             FolderAccess::ReadOpen => false,
             FolderAccess::Private => false,
             FolderAccess::Open => true,
