@@ -29,13 +29,15 @@ impl FromStr for PathWithName {
     type Err = OpenError;
 
     fn from_str(source_path: &str) -> Result<Self, Self::Err> {
+        // 判断是否是合法的路径
         let cs = source_path.chars().collect::<Vec<_>>();
         match (cs.get(0), cs.last()) {
             (Some('/'), Some(last)) if last != &'/' => {}
             _ => return Err(Self::Err::NotObjectPath(source_path.to_string())),
         };
         let path_list: Vec<_> = source_path.split('/').collect();
-        let path = path_list[..path_list.len() - 1].join("/");
+
+        let path = format!("/{}", path_list[1..path_list.len() - 1].join("/"));
         match path_list.last().cloned() {
             Some(filename) => Ok(Self {
                 filename: filename.to_string(),
@@ -79,6 +81,14 @@ mod test {
             Ok(PathWithName {
                 filename: "sushao.txt".to_string(),
                 path: "/test/www/xixi".to_string(),
+            })
+        );
+        let path = "/sushao.txt".parse::<PathWithName>();
+        assert_eq!(
+            path,
+            Ok(PathWithName {
+                filename: "sushao.txt".to_string(),
+                path: "/".to_string(),
             })
         );
     }

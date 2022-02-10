@@ -18,3 +18,6 @@ docker push suxiaoshao/core:latest;
 
 docker build -t suxiaoshao/open:latest -f ./docker/packages/open.Dockerfile .;
 docker push suxiaoshao/open:latest;
+
+docker build -t suxiaoshao/web:latest -f ./docker/web/web.Dockerfile .;
+docker push suxiaoshao/web:latest;
