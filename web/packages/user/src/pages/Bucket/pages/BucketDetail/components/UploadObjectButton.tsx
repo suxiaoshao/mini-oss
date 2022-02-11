@@ -18,6 +18,7 @@ import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import prettyBytes from 'pretty-bytes';
 import { Delete } from '@mui/icons-material';
 import ControllerRadioGroup from '@/components/ControllerRadioGroup';
+import { axiosInstance } from '@/utils/axios';
 
 export type CreateObjectForm = { file: FileList; access: ObjectAccess };
 
@@ -36,7 +37,9 @@ export default function UploadObjectButton({ reFetch }: UploadObjectButtonProps)
   const { register, handleSubmit, control, getValues } = useForm<CreateObjectForm>({
     defaultValues: { access: ObjectAccess.InheritanceObject },
   });
-  const onSubmit: SubmitHandler<CreateObjectForm> = async () => {
+  const onSubmit: SubmitHandler<CreateObjectForm> = async ({ file, access }) => {
+    const data = await file[0].arrayBuffer();
+    await axiosInstance.put(`/${file[0].name}`, data, { headers: { 'object-access': access } });
     reFetch();
     handleClose();
   };

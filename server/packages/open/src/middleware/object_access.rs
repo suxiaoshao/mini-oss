@@ -21,9 +21,13 @@ where
             .and_then(|x| x.to_str().ok())
         {
             None => proto::core::ObjectAccess::InheritanceObject,
-            Some("InheritanceObject") => proto::core::ObjectAccess::InheritanceObject,
-            Some("PrivateObject") => proto::core::ObjectAccess::PrivateObject,
-            Some("ReadOpenObject") => proto::core::ObjectAccess::ReadOpenObject,
+            Some("InheritanceObject" | "INHERITANCE_OBJECT") => {
+                proto::core::ObjectAccess::InheritanceObject
+            }
+            Some("PrivateObject" | "PRIVATE_OBJECT") => proto::core::ObjectAccess::PrivateObject,
+            Some("ReadOpenObject" | "READ_OPEN_OBJECT") => {
+                proto::core::ObjectAccess::ReadOpenObject
+            }
             Some(s) => {
                 return Err(Self::Rejection::NotObjectAccess(s.to_string()));
             }
