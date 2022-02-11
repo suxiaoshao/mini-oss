@@ -1,3 +1,4 @@
+use axum::http::header::{InvalidHeaderName, InvalidHeaderValue};
 use axum::response::{IntoResponse, Response};
 use axum::Json;
 use serde::Serialize;
@@ -26,6 +27,8 @@ pub(crate) enum OpenError {
     NotObjectAccess(String),
     #[error("{}不是合法的对象路径",.0)]
     NotObjectPath(String),
+    #[error("http headers 解析失败")]
+    HttpHeadersParse,
 }
 
 impl From<tonic::transport::Error> for OpenError {
@@ -37,6 +40,18 @@ impl From<tonic::transport::Error> for OpenError {
 impl From<Status> for OpenError {
     fn from(value: Status) -> Self {
         Self::Status(value.into())
+    }
+}
+
+impl From<InvalidHeaderName> for OpenError {
+    fn from(_: InvalidHeaderName) -> Self {
+        Self::HttpHeadersParse
+    }
+}
+
+impl From<InvalidHeaderValue> for OpenError {
+    fn from(_: InvalidHeaderValue) -> Self {
+        Self::HttpHeadersParse
     }
 }
 

@@ -4,7 +4,7 @@ import { enqueueSnackbar } from '..';
 
 /**  */
 const link = createHttpLink({
-  uri: 'http://api.mini-oss.sushao.me',
+  uri: 'http://api.mini-oss.top',
   credentials: 'include',
 });
 
