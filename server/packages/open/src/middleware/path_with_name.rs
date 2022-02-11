@@ -39,10 +39,12 @@ impl FromStr for PathWithName {
 
         let path = format!("/{}", path_list[1..path_list.len() - 1].join("/"));
         match path_list.last().cloned() {
-            Some(filename) => Ok(Self {
-                filename: filename.to_string(),
-                path,
-            }),
+            Some(filename) => {
+                let filename = urlencoding::decode(filename)
+                    .map(|x| x.to_string())
+                    .unwrap_or_else(|_| filename.to_string());
+                Ok(Self { filename, path })
+            }
             None => Err(Self::Err::NotObjectPath(source_path.to_string())),
         }
     }

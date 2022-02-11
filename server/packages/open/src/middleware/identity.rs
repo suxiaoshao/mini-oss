@@ -31,6 +31,7 @@ pub(crate) async fn identity<B>(mut req: Request<B>, next: Next<B>) -> OpenResul
         .get(AUTHORIZATION)
         .and_then(|header| header.to_str().ok())
         .map(|x| x.to_string());
+
     req.extensions_mut()
         .insert(Arc::new(Identity { auth, bucket_name }));
     Ok(next.run(req).await)
