@@ -97,6 +97,7 @@ impl QueryRoot {
             path,
             bucket_name,
         } = &data;
+        // 需要的总数
         let require_count = limit + offset;
 
         // 获取文件夹总数
@@ -128,7 +129,10 @@ impl QueryRoot {
             .await
             .to_field()?
             .into_inner();
+
+        // 数据库内的总数
         let total = object_count + folder_count;
+
         // 如果文件夹总数大于需要的总数
         if folder_count > require_count as i64 {
             let request = Request::new(data);
@@ -146,7 +150,7 @@ impl QueryRoot {
             })
             // 如果需要两种
         } else if folder_count > *offset as i64 && folder_count < require_count as i64 {
-            let folder_limit = require_count - folder_count as u32;
+            let folder_limit = folder_count as u32 - offset;
             let object_limit = limit - folder_limit;
             let folder_request = Request::new(GetFolderListRequest {
                 limit: folder_limit,

@@ -1,4 +1,4 @@
-#[cfg(any(feature = "password", feature = "future"))]
+#[cfg(feature = "password")]
 use crate::errors::grpc::ToStatusResult;
 #[cfg(feature = "password")]
 use pbkdf2::{
