@@ -212,9 +212,9 @@ impl FolderModal {
     ) -> Result<Vec<String>, Status> {
         let mut names = vec![];
         // 获取子目录一代
-        let mut child_names = Self::find_names_by_path(father_path, bucket_name, pool).await?;
+        let child_names = Self::find_names_by_path(father_path, bucket_name, pool).await?;
         if child_names.is_empty() {
-            return Ok(vec![]);
+            return Ok(vec![father_path.to_string()]);
         }
         // 获取子目录的后代
         let grade_names = child_names
@@ -225,7 +225,6 @@ impl FolderModal {
         for grade_name in &mut grade_names {
             names.append(grade_name);
         }
-        names.append(&mut child_names);
         names.push(father_path.to_string());
         Ok(names)
     }
@@ -294,5 +293,25 @@ impl Into<FolderInfo> for FolderModal {
             bucket_name,
             father_path,
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use sqlx::postgres::PgPoolOptions;
+
+    use super::FolderModal;
+
+    #[tokio::test]
+    async fn test_recursive_names_by_path() {
+        let pool = PgPoolOptions::new()
+            .max_connections(5)
+            .connect(&std::env::var("postgres").unwrap())
+            .await
+            .unwrap();
+        let a = FolderModal::recursive_names_by_path("/asas", "as-sushao", &pool)
+            .await
+            .unwrap();
+        println!("{:?}", a)
     }
 }
