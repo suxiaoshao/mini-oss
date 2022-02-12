@@ -15,16 +15,22 @@ import { TableInstance } from 'react-table';
 import { CustomColumn } from './useCustomTable';
 import { PageState } from './usePage';
 
-export interface CustomTableProps<D extends object> extends TableContainerProps {
+export interface CustomTableProps<D extends object> extends Omit<TableContainerProps, 'ref'> {
   tableInstance: TableInstance<D>;
   page?: Omit<PageState, 'limit' | 'offset'> & { total: number };
+  containerProps?: TableContainerProps;
 }
 
-export function CustomTable<D extends object>({ tableInstance, page }: CustomTableProps<D>): JSX.Element {
+export function CustomTable<D extends object>({
+  tableInstance,
+  page,
+  containerProps,
+  ...tableProps
+}: CustomTableProps<D>): JSX.Element {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = tableInstance;
   return (
-    <TableContainer component={Paper}>
-      <Table {...getTableProps()}>
+    <TableContainer component={Paper} {...containerProps}>
+      <Table {...tableProps} {...getTableProps()}>
         <TableHead>
           {
             // Loop over the header rows

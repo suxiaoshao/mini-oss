@@ -2,8 +2,11 @@ import { store } from '@/app/store';
 import axios, { AxiosError } from 'axios';
 import { enqueueSnackbar } from 'common';
 
+export function getPath(bucketName: string, path: string): string {
+  return `http://${bucketName}.open.mini-oss.top${path}`;
+}
+
 const instance = axios.create({
-  baseURL: 'http://as-sushao.open.mini-oss.top',
   withCredentials: true,
 });
 instance.interceptors.request.use(

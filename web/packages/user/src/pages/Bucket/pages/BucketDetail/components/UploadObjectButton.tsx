@@ -1,26 +1,14 @@
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  List,
-  ListItem,
-  ListItemSecondaryAction,
-  ListItemText,
-  TextField,
-} from '@mui/material';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { useState } from 'react';
 import { ObjectAccess } from 'graphql';
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import prettyBytes from 'pretty-bytes';
-import { Delete } from '@mui/icons-material';
+import { Controller, SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import ControllerRadioGroup from '@/components/ControllerRadioGroup';
-import { axiosInstance } from '@/utils/axios';
+import { axiosInstance, getPath } from '@/utils/axios';
+import ControllerFiles from '@/pages/Bucket/components/ControllerFiles';
+import { array, object } from 'common';
+import { yupResolver } from '@hookform/resolvers/yup';
 
-export type CreateObjectForm = { file: FileList; access: ObjectAccess };
+export type CreateObjectForm = { file: File[]; access: ObjectAccess };
 
 export interface UploadObjectButtonProps {
   path: string;
@@ -29,50 +17,53 @@ export interface UploadObjectButtonProps {
   reFetch: () => void;
 }
 
-export default function UploadObjectButton({ reFetch }: UploadObjectButtonProps): JSX.Element {
+const uploadObjectSchema = object({
+  file: array().min(1, '不能上传空文件'),
+});
+
+export default function UploadObjectButton({ reFetch, path, bucketName }: UploadObjectButtonProps): JSX.Element {
+  // 表单控制
+  const { handleSubmit, control, watch } = useForm<CreateObjectForm>({
+    defaultValues: { access: ObjectAccess.InheritanceObject, file: [] },
+    resolver: yupResolver(uploadObjectSchema),
+  });
+  const { append, remove } = useFieldArray({
+    control,
+    name: 'file',
+  });
+
+  const onSubmit: SubmitHandler<CreateObjectForm> = async ({ file: files, access }) => {
+    const promises = files.map(async (file) => {
+      const data = await file.arrayBuffer();
+      return await axiosInstance.put(getPath(bucketName, `${path}/${file.name}`), data, {
+        headers: { 'object-access': access },
+      });
+    });
+    await Promise.all(promises);
+    reFetch();
+    handleClose();
+  };
+  // 控制 dialog
   const [open, setOpen] = useState(false);
   const handleClose = () => {
     setOpen(false);
-  };
-  const { register, handleSubmit, control, getValues } = useForm<CreateObjectForm>({
-    defaultValues: { access: ObjectAccess.InheritanceObject },
-  });
-  const onSubmit: SubmitHandler<CreateObjectForm> = async ({ file, access }) => {
-    const data = await file[0].arrayBuffer();
-    await axiosInstance.put(`/${file[0].name}`, data, { headers: { 'object-access': access } });
-    reFetch();
-    handleClose();
+    remove();
   };
   return (
     <>
       <Button color="primary" size="large" variant="contained" onClick={() => setOpen(true)}>
         上传文件
       </Button>
-      <Dialog open={open} onClose={handleClose} onSubmit={handleSubmit(onSubmit)}>
-        <Box sx={{ width: 500 }} component="form">
+      <Dialog
+        PaperProps={{ sx: { maxWidth: 700 } }}
+        open={open}
+        onClose={handleClose}
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <Box sx={{ width: 700 }} component="form">
           <DialogTitle>上传文件</DialogTitle>
           <DialogContent>
-            <label htmlFor="contained-button-file">
-              <TextField {...register('file')} sx={{ display: 'none' }} id="contained-button-file" type="file" />
-              <Button variant="contained" component="span">
-                选择文件
-              </Button>
-            </label>
-            {getValues('file') && (
-              <List>
-                <ListItem>
-                  <ListItemText
-                    primary={getValues('file')[0].name}
-                    secondary={prettyBytes(getValues('file')[0].size)}
-                  />
-                  <ListItemSecondaryAction>
-                    <IconButton>
-                      <Delete />
-                    </IconButton>
-                  </ListItemSecondaryAction>
-                </ListItem>
-              </List>
-            )}
+            <ControllerFiles remove={remove} append={append} name="file" value={watch('file')} label="选择文件" />
             <Controller
               name="access"
               control={control}
