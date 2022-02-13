@@ -24,3 +24,17 @@ export function usePage({
   const limit = useMemo(() => pageSize, [pageSize]);
   return { pageIndex, setPage, offset, limit, pageSize, setPageSize, pageSizeOptions };
 }
+
+/** 表格需要的 page 数据 */
+export type PageWithTotal = Omit<PageState, 'limit' | 'offset'> & { total: number };
+
+export function usePageWithTotal(page: Omit<PageState, 'limit' | 'offset'>, total?: number): PageWithTotal | undefined {
+  const pageWithTotal = useMemo(() => {
+    if (total) {
+      return { ...page, total };
+    } else {
+      return undefined;
+    }
+  }, [page, total]);
+  return pageWithTotal;
+}

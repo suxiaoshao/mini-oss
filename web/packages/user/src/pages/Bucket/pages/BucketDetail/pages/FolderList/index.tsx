@@ -1,4 +1,4 @@
-import { CustomColumnArray, CustomTable, format, useCustomTable, usePage } from 'common';
+import { CustomColumnArray, CustomTable, format, useCustomTable, usePage, usePageWithTotal } from 'common';
 import { FolderListQuery, useFolderListQuery } from 'graphql';
 import { useAppSelector } from '@/app/hooks';
 import { useMemo } from 'react';
@@ -9,8 +9,10 @@ import { Folder, Refresh } from '@mui/icons-material';
 import CreateFolderButton from '@/pages/Bucket/pages/BucketDetail/components/CreateFolderButton';
 import AccessFormat from '@/components/AccessFormat';
 import UploadObjectButton from '@/pages/Bucket/pages/BucketDetail/components/UploadObjectButton';
+import prettyBytes from 'pretty-bytes';
+import FolderListActions from './components/FolderListActions';
 
-type FolderTableData = FolderListQuery['folderList']['data'][0];
+export type FolderTableData = FolderListQuery['folderList']['data'][0];
 
 export default function FolderList(): JSX.Element {
   const auth = useAppSelector((state) => state.auth.value) ?? '';
@@ -20,10 +22,13 @@ export default function FolderList(): JSX.Element {
   const path = useMemo(() => searchParams.get('path'), [searchParams]) ?? '/';
   const pathList = useMemo(() => parsePath(path), [path]);
 
-  const { limit, offset } = usePage({});
+  // page 数据
+  const { limit, offset, ...page } = usePage({});
   const { data: { folderList } = {}, refetch } = useFolderListQuery({
     variables: { data: { limit, offset, auth, bucketName, path } },
   });
+  // page 数据
+  const pageWithTotal = usePageWithTotal(page, folderList?.total);
   const columns = useMemo<CustomColumnArray<FolderTableData>>(
     () => [
       {
@@ -42,7 +47,17 @@ export default function FolderList(): JSX.Element {
               </Link>
             );
           } else {
-            return row.filename;
+            return (
+              <Link
+                component={RouterLink}
+                to={{
+                  pathname: `/object/${row.bucketName}`,
+                  search: createSearchParams({ path: row.path, filename: row.filename }).toString(),
+                }}
+              >
+                {row.filename}
+              </Link>
+            );
           }
         },
       },
@@ -58,6 +73,11 @@ export default function FolderList(): JSX.Element {
         },
       },
       {
+        Header: '大小',
+        id: 'size',
+        accessor: (row) => ('size' in row ? prettyBytes(row.size) : '-'),
+      },
+      {
         Header: '创建时间',
         id: 'createTime',
         accessor: ({ createTime }) => format(createTime),
@@ -67,8 +87,13 @@ export default function FolderList(): JSX.Element {
         id: 'updateTime',
         accessor: ({ updateTime }) => format(updateTime),
       },
+      {
+        Header: '操作',
+        id: 'action',
+        accessor: (row) => <FolderListActions refetch={refetch} item={row} />,
+      },
     ],
-    [],
+    [refetch],
   );
   const tableInstance = useCustomTable({ columns, data: folderList?.data ?? [] });
   return (
@@ -77,7 +102,7 @@ export default function FolderList(): JSX.Element {
         padding: (theme) => theme.spacing(2),
         display: 'flex',
         flexDirection: 'column',
-        flex: '0 0 1',
+        flex: '1 1 0',
       }}
     >
       <Breadcrumbs>
@@ -116,7 +141,7 @@ export default function FolderList(): JSX.Element {
           <Refresh />
         </IconButton>
       </Box>
-      <CustomTable tableInstance={tableInstance} />
+      <CustomTable containerProps={{}} page={pageWithTotal} tableInstance={tableInstance} />
     </Box>
   );
 }

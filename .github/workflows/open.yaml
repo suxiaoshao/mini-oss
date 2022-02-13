@@ -6,7 +6,7 @@ on:
     paths:
       - docker/packages/open.Dockerfile
       - server/packages/open/**
-      - server/common/**
+      - server/common/proto/**
       - server/.cargo/**
       - .github/workflows/open.yaml
 

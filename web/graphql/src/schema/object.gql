@@ -6,3 +6,18 @@ mutation updateObject($data: UpdateObjectRequest!) {
 mutation deleteObject($data: DeleteObjectRequest!) {
   deleteObject(data: $data)
 }
+query getObject($data: GetObjectRequest!) {
+  objectInfo(data: $data) {
+    filename
+    blake3
+    size
+    updateTime
+    bucketName
+    access
+    headers {
+      key
+      value
+    }
+    path
+  }
+}

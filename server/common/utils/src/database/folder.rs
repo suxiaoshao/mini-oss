@@ -4,10 +4,8 @@ use std::time::SystemTime;
 use async_recursion::async_recursion;
 use sqlx::{types::time::PrimitiveDateTime, FromRow, Pool, Postgres};
 
-use proto::{core::FolderInfo, Status};
-
-use crate::database::bucket::BucketModal;
 use crate::errors::grpc::ToStatusResult;
+use proto::{core::FolderInfo, Status};
 
 #[derive(sqlx::Type, Debug)]
 #[sqlx(type_name = "folder_access_type")]
@@ -163,6 +161,7 @@ impl FolderModal {
         bucket_name: &str,
         pool: &Pool<Postgres>,
     ) -> Result<bool, Status> {
+        use crate::database::bucket::BucketModal;
         if path == "/" {
             return BucketModal::read_open(bucket_name, pool).await;
         }
@@ -186,6 +185,7 @@ impl FolderModal {
         bucket_name: &str,
         pool: &Pool<Postgres>,
     ) -> Result<bool, Status> {
+        use crate::database::bucket::BucketModal;
         if path == "/" {
             return BucketModal::write_open(bucket_name, pool).await;
         }

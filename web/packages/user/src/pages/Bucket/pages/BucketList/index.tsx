@@ -77,7 +77,7 @@ export default function BucketList(): JSX.Element {
           padding: (theme) => theme.spacing(2),
           display: 'flex',
           flexDirection: 'column',
-          flex: '0 0 1',
+          flex: '1 1 0',
         }}
       >
         <Box sx={{ flex: '0 0 auto', marginBottom: (theme) => theme.spacing(2), display: 'flex' }}>

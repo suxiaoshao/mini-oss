@@ -57,7 +57,7 @@ export type CreateFolderRequest = {
   /** 访问控制 */
   access: FolderAccess;
   /** 用户凭证 */
-  auth: Scalars['String'];
+  auth?: InputMaybe<Scalars['String']>;
   /** bucket 名 */
   bucketName: Scalars['String'];
   /** 路径 */
@@ -86,7 +86,7 @@ export type DeleteBucketRequest = {
 
 export type DeleteFolderRequest = {
   /** 用户凭证 */
-  auth: Scalars['String'];
+  auth?: InputMaybe<Scalars['String']>;
   /** bucket 名 */
   bucketName: Scalars['String'];
   /** 名字 */
@@ -95,7 +95,7 @@ export type DeleteFolderRequest = {
 
 export type DeleteObjectRequest = {
   /** 访问控制 */
-  auth: Scalars['String'];
+  auth?: InputMaybe<Scalars['String']>;
   /** bucket 名 */
   bucketName: Scalars['String'];
   /** 文件名 */
@@ -157,7 +157,7 @@ export type GetBucketRequest = {
 
 export type GetFolderListRequest = {
   /** 身份验证 */
-  auth: Scalars['String'];
+  auth?: InputMaybe<Scalars['String']>;
   /** bucket 名 */
   bucketName: Scalars['String'];
   /** 获取多少数据 */
@@ -170,7 +170,7 @@ export type GetFolderListRequest = {
 
 export type GetFolderRequest = {
   /** 身份验证 */
-  auth: Scalars['String'];
+  auth?: InputMaybe<Scalars['String']>;
   /** bucket 名 */
   bucketName: Scalars['String'];
   /** 路径 */
@@ -188,7 +188,7 @@ export type GetListRequest = {
 
 export type GetObjectRequest = {
   /** 身份验证 */
-  auth: Scalars['String'];
+  auth?: InputMaybe<Scalars['String']>;
   /** bucket 名 */
   bucketName: Scalars['String'];
   /** 文件名 */
@@ -414,7 +414,7 @@ export type UpdateFolderRequest = {
   /** 访问控制 */
   access: FolderAccess;
   /** 用户凭证 */
-  auth: Scalars['String'];
+  auth?: InputMaybe<Scalars['String']>;
   /** bucket 名 */
   bucketName: Scalars['String'];
   /** 路径 */
@@ -425,7 +425,7 @@ export type UpdateObjectRequest = {
   /** 访问控制 */
   access: ObjectAccess;
   /** 访问控制 */
-  auth: Scalars['String'];
+  auth?: InputMaybe<Scalars['String']>;
   /** bucket 名 */
   bucketName: Scalars['String'];
   /** 旧文件名 */
@@ -617,7 +617,7 @@ export type UserListQuery = {
     data: Array<{
       __typename?: 'UserInfo';
       name: string;
-      description?: string | null | undefined;
+      description?: string | null;
       createTime: number;
       updateTime: number;
     }>;
@@ -633,7 +633,7 @@ export type UserInfoQuery = {
   userInfo: {
     __typename?: 'UserInfo';
     name: string;
-    description?: string | null | undefined;
+    description?: string | null;
     createTime: number;
     updateTime: number;
   };
@@ -678,6 +678,25 @@ export type DeleteObjectMutationVariables = Exact<{
 
 export type DeleteObjectMutation = { __typename?: 'MutationRoot'; deleteObject: boolean };
 
+export type GetObjectQueryVariables = Exact<{
+  data: GetObjectRequest;
+}>;
+
+export type GetObjectQuery = {
+  __typename?: 'QueryRoot';
+  objectInfo: {
+    __typename?: 'ObjectInfo';
+    filename: string;
+    blake3: string;
+    size: number;
+    updateTime: number;
+    bucketName: string;
+    access: ObjectAccess;
+    path: string;
+    headers: Array<{ __typename?: 'Header'; key: string; value: string }>;
+  };
+};
+
 export type SelfUserInfoQueryVariables = Exact<{
   data: GetUserInfoRequest;
 }>;
@@ -689,7 +708,7 @@ export type SelfUserInfoQuery = {
     name: string;
     createTime: number;
     updateTime: number;
-    description?: string | null | undefined;
+    description?: string | null;
   };
 };
 
@@ -1399,6 +1418,53 @@ export type DeleteObjectMutationOptions = Apollo.BaseMutationOptions<
   DeleteObjectMutation,
   DeleteObjectMutationVariables
 >;
+export const GetObjectDocument = gql`
+  query getObject($data: GetObjectRequest!) {
+    objectInfo(data: $data) {
+      filename
+      blake3
+      size
+      updateTime
+      bucketName
+      access
+      headers {
+        key
+        value
+      }
+      path
+    }
+  }
+`;
+
+/**
+ * __useGetObjectQuery__
+ *
+ * To run a query within a React component, call `useGetObjectQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetObjectQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetObjectQuery({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useGetObjectQuery(baseOptions: Apollo.QueryHookOptions<GetObjectQuery, GetObjectQueryVariables>) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetObjectQuery, GetObjectQueryVariables>(GetObjectDocument, options);
+}
+export function useGetObjectLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<GetObjectQuery, GetObjectQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GetObjectQuery, GetObjectQueryVariables>(GetObjectDocument, options);
+}
+export type GetObjectQueryHookResult = ReturnType<typeof useGetObjectQuery>;
+export type GetObjectLazyQueryHookResult = ReturnType<typeof useGetObjectLazyQuery>;
+export type GetObjectQueryResult = Apollo.QueryResult<GetObjectQuery, GetObjectQueryVariables>;
 export const SelfUserInfoDocument = gql`
   query selfUserInfo($data: GetUserInfoRequest!) {
     selfUserInfo(data: $data) {

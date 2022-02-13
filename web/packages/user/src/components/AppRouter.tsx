@@ -11,6 +11,7 @@ import AppDrawer from './AppDrawer';
 import BucketDetail from '@/pages/Bucket/pages/BucketDetail';
 import FolderList from '@/pages/Bucket/pages/BucketDetail/pages/FolderList';
 import Statistical from '@/pages/Bucket/pages/BucketDetail/pages/Statistical';
+import ObjectPage from '@/pages/ObjectPage';
 
 export default function AppRouter(): JSX.Element {
   const auth = useAppSelector((state) => state.auth.value);
@@ -41,6 +42,7 @@ export default function AppRouter(): JSX.Element {
             <Route path="fileList" element={<FolderList />} />
           </Route>
         </Route>
+        <Route path="object/:bucketName" element={<ObjectPage />} />
         <Route path="setting" element={<Setting />} />
         <Route path="*" element={<ErrorPage to={'/'} />} />
       </Route>

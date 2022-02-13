@@ -35,7 +35,8 @@ export default function UploadObjectButton({ reFetch, path, bucketName }: Upload
   const onSubmit: SubmitHandler<CreateObjectForm> = async ({ file: files, access }) => {
     const promises = files.map(async (file) => {
       const data = await file.arrayBuffer();
-      return await axiosInstance.put(getPath(bucketName, `${path}/${file.name}`), data, {
+
+      return await axiosInstance.put(getPath(bucketName, path, file.name), data, {
         headers: { 'object-access': access },
       });
     });

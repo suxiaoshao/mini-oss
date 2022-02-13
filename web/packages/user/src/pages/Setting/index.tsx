@@ -12,7 +12,7 @@ export default function Setting(): JSX.Element {
           </Typography>
         </Toolbar>
       </AppBar>
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: '0 0 1' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: '1 1 0' }}>
         <UserInfoSetting />
         <UserPasswordReset />
       </Box>
