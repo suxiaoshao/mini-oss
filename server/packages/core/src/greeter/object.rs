@@ -113,9 +113,10 @@ impl Object for ObjectGreeter {
         // 判断对象是否可写
         check_object_writeable(&auth, &bucket_name, &path, &filename, pool).await?;
         // 判断新文件是否存在
-        if ObjectModal::exist(&path, &bucket_name, &new_filename, &self.pool)
-            .await
-            .is_ok()
+        if new_filename != filename
+            && ObjectModal::exist(&path, &bucket_name, &new_filename, &self.pool)
+                .await
+                .is_ok()
         {
             return Err(Status::already_exists("新文件名重复"));
         }
