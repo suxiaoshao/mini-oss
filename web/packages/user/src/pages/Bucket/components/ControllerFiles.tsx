@@ -4,21 +4,22 @@ import { CustomColumnArray, CustomTable, useCustomTable } from 'common';
 import prettyBytes from 'pretty-bytes';
 import React, { ChangeEvent, useMemo } from 'react';
 import { ReactChild } from 'react';
+import { Control, useFieldArray } from 'react-hook-form';
+import { CreateObjectForm } from '../pages/BucketDetail/components/UploadObjectButton';
 
 export interface ControllerFilesProps {
   label: ReactChild;
   name: string;
   value: File[];
-  /** 添加文件 */
-  append: (file: File) => void;
-  remove: (index?: number | number[]) => void;
+  control: Control<CreateObjectForm, object>;
 }
 
-function ControllerFiles(
-  { label, name, value, append, remove }: ControllerFilesProps,
-  ref?: React.Ref<never>,
-): JSX.Element {
-  const columns = useMemo<CustomColumnArray<FileList[0]>>(
+function ControllerFiles({ label, name, value, control }: ControllerFilesProps, ref?: React.Ref<never>): JSX.Element {
+  const { append, remove } = useFieldArray({
+    control,
+    name: 'file',
+  });
+  const columns = useMemo<CustomColumnArray<File>>(
     () => [
       {
         Header: '名字',
@@ -45,7 +46,7 @@ function ControllerFiles(
     [remove],
   );
 
-  const tableInstance = useCustomTable({ columns, data: Array.from(value ?? []) });
+  const tableInstance = useCustomTable({ columns, data: value });
   return (
     <>
       <Box sx={{ display: 'flex' }} component="label" htmlFor="contained-button-file">
@@ -70,7 +71,7 @@ function ControllerFiles(
       <FormHelperText error>{value.length === 0 && '不能上传空文件'}</FormHelperText>
       {value.length > 0 && (
         <CustomTable
-          containerProps={{ sx: { overflow: 'auto', maxHeight: 400, marginTop: (theme) => theme.spacing(1) } }}
+          containerProps={{ sx: { height: 400, marginTop: (theme) => theme.spacing(1) } }}
           tableInstance={tableInstance}
         />
       )}

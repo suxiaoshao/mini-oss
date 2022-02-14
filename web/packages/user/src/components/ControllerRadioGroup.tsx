@@ -16,7 +16,7 @@ function ControllerRadioGroup<T extends string | number>(
   ref?: React.Ref<never>,
 ): JSX.Element {
   return (
-    <FormControl required sx={{ marginTop: (theme) => theme.spacing(1) }}>
+    <FormControl required sx={{ marginTop: (theme) => theme.spacing(1), display: 'block' }}>
       <FormLabel>{label}</FormLabel>
       <RadioGroup name={name} value={value} onBlur={onBlur} onChange={onChange} row>
         {children?.map(({ label, value }) => (

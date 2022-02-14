@@ -40,7 +40,7 @@ export function CustomTable<D extends object>({
       component={Paper}
       {...containerProps}
     >
-      <Box sx={{ flex: '1 1 0', overflow: 'auto' }}>
+      <Box sx={{ flex: '1 1 0', overflow: 'auto', maxHeight: '100%' }}>
         <Table stickyHeader {...tableProps} {...getTableProps()}>
           <TableHead>
             {
@@ -52,8 +52,11 @@ export function CustomTable<D extends object>({
                     // Loop over the headers in each row
                     headerGroup.headers.map((column) => {
                       const headerCulumn = column as CustomColumn<D>;
-                      const headerProps = headerCulumn.headerCellProps ?? headerCulumn.cellProps;
-
+                      const headerProps = headerCulumn.headerCellProps ?? headerCulumn.cellProps ?? {};
+                      headerProps.sx = {
+                        backgroundColor: '#2c2c2c',
+                        ...headerProps?.sx,
+                      };
                       return (
                         // Apply the header cell props
                         <TableCell {...column.getHeaderProps()} {...headerProps} key={column.getHeaderProps().key}>

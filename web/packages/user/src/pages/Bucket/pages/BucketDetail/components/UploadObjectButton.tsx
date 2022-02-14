@@ -27,7 +27,7 @@ export default function UploadObjectButton({ reFetch, path, bucketName }: Upload
     defaultValues: { access: ObjectAccess.InheritanceObject, file: [] },
     resolver: yupResolver(uploadObjectSchema),
   });
-  const { append, remove } = useFieldArray({
+  const { remove } = useFieldArray({
     control,
     name: 'file',
   });
@@ -64,7 +64,7 @@ export default function UploadObjectButton({ reFetch, path, bucketName }: Upload
         <Box sx={{ width: 700 }} component="form">
           <DialogTitle>上传文件</DialogTitle>
           <DialogContent>
-            <ControllerFiles remove={remove} append={append} name="file" value={watch('file')} label="选择文件" />
+            <ControllerFiles control={control} name="file" value={watch('file')} label="选择文件" />
             <Controller
               name="access"
               control={control}
