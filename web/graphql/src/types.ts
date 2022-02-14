@@ -669,7 +669,7 @@ export type UpdateObjectMutationVariables = Exact<{
 
 export type UpdateObjectMutation = {
   __typename?: 'MutationRoot';
-  updateObject: { __typename?: 'ObjectInfo'; path: string };
+  updateObject: { __typename?: 'ObjectInfo'; filename: string };
 };
 
 export type DeleteObjectMutationVariables = Exact<{
@@ -1347,7 +1347,7 @@ export type UserDeleteMutationOptions = Apollo.BaseMutationOptions<UserDeleteMut
 export const UpdateObjectDocument = gql`
   mutation updateObject($data: UpdateObjectRequest!) {
     updateObject(data: $data) {
-      path
+      filename
     }
   }
 `;

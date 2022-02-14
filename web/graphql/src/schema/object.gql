@@ -1,6 +1,6 @@
 mutation updateObject($data: UpdateObjectRequest!) {
   updateObject(data: $data) {
-    path
+    filename
   }
 }
 mutation deleteObject($data: DeleteObjectRequest!) {
