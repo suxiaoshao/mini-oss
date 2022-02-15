@@ -6,12 +6,6 @@ export function format(timestamp?: number): string {
     return '~';
   }
   const time = dayjs(timestamp);
-  const now = dayjs();
-  if (now.isSame(time, 'day')) {
-    return time.format('HH:mm');
-  }
-  if (now.isSame(time, 'year')) {
-    return time.format('M月D日 HH:mm');
-  }
-  return time.format('YYYY年M月D日 HH:mm');
+
+  return time.format('YYYY-M-D- HH:mm:ss');
 }
