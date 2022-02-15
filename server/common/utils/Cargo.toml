@@ -18,7 +18,7 @@ futures = { version = "0.3.21", optional = true }
 mongodb = { version = "2.1.0", optional = true }
 mongodb-gridfs = { version = "0.2.2", optional = true }
 async-recursion = { version = "1.0.0", optional = true }
-serde_json = { version = "1.0.78", optional = true }
+serde_json = { version = "1.0.79", optional = true }
 
 [features]
 default = []

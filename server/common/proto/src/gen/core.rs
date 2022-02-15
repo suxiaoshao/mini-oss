@@ -82,6 +82,12 @@ pub struct BucketInfo {
     #[prost(string, tag = "5")]
     pub username: ::prost::alloc::string::String,
 }
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetFolderSizeReply {
+    /// 对象总数
+    #[prost(int64, tag = "1")]
+    pub size: i64,
+}
 #[derive(Clone, PartialEq, ::prost::Message, InputObject)]
 pub struct GetFolderRequest {
     /// 身份验证
@@ -93,18 +99,6 @@ pub struct GetFolderRequest {
     /// 路径
     #[prost(string, tag = "3")]
     pub path: ::prost::alloc::string::String,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct GetFolderCountRequest {
-    /// 身份验证
-    #[prost(string, optional, tag = "1")]
-    pub auth: ::core::option::Option<::prost::alloc::string::String>,
-    /// 路径
-    #[prost(string, tag = "2")]
-    pub path: ::prost::alloc::string::String,
-    /// bucket 名
-    #[prost(string, tag = "3")]
-    pub bucket_name: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CountReply {
@@ -207,6 +201,12 @@ pub struct FolderInfo {
     /// 路径
     #[prost(string, tag = "6")]
     pub father_path: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct SizeReply {
+    /// 对象总数
+    #[prost(int64, tag = "1")]
+    pub size: i64,
 }
 #[derive(Clone, PartialEq, ::prost::Message, InputObject)]
 pub struct GetObjectRequest {
@@ -628,7 +628,7 @@ pub mod folder_client {
             let path = http::uri::PathAndQuery::from_static("/core.Folder/UpdateFolder");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取path列表"]
+        #[doc = " 获取 path 列表"]
         pub async fn get_folder_list(
             &mut self,
             request: impl tonic::IntoRequest<super::GetFolderListRequest>,
@@ -646,7 +646,7 @@ pub mod folder_client {
         #[doc = " 获取 path 总数"]
         pub async fn get_folder_count(
             &mut self,
-            request: impl tonic::IntoRequest<super::GetFolderCountRequest>,
+            request: impl tonic::IntoRequest<super::GetFolderRequest>,
         ) -> Result<tonic::Response<super::CountReply>, tonic::Status> {
             self.inner.ready().await.map_err(|e| {
                 tonic::Status::new(
@@ -671,6 +671,21 @@ pub mod folder_client {
             })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static("/core.Folder/GetFolder");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        #[doc = " 获取 path 下所有 path 总数"]
+        pub async fn get_total_by_folder(
+            &mut self,
+            request: impl tonic::IntoRequest<super::GetFolderRequest>,
+        ) -> Result<tonic::Response<super::CountReply>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/core.Folder/GetTotalByFolder");
             self.inner.unary(request.into_request(), path, codec).await
         }
     }
@@ -798,7 +813,7 @@ pub mod object_client {
         #[doc = " 获取 object 总数"]
         pub async fn get_object_count(
             &mut self,
-            request: impl tonic::IntoRequest<super::GetFolderCountRequest>,
+            request: impl tonic::IntoRequest<super::GetFolderRequest>,
         ) -> Result<tonic::Response<super::CountReply>, tonic::Status> {
             self.inner.ready().await.map_err(|e| {
                 tonic::Status::new(
@@ -838,6 +853,36 @@ pub mod object_client {
             })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static("/core.Object/GetObjectContent");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        #[doc = " 获取 path 下所有 object 总数"]
+        pub async fn get_total_by_folder(
+            &mut self,
+            request: impl tonic::IntoRequest<super::GetFolderRequest>,
+        ) -> Result<tonic::Response<super::CountReply>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/core.Object/GetTotalByFolder");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        #[doc = " 获取 path 下所有 object 大小"]
+        pub async fn get_size_by_total(
+            &mut self,
+            request: impl tonic::IntoRequest<super::GetFolderRequest>,
+        ) -> Result<tonic::Response<super::SizeReply>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/core.Object/GetSizeByTotal");
             self.inner.unary(request.into_request(), path, codec).await
         }
     }
@@ -1164,7 +1209,7 @@ pub mod folder_server {
             &self,
             request: tonic::Request<super::UpdateFolderRequest>,
         ) -> Result<tonic::Response<super::FolderInfo>, tonic::Status>;
-        #[doc = " 获取path列表"]
+        #[doc = " 获取 path 列表"]
         async fn get_folder_list(
             &self,
             request: tonic::Request<super::GetFolderListRequest>,
@@ -1172,13 +1217,18 @@ pub mod folder_server {
         #[doc = " 获取 path 总数"]
         async fn get_folder_count(
             &self,
-            request: tonic::Request<super::GetFolderCountRequest>,
+            request: tonic::Request<super::GetFolderRequest>,
         ) -> Result<tonic::Response<super::CountReply>, tonic::Status>;
         #[doc = " 获取 path 信息"]
         async fn get_folder(
             &self,
             request: tonic::Request<super::GetFolderRequest>,
         ) -> Result<tonic::Response<super::FolderInfo>, tonic::Status>;
+        #[doc = " 获取 path 下所有 path 总数"]
+        async fn get_total_by_folder(
+            &self,
+            request: tonic::Request<super::GetFolderRequest>,
+        ) -> Result<tonic::Response<super::CountReply>, tonic::Status>;
     }
     #[derive(Debug)]
     pub struct FolderServer<T: Folder> {
@@ -1346,12 +1396,12 @@ pub mod folder_server {
                 "/core.Folder/GetFolderCount" => {
                     #[allow(non_camel_case_types)]
                     struct GetFolderCountSvc<T: Folder>(pub Arc<T>);
-                    impl<T: Folder> tonic::server::UnaryService<super::GetFolderCountRequest> for GetFolderCountSvc<T> {
+                    impl<T: Folder> tonic::server::UnaryService<super::GetFolderRequest> for GetFolderCountSvc<T> {
                         type Response = super::CountReply;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::GetFolderCountRequest>,
+                            request: tonic::Request<super::GetFolderRequest>,
                         ) -> Self::Future {
                             let inner = self.0.clone();
                             let fut = async move { (*inner).get_folder_count(request).await };
@@ -1395,6 +1445,37 @@ pub mod folder_server {
                     let fut = async move {
                         let inner = inner.0;
                         let method = GetFolderSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
+                            accept_compression_encodings,
+                            send_compression_encodings,
+                        );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/core.Folder/GetTotalByFolder" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetTotalByFolderSvc<T: Folder>(pub Arc<T>);
+                    impl<T: Folder> tonic::server::UnaryService<super::GetFolderRequest> for GetTotalByFolderSvc<T> {
+                        type Response = super::CountReply;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::GetFolderRequest>,
+                        ) -> Self::Future {
+                            let inner = self.0.clone();
+                            let fut = async move { (*inner).get_total_by_folder(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = GetTotalByFolderSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
                             accept_compression_encodings,
@@ -1470,7 +1551,7 @@ pub mod object_server {
         #[doc = " 获取 object 总数"]
         async fn get_object_count(
             &self,
-            request: tonic::Request<super::GetFolderCountRequest>,
+            request: tonic::Request<super::GetFolderRequest>,
         ) -> Result<tonic::Response<super::CountReply>, tonic::Status>;
         #[doc = " 获取 object 信息"]
         async fn get_object(
@@ -1482,6 +1563,16 @@ pub mod object_server {
             &self,
             request: tonic::Request<super::GetObjectRequest>,
         ) -> Result<tonic::Response<super::GetObjectContentReply>, tonic::Status>;
+        #[doc = " 获取 path 下所有 object 总数"]
+        async fn get_total_by_folder(
+            &self,
+            request: tonic::Request<super::GetFolderRequest>,
+        ) -> Result<tonic::Response<super::CountReply>, tonic::Status>;
+        #[doc = " 获取 path 下所有 object 大小"]
+        async fn get_size_by_total(
+            &self,
+            request: tonic::Request<super::GetFolderRequest>,
+        ) -> Result<tonic::Response<super::SizeReply>, tonic::Status>;
     }
     #[derive(Debug)]
     pub struct ObjectServer<T: Object> {
@@ -1649,12 +1740,12 @@ pub mod object_server {
                 "/core.Object/GetObjectCount" => {
                     #[allow(non_camel_case_types)]
                     struct GetObjectCountSvc<T: Object>(pub Arc<T>);
-                    impl<T: Object> tonic::server::UnaryService<super::GetFolderCountRequest> for GetObjectCountSvc<T> {
+                    impl<T: Object> tonic::server::UnaryService<super::GetFolderRequest> for GetObjectCountSvc<T> {
                         type Response = super::CountReply;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::GetFolderCountRequest>,
+                            request: tonic::Request<super::GetFolderRequest>,
                         ) -> Self::Future {
                             let inner = self.0.clone();
                             let fut = async move { (*inner).get_object_count(request).await };
@@ -1729,6 +1820,68 @@ pub mod object_server {
                     let fut = async move {
                         let inner = inner.0;
                         let method = GetObjectContentSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
+                            accept_compression_encodings,
+                            send_compression_encodings,
+                        );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/core.Object/GetTotalByFolder" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetTotalByFolderSvc<T: Object>(pub Arc<T>);
+                    impl<T: Object> tonic::server::UnaryService<super::GetFolderRequest> for GetTotalByFolderSvc<T> {
+                        type Response = super::CountReply;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::GetFolderRequest>,
+                        ) -> Self::Future {
+                            let inner = self.0.clone();
+                            let fut = async move { (*inner).get_total_by_folder(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = GetTotalByFolderSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
+                            accept_compression_encodings,
+                            send_compression_encodings,
+                        );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/core.Object/GetSizeByTotal" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetSizeByTotalSvc<T: Object>(pub Arc<T>);
+                    impl<T: Object> tonic::server::UnaryService<super::GetFolderRequest> for GetSizeByTotalSvc<T> {
+                        type Response = super::SizeReply;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::GetFolderRequest>,
+                        ) -> Self::Future {
+                            let inner = self.0.clone();
+                            let fut = async move { (*inner).get_size_by_total(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = GetSizeByTotalSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
                             accept_compression_encodings,

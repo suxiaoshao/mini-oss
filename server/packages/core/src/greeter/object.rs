@@ -1,6 +1,8 @@
 use std::sync::Arc;
 
-use proto::core::{CountReply, GetFolderCountRequest, GetObjectContentReply, GetObjectRequest};
+use proto::core::{
+    CountReply, GetFolderRequest, GetObjectContentReply, GetObjectRequest, SizeReply,
+};
 use proto::{
     async_trait,
     auth::Empty,
@@ -164,10 +166,10 @@ impl Object for ObjectGreeter {
 
     async fn get_object_count(
         &self,
-        request: Request<GetFolderCountRequest>,
+        request: Request<GetFolderRequest>,
     ) -> Result<Response<CountReply>, Status> {
         let pool = &self.pool;
-        let GetFolderCountRequest {
+        let GetFolderRequest {
             path,
             bucket_name,
             auth,
@@ -212,6 +214,36 @@ impl Object for ObjectGreeter {
             ObjectModal::find_one(&path, &bucket_name, &filename, pool).await?;
         let content = self.mongo.read_file(bucket_name, &object_id).await?;
         Ok(Response::new(GetObjectContentReply { content }))
+    }
+
+    async fn get_total_by_folder(
+        &self,
+        request: Request<GetFolderRequest>,
+    ) -> Result<Response<CountReply>, Status> {
+        let pool = &self.pool;
+        let GetFolderRequest {
+            auth,
+            bucket_name,
+            path,
+        } = request.into_inner();
+        check_folder_readable(&auth, &bucket_name, &path, pool).await?;
+        let total = ObjectModal::count_by_path(&bucket_name, &path, pool).await?;
+        Ok(Response::new(CountReply { total }))
+    }
+
+    async fn get_size_by_total(
+        &self,
+        request: Request<GetFolderRequest>,
+    ) -> Result<Response<SizeReply>, Status> {
+        let pool = &self.pool;
+        let GetFolderRequest {
+            auth,
+            bucket_name,
+            path,
+        } = request.into_inner();
+        check_folder_readable(&auth, &bucket_name, &path, pool).await?;
+        let size = ObjectModal::size_by_path(&bucket_name, &path, pool).await?;
+        Ok(Response::new(SizeReply { size }))
     }
 }
 

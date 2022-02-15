@@ -4,8 +4,9 @@ use std::time::SystemTime;
 use async_recursion::async_recursion;
 use sqlx::{types::time::PrimitiveDateTime, FromRow, Pool, Postgres};
 
-use crate::errors::grpc::ToStatusResult;
 use proto::{core::FolderInfo, Status};
+
+use crate::errors::grpc::ToStatusResult;
 
 #[derive(sqlx::Type, Debug)]
 #[sqlx(type_name = "folder_access_type")]
@@ -138,20 +139,35 @@ impl FolderModal {
             .to_status()?;
         Ok(())
     }
-    /// 获取列表名
-    pub async fn find_names_by_path(
-        father_path: &str,
+    /// 删除某个 path 下所有
+    pub async fn delete_by_path(
         bucket_name: &str,
+        father_path: &str,
         pool: &Pool<Postgres>,
-    ) -> Result<Vec<String>, Status> {
-        let names: Vec<(String,)> =
-            sqlx::query_as("select path from folder where father_path = $1 and bucket_name=$2")
-                .bind(father_path)
-                .bind(bucket_name)
-                .fetch_all(pool)
-                .await
-                .to_status()?;
-        Ok(names.into_iter().map(|(name,)| name).collect())
+    ) -> Result<(), Status> {
+        sqlx::query("delete from folder where bucket_name = $1 and path like $2")
+            .bind(bucket_name)
+            .bind(format!("{}%", father_path))
+            .execute(pool)
+            .await
+            .to_status()?;
+        Ok(())
+    }
+    /// 某个 path 下所有文件夹个数
+    pub async fn count_by_path(
+        bucket_name: &str,
+        father_path: &str,
+        pool: &Pool<Postgres>,
+    ) -> Result<i64, Status> {
+        let (count,): (i64,) = sqlx::query_as(
+            "select count(path) from folder where bucket_name = $1 and path like $2",
+        )
+        .bind(bucket_name)
+        .bind(format!("{}/%", father_path))
+        .fetch_one(pool)
+        .await
+        .to_status()?;
+        Ok(count)
     }
     /// 判断读取访问权限
     #[cfg(feature = "recursion")]
@@ -200,33 +216,6 @@ impl FolderModal {
             FolderAccess::Private => false,
             FolderAccess::Open => true,
         })
-    }
-
-    /// 递归获取列表名
-    #[cfg(all(feature = "recursion", feature = "future"))]
-    #[async_recursion]
-    pub async fn recursive_names_by_path(
-        father_path: &str,
-        bucket_name: &str,
-        pool: &Pool<Postgres>,
-    ) -> Result<Vec<String>, Status> {
-        let mut names = vec![];
-        // 获取子目录一代
-        let child_names = Self::find_names_by_path(father_path, bucket_name, pool).await?;
-        if child_names.is_empty() {
-            return Ok(vec![father_path.to_string()]);
-        }
-        // 获取子目录的后代
-        let grade_names = child_names
-            .iter()
-            .map(|son_name| Self::recursive_names_by_path(son_name, bucket_name, pool))
-            .collect::<Vec<_>>();
-        let mut grade_names = futures::future::try_join_all(grade_names).await?;
-        for grade_name in &mut grade_names {
-            names.append(grade_name);
-        }
-        names.push(father_path.to_string());
-        Ok(names)
     }
     /// 获取列表
     pub async fn find_many_by_father_path(
@@ -293,25 +282,5 @@ impl Into<FolderInfo> for FolderModal {
             bucket_name,
             father_path,
         }
-    }
-}
-
-#[cfg(test)]
-mod test {
-    use sqlx::postgres::PgPoolOptions;
-
-    use super::FolderModal;
-
-    #[tokio::test]
-    async fn test_recursive_names_by_path() {
-        let pool = PgPoolOptions::new()
-            .max_connections(5)
-            .connect(&std::env::var("postgres").unwrap())
-            .await
-            .unwrap();
-        let a = FolderModal::recursive_names_by_path("/asas", "as-sushao", &pool)
-            .await
-            .unwrap();
-        println!("{:?}", a)
     }
 }

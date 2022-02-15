@@ -191,32 +191,28 @@ impl ObjectModal {
             .to_status()?;
         Ok(())
     }
+    /// 删除某个 path 下所有
+    pub async fn delete_by_path(
+        bucket_name: &str,
+        father_path: &str,
+        pool: &Pool<Postgres>,
+    ) -> Result<(), Status> {
+        sqlx::query("delete from object where bucket_name = $1 and path like $2")
+            .bind(bucket_name)
+            .bind(format!("{}%", father_path))
+            .execute(pool)
+            .await
+            .to_status()?;
+        Ok(())
+    }
     /// 根据 paths 获取对象
-    #[cfg(feature = "future")]
     pub async fn find_by_paths(
         bucket_name: &str,
-        paths: &[String],
-        pool: &Pool<Postgres>,
-    ) -> Result<Vec<Self>, Status> {
-        let mut result = vec![];
-        futures::future::try_join_all(
-            paths
-                .iter()
-                .map(|path| Self::find_total_by_path(path, bucket_name, pool)),
-        )
-        .await?
-        .into_iter()
-        .for_each(|mut item| result.append(&mut item));
-        Ok(result)
-    }
-    /// 获取列表
-    pub async fn find_total_by_path(
         father_path: &str,
-        bucket_name: &str,
         pool: &Pool<Postgres>,
     ) -> Result<Vec<Self>, Status> {
-        let users = sqlx::query_as(r#"select * from object where path = $1 and bucket_name=$2"#)
-            .bind(father_path)
+        let users = sqlx::query_as(r#"select * from object where path like $1 and bucket_name=$2"#)
+            .bind(format!("{}%", father_path))
             .bind(bucket_name)
             .fetch_all(pool)
             .await
@@ -285,9 +281,42 @@ impl ObjectModal {
             _ => false,
         })
     }
+    /// 某个 path 下所有对象个数
+    pub async fn count_by_path(
+        bucket_name: &str,
+        father_path: &str,
+        pool: &Pool<Postgres>,
+    ) -> Result<i64, Status> {
+        let (count,): (i64,) = sqlx::query_as(
+            "select count(path) from object where bucket_name = $1 and path like $2",
+        )
+        .bind(bucket_name)
+        .bind(format!("{}/%", father_path))
+        .fetch_one(pool)
+        .await
+        .to_status()?;
+        Ok(count)
+    }
+    /// 某个 path 下所有对象大小
+    pub async fn size_by_path(
+        bucket_name: &str,
+        father_path: &str,
+        pool: &Pool<Postgres>,
+    ) -> Result<i64, Status> {
+        let (count,): (i64,) =
+            sqlx::query_as("select sum(size) from object where bucket_name = $1 and path like $2")
+                .bind(bucket_name)
+                .bind(format!("{}/%", father_path))
+                .fetch_one(pool)
+                .await
+                .to_status()?;
+        Ok(count)
+    }
 }
 #[allow(clippy::from_over_into)]
 impl TryInto<ObjectInfo> for ObjectModal {
+    type Error = Status;
+
     fn try_into(self) -> Result<ObjectInfo, Status> {
         let ObjectModal {
             path,
@@ -324,6 +353,4 @@ impl TryInto<ObjectInfo> for ObjectModal {
             size,
         })
     }
-
-    type Error = Status;
 }

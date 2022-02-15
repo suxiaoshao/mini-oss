@@ -4,8 +4,8 @@ use crate::schema::folder::folder_list::FolderList;
 use ::utils::errors::graphql::ToFieldResult;
 use proto::core::object_client::ObjectClient;
 use proto::core::{
-    CountReply, DeleteObjectRequest, GetBucketRequest, GetFolderCountRequest, GetFolderListReply,
-    GetFolderListRequest, GetFolderRequest, GetObjectRequest,
+    CountReply, DeleteObjectRequest, GetBucketRequest, GetFolderListReply, GetFolderListRequest,
+    GetFolderRequest, GetObjectRequest,
 };
 use proto::{
     auth::{login_client::LoginClient, LoginReply, LoginRequest},
@@ -102,7 +102,7 @@ impl QueryRoot {
 
         // 获取文件夹总数
         let mut folder_client = FolderClient::connect("http://core:80").await.to_field()?;
-        let request = Request::new(GetFolderCountRequest {
+        let request = Request::new(GetFolderRequest {
             auth: auth.clone(),
             path: path.clone(),
             bucket_name: bucket_name.clone(),
@@ -117,7 +117,7 @@ impl QueryRoot {
 
         // 获取对象总数
         let mut object_client = ObjectClient::connect("http://core:80").await.to_field()?;
-        let request = Request::new(GetFolderCountRequest {
+        let request = Request::new(GetFolderRequest {
             auth: auth.clone(),
             path: path.clone(),
             bucket_name: bucket_name.clone(),

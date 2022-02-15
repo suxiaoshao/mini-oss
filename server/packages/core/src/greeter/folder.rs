@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use proto::core::{CountReply, GetFolderCountRequest, GetFolderRequest};
+use proto::core::{CountReply, GetFolderRequest};
 use proto::{
     async_trait,
     auth::Empty,
@@ -76,18 +76,10 @@ impl Folder for FolderGreeter {
         } = request.into_inner();
         // 判断此文件夹是否可写
         check_folder_writeable(&auth, &bucket_name, &path, pool).await?;
-        // 获取所有文件夹下的文件夹
-        let delete_names = FolderModal::recursive_names_by_path(&path, &bucket_name, pool).await?;
-        let delete_objects = ObjectModal::find_by_paths(&bucket_name, &delete_names, pool).await?;
+        // 获取文件夹下的所有 object
+        let delete_objects = ObjectModal::find_by_paths(&bucket_name, &path, pool).await?;
         // 删除 sql 中 object
-        let delete_object_sql = futures::future::try_join_all(delete_objects.iter().map(
-            |ObjectModal {
-                 filename,
-                 path,
-                 bucket_name,
-                 ..
-             }| ObjectModal::delete(path, bucket_name, filename, pool),
-        ));
+        let delete_object_sql = ObjectModal::delete_by_path(&bucket_name, &path, pool);
         // 删除 mongo 中对象
         let delete_object_mongo = futures::future::try_join_all(delete_objects.iter().map(
             |ObjectModal {
@@ -97,11 +89,7 @@ impl Folder for FolderGreeter {
              }| self.mongo.delete_file(bucket_name.clone(), object_id),
         ));
         // 删除 folder
-        let delete_folders = futures::future::try_join_all(
-            delete_names
-                .iter()
-                .map(|path| FolderModal::delete(path, &bucket_name, pool)),
-        );
+        let delete_folders = FolderModal::delete(&bucket_name, &path, pool);
         futures::future::try_join3(delete_object_sql, delete_object_mongo, delete_folders).await?;
         Ok(Response::new(Empty {}))
     }
@@ -155,17 +143,17 @@ impl Folder for FolderGreeter {
 
     async fn get_folder_count(
         &self,
-        request: Request<GetFolderCountRequest>,
+        request: Request<GetFolderRequest>,
     ) -> Result<Response<CountReply>, Status> {
         let pool = &self.pool;
-        let GetFolderCountRequest {
+        let GetFolderRequest {
             path,
             bucket_name,
             auth,
         } = request.into_inner();
         // 判断文件夹
         check_folder_readable(&auth, &bucket_name, &path, pool).await?;
-        let count = FolderModal::count_by_father_path(&bucket_name, &path, pool).await?;
+        let count = FolderModal::count_by_path(&bucket_name, &path, pool).await?;
         Ok(Response::new(CountReply { total: count }))
     }
 
@@ -182,5 +170,20 @@ impl Folder for FolderGreeter {
         check_folder_readable(&auth, &bucket_name, &path, pool).await?;
         let folder = FolderModal::find_one(&path, &bucket_name, pool).await?;
         Ok(Response::new(folder.into()))
+    }
+
+    async fn get_total_by_folder(
+        &self,
+        request: Request<GetFolderRequest>,
+    ) -> Result<Response<CountReply>, Status> {
+        let pool = &self.pool;
+        let GetFolderRequest {
+            auth,
+            bucket_name,
+            path,
+        } = request.into_inner();
+        check_folder_readable(&auth, &bucket_name, &path, pool).await?;
+        let total = FolderModal::count_by_path(&bucket_name, &path, pool).await?;
+        Ok(Response::new(CountReply { total }))
     }
 }

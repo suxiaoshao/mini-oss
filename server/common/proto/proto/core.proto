@@ -95,12 +95,14 @@ service Folder {
   rpc DeleteFolder (DeleteFolderRequest) returns (auth.Empty) {}
   // 修改文件夹
   rpc UpdateFolder (UpdateFolderRequest) returns (FolderInfo) {}
-  // 获取path列表
+  // 获取 path 列表
   rpc GetFolderList(GetFolderListRequest) returns (GetFolderListReply){}
   // 获取 path 总数
-  rpc GetFolderCount(GetFolderCountRequest) returns (CountReply){}
+  rpc GetFolderCount(GetFolderRequest) returns (CountReply){}
   // 获取 path 信息
   rpc GetFolder(GetFolderRequest) returns (FolderInfo){}
+  // 获取 path 下所有 path 总数
+  rpc GetTotalByFolder(GetFolderRequest) returns (CountReply){}
 }
 
 // 访问权限类型
@@ -122,15 +124,6 @@ message GetFolderRequest{
   string bucket_name = 2;
   // 路径
   string path = 3;
-}
-
-message GetFolderCountRequest{
-  // 身份验证
-  optional string auth = 1;
-  // 路径
-  string path = 2;
-  // bucket 名
-  string bucket_name = 3;
 }
 
 message CountReply{
@@ -227,11 +220,20 @@ service Object {
   // 获取path列表
   rpc GetObjectList(GetFolderListRequest) returns (GetObjectListReply){}
   // 获取 object 总数
-  rpc GetObjectCount(GetFolderCountRequest) returns (CountReply){}
+  rpc GetObjectCount(GetFolderRequest) returns (CountReply){}
   // 获取 object 信息
   rpc GetObject(GetObjectRequest) returns (ObjectInfo){}
   // 获取文件内容
   rpc GetObjectContent(GetObjectRequest) returns (GetObjectContentReply){}
+  // 获取 path 下所有 object 总数
+  rpc GetTotalByFolder(GetFolderRequest) returns (CountReply){}
+  // 获取 path 下所有 object 大小
+  rpc GetSizeByTotal(GetFolderRequest) returns (SizeReply){}
+}
+
+message SizeReply{
+  // 对象大小
+  int64 size = 1;
 }
 
 message GetObjectRequest{
