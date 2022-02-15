@@ -231,7 +231,7 @@ impl Object for ObjectGreeter {
         Ok(Response::new(CountReply { total }))
     }
 
-    async fn get_size_by_total(
+    async fn get_size_by_folder(
         &self,
         request: Request<GetFolderRequest>,
     ) -> Result<Response<SizeReply>, Status> {

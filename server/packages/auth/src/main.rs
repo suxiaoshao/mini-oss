@@ -6,7 +6,7 @@ use crate::greeter::{check::CheckGreeter, login::LoginGreeter};
 use ::utils::database::PgPoolOptions;
 use proto::{
     auth::{check_server::CheckServer, login_server::LoginServer},
-    Server,
+    transport::Server,
 };
 
 #[tokio::main]

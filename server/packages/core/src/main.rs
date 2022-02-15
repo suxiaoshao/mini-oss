@@ -4,7 +4,7 @@ use ::utils::database::PgPoolOptions;
 use ::utils::mongo::Mongo;
 use proto::{
     core::{bucket_server::BucketServer, folder_server::FolderServer, object_server::ObjectServer},
-    Server,
+    transport::Server,
 };
 
 use crate::greeter::{bucket::BucketGreeter, folder::FolderGreeter, object::ObjectGreeter};

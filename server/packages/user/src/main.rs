@@ -2,8 +2,8 @@ use std::sync::Arc;
 
 use ::utils::database::PgPoolOptions;
 use proto::{
+    transport::Server,
     user::{self_manage_server::SelfManageServer, user_manage_server::UserManageServer},
-    Server,
 };
 
 use crate::greeter::{self_manage::SelfManageGreeter, user_manage::UserManageGreeter};

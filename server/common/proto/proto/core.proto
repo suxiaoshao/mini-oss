@@ -228,7 +228,7 @@ service Object {
   // 获取 path 下所有 object 总数
   rpc GetTotalByFolder(GetFolderRequest) returns (CountReply){}
   // 获取 path 下所有 object 大小
-  rpc GetSizeByTotal(GetFolderRequest) returns (SizeReply){}
+  rpc GetSizeByFolder(GetFolderRequest) returns (SizeReply){}
 }
 
 message SizeReply{

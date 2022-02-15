@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 use crate::validation::{bucket::validate_bucket, folder::validate_folder, path::validate_path};
+
 #[derive(Clone, PartialEq, ::prost::Message, InputObject)]
 pub struct GetBucketRequest {
     /// 身份验证
@@ -374,7 +375,9 @@ pub enum ObjectAccess {
 #[doc = r" Generated client implementations."]
 pub mod bucket_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+
     use tonic::codegen::*;
+
     #[derive(Debug, Clone)]
     pub struct BucketClient<T> {
         inner: tonic::client::Grpc<T>,
@@ -526,7 +529,9 @@ pub mod bucket_client {
 #[doc = r" Generated client implementations."]
 pub mod folder_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+
     use tonic::codegen::*;
+
     #[derive(Debug, Clone)]
     pub struct FolderClient<T> {
         inner: tonic::client::Grpc<T>,
@@ -693,7 +698,9 @@ pub mod folder_client {
 #[doc = r" Generated client implementations."]
 pub mod object_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+
     use tonic::codegen::*;
+
     #[derive(Debug, Clone)]
     pub struct ObjectClient<T> {
         inner: tonic::client::Grpc<T>,
@@ -871,7 +878,7 @@ pub mod object_client {
             self.inner.unary(request.into_request(), path, codec).await
         }
         #[doc = " 获取 path 下所有 object 大小"]
-        pub async fn get_size_by_total(
+        pub async fn get_size_by_folder(
             &mut self,
             request: impl tonic::IntoRequest<super::GetFolderRequest>,
         ) -> Result<tonic::Response<super::SizeReply>, tonic::Status> {
@@ -882,7 +889,7 @@ pub mod object_client {
                 )
             })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/core.Object/GetSizeByTotal");
+            let path = http::uri::PathAndQuery::from_static("/core.Object/GetSizeByFolder");
             self.inner.unary(request.into_request(), path, codec).await
         }
     }
@@ -890,7 +897,9 @@ pub mod object_client {
 #[doc = r" Generated server implementations."]
 pub mod bucket_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+
     use tonic::codegen::*;
+
     #[doc = "Generated trait containing gRPC methods that should be implemented for use with BucketServer."]
     #[async_trait]
     pub trait Bucket: Send + Sync + 'static {
@@ -1190,7 +1199,9 @@ pub mod bucket_server {
 #[doc = r" Generated server implementations."]
 pub mod folder_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+
     use tonic::codegen::*;
+
     #[doc = "Generated trait containing gRPC methods that should be implemented for use with FolderServer."]
     #[async_trait]
     pub trait Folder: Send + Sync + 'static {
@@ -1524,7 +1535,9 @@ pub mod folder_server {
 #[doc = r" Generated server implementations."]
 pub mod object_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+
     use tonic::codegen::*;
+
     #[doc = "Generated trait containing gRPC methods that should be implemented for use with ObjectServer."]
     #[async_trait]
     pub trait Object: Send + Sync + 'static {
@@ -1569,7 +1582,7 @@ pub mod object_server {
             request: tonic::Request<super::GetFolderRequest>,
         ) -> Result<tonic::Response<super::CountReply>, tonic::Status>;
         #[doc = " 获取 path 下所有 object 大小"]
-        async fn get_size_by_total(
+        async fn get_size_by_folder(
             &self,
             request: tonic::Request<super::GetFolderRequest>,
         ) -> Result<tonic::Response<super::SizeReply>, tonic::Status>;
@@ -1861,10 +1874,10 @@ pub mod object_server {
                     };
                     Box::pin(fut)
                 }
-                "/core.Object/GetSizeByTotal" => {
+                "/core.Object/GetSizeByFolder" => {
                     #[allow(non_camel_case_types)]
-                    struct GetSizeByTotalSvc<T: Object>(pub Arc<T>);
-                    impl<T: Object> tonic::server::UnaryService<super::GetFolderRequest> for GetSizeByTotalSvc<T> {
+                    struct GetSizeByFolderSvc<T: Object>(pub Arc<T>);
+                    impl<T: Object> tonic::server::UnaryService<super::GetFolderRequest> for GetSizeByFolderSvc<T> {
                         type Response = super::SizeReply;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
@@ -1872,7 +1885,7 @@ pub mod object_server {
                             request: tonic::Request<super::GetFolderRequest>,
                         ) -> Self::Future {
                             let inner = self.0.clone();
-                            let fut = async move { (*inner).get_size_by_total(request).await };
+                            let fut = async move { (*inner).get_size_by_folder(request).await };
                             Box::pin(fut)
                         }
                     }
@@ -1881,7 +1894,7 @@ pub mod object_server {
                     let inner = self.inner.clone();
                     let fut = async move {
                         let inner = inner.0;
-                        let method = GetSizeByTotalSvc(inner);
+                        let method = GetSizeByFolderSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
                             accept_compression_encodings,

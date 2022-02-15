@@ -1,4 +1,4 @@
-pub use tonic::{async_trait, transport::Server, Request, Response, Status};
+pub use tonic::{async_trait, transport, Code, Request, Response, Status};
 
 mod gen;
 pub mod validation;

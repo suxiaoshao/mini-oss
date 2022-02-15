@@ -1,5 +1,6 @@
 mod schema;
 mod utils;
+mod errors;
 
 use async_graphql::http::{playground_source, GraphQLPlaygroundConfig};
 use async_graphql::{EmptySubscription, Schema};
