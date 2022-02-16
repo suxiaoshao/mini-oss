@@ -116,20 +116,6 @@ impl FolderModal {
         .to_status()?;
         Ok(folder)
     }
-    /// 删除
-    pub async fn delete(
-        path: &str,
-        bucket_name: &str,
-        pool: &Pool<Postgres>,
-    ) -> Result<(), Status> {
-        sqlx::query("delete from folder where path = $1 and bucket_name = $2")
-            .bind(path)
-            .bind(bucket_name)
-            .execute(pool)
-            .await
-            .to_status()?;
-        Ok(())
-    }
     /// 删除某个 bucket 下所有
     pub async fn delete_by_bucket(bucket_name: &str, pool: &Pool<Postgres>) -> Result<(), Status> {
         sqlx::query("delete from folder where bucket_name = $1")

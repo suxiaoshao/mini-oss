@@ -89,7 +89,7 @@ impl Folder for FolderGreeter {
              }| self.mongo.delete_file(bucket_name.clone(), object_id),
         ));
         // 删除 folder
-        let delete_folders = FolderModal::delete(&bucket_name, &path, pool);
+        let delete_folders = FolderModal::delete_by_path(&bucket_name, &path, pool);
         futures::future::try_join3(delete_object_sql, delete_object_mongo, delete_folders).await?;
         Ok(Response::new(Empty {}))
     }
