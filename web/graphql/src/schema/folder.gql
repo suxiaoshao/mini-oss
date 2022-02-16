@@ -38,3 +38,11 @@ query folderList($data: GetFolderListRequest!) {
     }
   }
 }
+query getFolderStatistics($data: GetFolderRequest!) {
+  folderInfo(data: $data) {
+    folderCount
+    objectCount
+    objectSize
+    folderName
+  }
+}

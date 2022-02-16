@@ -6,3 +6,4 @@
 **/*.local
 **/target
 **/*.pnpm-debug.log
+**/.npmrc

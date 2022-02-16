@@ -133,7 +133,10 @@ export type FolderInfo = {
   createTime: Scalars['Int'];
   /** 路径 */
   fatherPath: Scalars['String'];
+  folderCount: Scalars['Int'];
   folderName: Scalars['String'];
+  objectCount: Scalars['Int'];
+  objectSize: Scalars['Int'];
   /** 路径 */
   path: Scalars['String'];
   /** 创建时间 */
@@ -590,6 +593,21 @@ export type FolderListQuery = {
           objectAccess: ObjectAccess;
         }
     >;
+  };
+};
+
+export type GetFolderStatisticsQueryVariables = Exact<{
+  data: GetFolderRequest;
+}>;
+
+export type GetFolderStatisticsQuery = {
+  __typename?: 'QueryRoot';
+  folderInfo: {
+    __typename?: 'FolderInfo';
+    folderCount: number;
+    objectCount: number;
+    objectSize: number;
+    folderName: string;
   };
 };
 
@@ -1090,6 +1108,57 @@ export function useFolderListLazyQuery(
 export type FolderListQueryHookResult = ReturnType<typeof useFolderListQuery>;
 export type FolderListLazyQueryHookResult = ReturnType<typeof useFolderListLazyQuery>;
 export type FolderListQueryResult = Apollo.QueryResult<FolderListQuery, FolderListQueryVariables>;
+export const GetFolderStatisticsDocument = gql`
+  query getFolderStatistics($data: GetFolderRequest!) {
+    folderInfo(data: $data) {
+      folderCount
+      objectCount
+      objectSize
+      folderName
+    }
+  }
+`;
+
+/**
+ * __useGetFolderStatisticsQuery__
+ *
+ * To run a query within a React component, call `useGetFolderStatisticsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFolderStatisticsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFolderStatisticsQuery({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useGetFolderStatisticsQuery(
+  baseOptions: Apollo.QueryHookOptions<GetFolderStatisticsQuery, GetFolderStatisticsQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetFolderStatisticsQuery, GetFolderStatisticsQueryVariables>(
+    GetFolderStatisticsDocument,
+    options,
+  );
+}
+export function useGetFolderStatisticsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<GetFolderStatisticsQuery, GetFolderStatisticsQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GetFolderStatisticsQuery, GetFolderStatisticsQueryVariables>(
+    GetFolderStatisticsDocument,
+    options,
+  );
+}
+export type GetFolderStatisticsQueryHookResult = ReturnType<typeof useGetFolderStatisticsQuery>;
+export type GetFolderStatisticsLazyQueryHookResult = ReturnType<typeof useGetFolderStatisticsLazyQuery>;
+export type GetFolderStatisticsQueryResult = Apollo.QueryResult<
+  GetFolderStatisticsQuery,
+  GetFolderStatisticsQueryVariables
+>;
 export const UserLoginDocument = gql`
   query userLogin($data: LoginRequest!) {
     userLogin(data: $data)

@@ -1,10 +1,10 @@
-import { createHttpLink, ApolloClient, InMemoryCache, from } from '@apollo/client';
+import { ApolloClient, createHttpLink, from, InMemoryCache } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
 import { enqueueSnackbar } from '..';
 
 /**  */
 const link = createHttpLink({
-  uri: 'http://api.mini-oss.top',
+  uri: String(import.meta.env.GRAPHQL_URL ?? 'http://api.mini-oss.sushao.top'),
   credentials: 'include',
 });
 

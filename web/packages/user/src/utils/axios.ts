@@ -3,7 +3,8 @@ import axios, { AxiosError } from 'axios';
 import { enqueueSnackbar } from 'common';
 
 export function getPath(bucketName: string, path: string, filename: string): string {
-  return `http://${bucketName}.open.mini-oss.top${path === '/' ? '' : path}/${filename}`;
+  const url = import.meta.env.OPEN_URL ?? 'open.mini-oss.sushao.top';
+  return `http://${bucketName}.${url}${path === '/' ? '' : path}/${filename}`;
 }
 
 const instance = axios.create({
