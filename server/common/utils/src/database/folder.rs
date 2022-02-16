@@ -145,11 +145,16 @@ impl FolderModal {
         father_path: &str,
         pool: &Pool<Postgres>,
     ) -> Result<i64, Status> {
+        let father_path = if father_path == "/" {
+            format!("{}%", father_path)
+        } else {
+            format!("{}/%", father_path)
+        };
         let (count,): (i64,) = sqlx::query_as(
             "select count(path) from folder where bucket_name = $1 and path like $2",
         )
         .bind(bucket_name)
-        .bind(format!("{}/%", father_path))
+        .bind(father_path)
         .fetch_one(pool)
         .await
         .to_status()?;
@@ -268,5 +273,24 @@ impl Into<FolderInfo> for FolderModal {
             bucket_name,
             father_path,
         }
+    }
+}
+#[cfg(test)]
+mod test {
+    use sqlx::postgres::PgPoolOptions;
+
+    use super::FolderModal;
+
+    #[tokio::test]
+    async fn test() {
+        // 获取数据库连接池=]
+        let pool = PgPoolOptions::new()
+            .max_connections(5)
+            .connect(&std::env::var("postgres").unwrap())
+            .await
+            .unwrap();
+        FolderModal::delete_by_path("as-sushao", "/dsd", &pool)
+            .await
+            .unwrap();
     }
 }
