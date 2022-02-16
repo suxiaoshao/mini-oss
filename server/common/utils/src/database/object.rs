@@ -291,7 +291,7 @@ impl ObjectModal {
             "select count(path) from object where bucket_name = $1 and path like $2",
         )
         .bind(bucket_name)
-        .bind(format!("{}/%", father_path))
+        .bind(format!("{}%", father_path))
         .fetch_one(pool)
         .await
         .to_status()?;
@@ -303,14 +303,14 @@ impl ObjectModal {
         father_path: &str,
         pool: &Pool<Postgres>,
     ) -> Result<i64, Status> {
-        let (count,): (i64,) =
+        let (count,): (Option<i64>,) =
             sqlx::query_as("select sum(size) from object where bucket_name = $1 and path like $2")
                 .bind(bucket_name)
-                .bind(format!("{}/%", father_path))
+                .bind(format!("{}%", father_path))
                 .fetch_one(pool)
                 .await
                 .to_status()?;
-        Ok(count)
+        Ok(count.unwrap_or(0))
     }
 }
 #[allow(clippy::from_over_into)]
