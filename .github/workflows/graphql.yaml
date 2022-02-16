@@ -6,7 +6,7 @@ on:
     paths:
       - docker/packages/graphql.Dockerfile
       - server/packages/graphql/**
-      - server/common/**
+      - server/common/proto/**
       - server/.cargo/**
       - .github/workflows/graphql.yaml
 

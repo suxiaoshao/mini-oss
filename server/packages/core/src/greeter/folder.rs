@@ -153,7 +153,7 @@ impl Folder for FolderGreeter {
         } = request.into_inner();
         // 判断文件夹
         check_folder_readable(&auth, &bucket_name, &path, pool).await?;
-        let count = FolderModal::count_by_path(&bucket_name, &path, pool).await?;
+        let count = FolderModal::count_by_father_path(&bucket_name, &path, pool).await?;
         Ok(Response::new(CountReply { total: count }))
     }
 

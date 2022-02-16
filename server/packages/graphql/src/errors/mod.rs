@@ -1,18 +1,24 @@
 use std::sync::Arc;
 
 use async_graphql::{ErrorExtensionValues, ErrorExtensions};
-use thiserror::Error;
 
 use proto::{transport, Code, Status};
 
-#[derive(Error, Debug)]
+#[derive(Debug)]
 pub enum GraphqlError {
-    #[error("{}", 0)]
     Status(Status),
-    #[error("内部连接错误")]
     Transport,
-    #[error("目录名获取失败")]
     ParseFolderName,
+}
+
+impl GraphqlError {
+    pub fn message(&self) -> &str {
+        match self {
+            GraphqlError::Status(status) => status.message(),
+            GraphqlError::Transport => "内部连接错误",
+            GraphqlError::ParseFolderName => "目录获取错误",
+        }
+    }
 }
 
 impl Clone for GraphqlError {
@@ -71,9 +77,16 @@ impl ErrorExtensions for GraphqlError {
             GraphqlError::ParseFolderName => extensions.set("code", "Internal"),
         };
         async_graphql::Error {
-            message: format!("{}", self),
+            message: self.message().to_string(),
             source: Some(Arc::new(self.clone())),
             extensions: Some(extensions),
         }
+    }
+}
+
+#[allow(clippy::from_over_into)]
+impl Into<async_graphql::Error> for GraphqlError {
+    fn into(self) -> async_graphql::Error {
+        self.extend()
     }
 }
