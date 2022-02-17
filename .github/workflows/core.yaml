@@ -32,3 +32,4 @@ jobs:
           push: true
           tags: suxiaoshao/core:latest
           file: ./docker/packages/core.Dockerfile
+          context: .
