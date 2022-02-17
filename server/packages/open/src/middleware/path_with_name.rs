@@ -93,5 +93,21 @@ mod test {
                 path: "/".to_string(),
             })
         );
+        let path = "/221500###_###__基于JavaEE的众筹网(系统开发类样例).pdf".parse::<PathWithName>();
+        assert_eq!(
+            path,
+            Ok(PathWithName {
+                filename: "221500###_###__基于JavaEE的众筹网(系统开发类样例).pdf".to_string(),
+                path: "/".to_string(),
+            })
+        );
+        let path = "/test/221500###_###__基于JavaEE的众筹网(系统开发类样例).pdf".parse::<PathWithName>();
+        assert_eq!(
+            path,
+            Ok(PathWithName {
+                filename: "221500###_###__基于JavaEE的众筹网(系统开发类样例).pdf".to_string(),
+                path: "/test".to_string(),
+            })
+        );
     }
 }
