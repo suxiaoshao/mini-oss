@@ -6,8 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-tokio = { version = "1.16.1", features = ["rt-multi-thread", "time", "fs", "macros", "net"] }
+tokio = { version = "1.17.0", features = ["rt-multi-thread", "time", "fs", "macros", "net"] }
 futures = "0.3.21"
-proto={path="../../common/proto",features=["core","user"]}
-utils={path="../../common/utils",features=["mongo","sql","recursion","future","json"]}
-mime_guess = "2.0.3"
+proto = { path = "../../common/proto", features = ["core", "user", "json"] }
+utils = { path = "../../common/utils", features = ["mongo", "sql", "recursion", "future", "json"] }
+mime_guess = "2.0.4"

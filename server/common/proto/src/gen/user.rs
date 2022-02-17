@@ -1,8 +1,11 @@
-use crate::validation::{name::validate_name, password::validate_password};
-use serde::Deserialize;
+#[cfg(feature = "validate")]
 use validator::Validate;
 
-#[derive(async_graphql::InputObject, Clone, PartialEq, ::prost::Message)]
+#[cfg(feature = "validate")]
+use crate::validation::{name::validate_name, password::validate_password};
+
+#[cfg_attr(feature = "graphql", derive(async_graphql::InputObject))]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UpdateUserRequest {
     /// 账号
     #[prost(string, tag = "1")]
@@ -14,7 +17,8 @@ pub struct UpdateUserRequest {
     #[prost(string, tag = "2")]
     pub auth: ::prost::alloc::string::String,
 }
-#[derive(async_graphql::InputObject, Clone, PartialEq, ::prost::Message)]
+#[cfg_attr(feature = "graphql", derive(async_graphql::InputObject))]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct DeleteUserRequest {
     /// 账号
     #[prost(string, tag = "1")]
@@ -23,15 +27,17 @@ pub struct DeleteUserRequest {
     #[prost(string, tag = "2")]
     pub auth: ::prost::alloc::string::String,
 }
-#[derive(async_graphql::InputObject, Clone, PartialEq, ::prost::Message, Validate, Deserialize)]
+#[cfg_attr(feature = "validate", derive(Validate))]
+#[cfg_attr(feature = "graphql", derive(async_graphql::InputObject))]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CreateUserRequest {
     /// 账号
     #[prost(string, tag = "1")]
-    #[validate(custom = "validate_name")]
+    #[cfg_attr(feature = "validate", validate(custom = "validate_name"))]
     pub name: ::prost::alloc::string::String,
     /// 密码
     #[prost(string, tag = "2")]
-    #[validate(custom = "validate_password")]
+    #[cfg_attr(feature = "validate", validate(custom = "validate_password"))]
     pub password: ::prost::alloc::string::String,
     /// 描述
     #[prost(string, optional, tag = "3")]
@@ -40,7 +46,8 @@ pub struct CreateUserRequest {
     #[prost(string, tag = "4")]
     pub auth: ::prost::alloc::string::String,
 }
-#[derive(async_graphql::InputObject, Clone, PartialEq, ::prost::Message)]
+#[cfg_attr(feature = "graphql", derive(async_graphql::InputObject))]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetListRequest {
     /// 获取多少数据
     #[prost(uint32, tag = "1")]
@@ -52,7 +59,7 @@ pub struct GetListRequest {
     #[prost(string, tag = "3")]
     pub auth: ::prost::alloc::string::String,
 }
-#[derive(async_graphql::InputObject, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetUserListReply {
     /// 数据
     #[prost(message, repeated, tag = "1")]
@@ -61,7 +68,8 @@ pub struct GetUserListReply {
     #[prost(int64, tag = "2")]
     pub total: i64,
 }
-#[derive(async_graphql::InputObject, Clone, PartialEq, ::prost::Message)]
+#[cfg_attr(feature = "graphql", derive(async_graphql::InputObject))]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetUserRequest {
     /// 用户名
     #[prost(string, tag = "1")]
@@ -70,7 +78,7 @@ pub struct GetUserRequest {
     #[prost(string, tag = "2")]
     pub auth: ::prost::alloc::string::String,
 }
-#[derive(async_graphql::InputObject, Clone, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UserInfo {
     /// 账号
     #[prost(string, tag = "1")]
@@ -85,13 +93,15 @@ pub struct UserInfo {
     #[prost(int64, tag = "5")]
     pub update_time: i64,
 }
-#[derive(async_graphql::InputObject, Clone, PartialEq, ::prost::Message)]
+#[cfg_attr(feature = "graphql", derive(async_graphql::InputObject))]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetUserInfoRequest {
     /// 身份验证
     #[prost(string, tag = "1")]
     pub auth: ::prost::alloc::string::String,
 }
-#[derive(async_graphql::InputObject, Clone, PartialEq, ::prost::Message)]
+#[cfg_attr(feature = "graphql", derive(async_graphql::InputObject))]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UpdateUserInfoRequest {
     /// 描述
     #[prost(string, optional, tag = "1")]
@@ -100,15 +110,17 @@ pub struct UpdateUserInfoRequest {
     #[prost(string, tag = "2")]
     pub auth: ::prost::alloc::string::String,
 }
-#[derive(async_graphql::InputObject, Clone, PartialEq, ::prost::Message, Validate, Deserialize)]
+#[cfg_attr(feature = "validate", derive(Validate))]
+#[cfg_attr(feature = "graphql", derive(async_graphql::InputObject))]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UpdatePasswordRequest {
     /// 旧密码
     #[prost(string, tag = "1")]
-    #[validate(custom = "validate_password")]
+    #[cfg_attr(feature = "validate", validate(custom = "validate_password"))]
     pub old_password: ::prost::alloc::string::String,
     /// 新密码
     #[prost(string, tag = "2")]
-    #[validate(custom = "validate_password")]
+    #[cfg_attr(feature = "validate", validate(custom = "validate_password"))]
     pub new_password: ::prost::alloc::string::String,
     /// 身份验证
     #[prost(string, tag = "3")]
@@ -117,7 +129,9 @@ pub struct UpdatePasswordRequest {
 #[doc = r" Generated client implementations."]
 pub mod user_manage_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+
     use tonic::codegen::*;
+
     #[derive(Debug, Clone)]
     pub struct UserManageClient<T> {
         inner: tonic::client::Grpc<T>,
@@ -254,7 +268,9 @@ pub mod user_manage_client {
 #[doc = r" Generated client implementations."]
 pub mod self_manage_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+
     use tonic::codegen::*;
+
     #[doc = " 用户管理自身"]
     #[derive(Debug, Clone)]
     pub struct SelfManageClient<T> {
@@ -362,7 +378,9 @@ pub mod self_manage_client {
 #[doc = r" Generated server implementations."]
 pub mod user_manage_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+
     use tonic::codegen::*;
+
     #[doc = "Generated trait containing gRPC methods that should be implemented for use with UserManageServer."]
     #[async_trait]
     pub trait UserManage: Send + Sync + 'static {
@@ -624,7 +642,9 @@ pub mod user_manage_server {
 #[doc = r" Generated server implementations."]
 pub mod self_manage_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+
     use tonic::codegen::*;
+
     #[doc = "Generated trait containing gRPC methods that should be implemented for use with SelfManageServer."]
     #[async_trait]
     pub trait SelfManage: Send + Sync + 'static {

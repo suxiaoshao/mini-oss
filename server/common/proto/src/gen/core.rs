@@ -1,10 +1,13 @@
+#[cfg(feature = "graphql")]
 use async_graphql::{Enum, InputObject, SimpleObject};
-use serde::{Deserialize, Serialize};
+#[cfg(feature = "validate")]
 use validator::Validate;
 
+#[cfg(feature = "validate")]
 use crate::validation::{bucket::validate_bucket, folder::validate_folder, path::validate_path};
 
-#[derive(Clone, PartialEq, ::prost::Message, InputObject)]
+#[cfg_attr(feature = "graphql", derive(InputObject))]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetBucketRequest {
     /// 身份验证
     #[prost(string, tag = "1")]
@@ -22,7 +25,8 @@ pub struct GetBucketListReply {
     #[prost(int64, tag = "2")]
     pub total: i64,
 }
-#[derive(InputObject, Clone, PartialEq, ::prost::Message)]
+#[cfg_attr(feature = "graphql", derive(InputObject))]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UpdateBucketRequest {
     /// 名字
     #[prost(string, tag = "1")]
@@ -34,7 +38,8 @@ pub struct UpdateBucketRequest {
     #[prost(string, tag = "3")]
     pub auth: ::prost::alloc::string::String,
 }
-#[derive(InputObject, Clone, PartialEq, ::prost::Message)]
+#[cfg_attr(feature = "graphql", derive(InputObject))]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct DeleteBucketRequest {
     /// 名字
     #[prost(string, tag = "1")]
@@ -43,7 +48,8 @@ pub struct DeleteBucketRequest {
     #[prost(string, tag = "2")]
     pub auth: ::prost::alloc::string::String,
 }
-#[derive(InputObject, Clone, PartialEq, ::prost::Message)]
+#[cfg_attr(feature = "graphql", derive(InputObject))]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct DeleteBucketsRequest {
     /// 用户名
     #[prost(string, tag = "1")]
@@ -52,11 +58,13 @@ pub struct DeleteBucketsRequest {
     #[prost(string, tag = "2")]
     pub auth: ::prost::alloc::string::String,
 }
-#[derive(InputObject, Clone, PartialEq, ::prost::Message, Validate, Deserialize)]
+#[cfg_attr(feature = "graphql", derive(InputObject))]
+#[cfg_attr(feature = "validate", derive(Validate))]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CreateBucketRequest {
     /// 名字
     #[prost(string, tag = "1")]
-    #[validate(custom = "validate_bucket")]
+    #[cfg_attr(feature = "validate", validate(custom = "validate_bucket"))]
     pub name: ::prost::alloc::string::String,
     /// 访问控制
     #[prost(enumeration = "BucketAccess", tag = "2")]
@@ -89,7 +97,8 @@ pub struct GetFolderSizeReply {
     #[prost(int64, tag = "1")]
     pub size: i64,
 }
-#[derive(Clone, PartialEq, ::prost::Message, InputObject)]
+#[cfg_attr(feature = "graphql", derive(InputObject))]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetFolderRequest {
     /// 身份验证
     #[prost(string, optional, tag = "1")]
@@ -107,7 +116,8 @@ pub struct CountReply {
     #[prost(int64, tag = "1")]
     pub total: i64,
 }
-#[derive(Clone, PartialEq, ::prost::Message, InputObject)]
+#[cfg_attr(feature = "graphql", derive(InputObject))]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetFolderListRequest {
     /// 获取多少数据
     #[prost(uint32, tag = "1")]
@@ -134,11 +144,13 @@ pub struct GetFolderListReply {
     #[prost(int64, tag = "2")]
     pub total: i64,
 }
-#[derive(Clone, PartialEq, ::prost::Message, InputObject, Validate, Deserialize)]
+#[cfg_attr(feature = "validate", derive(Validate))]
+#[cfg_attr(feature = "graphql", derive(InputObject))]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UpdateFolderRequest {
     /// 路径
     #[prost(string, tag = "1")]
-    #[validate(custom = "validate_path")]
+    #[cfg_attr(feature = "validate", validate(custom = "validate_path"))]
     pub path: ::prost::alloc::string::String,
     /// bucket 名
     #[prost(string, tag = "2")]
@@ -150,11 +162,13 @@ pub struct UpdateFolderRequest {
     #[prost(enumeration = "FolderAccess", tag = "4")]
     pub access: i32,
 }
-#[derive(Clone, PartialEq, ::prost::Message, InputObject, Validate, Deserialize)]
+#[cfg_attr(feature = "validate", derive(Validate))]
+#[cfg_attr(feature = "graphql", derive(InputObject))]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct DeleteFolderRequest {
     /// 名字
     #[prost(string, tag = "1")]
-    #[validate(custom = "validate_path")]
+    #[cfg_attr(feature = "validate", validate(custom = "validate_path"))]
     pub path: ::prost::alloc::string::String,
     /// bucket 名
     #[prost(string, tag = "2")]
@@ -163,11 +177,13 @@ pub struct DeleteFolderRequest {
     #[prost(string, optional, tag = "3")]
     pub auth: ::core::option::Option<::prost::alloc::string::String>,
 }
-#[derive(Clone, PartialEq, ::prost::Message, Validate, Deserialize, InputObject)]
+#[cfg_attr(feature = "validate", derive(Validate))]
+#[cfg_attr(feature = "graphql", derive(InputObject))]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CreateFolderRequest {
     /// 路径
     #[prost(string, tag = "1")]
-    #[validate(custom = "validate_folder")]
+    #[cfg_attr(feature = "validate", validate(custom = "validate_folder"))]
     pub path: ::prost::alloc::string::String,
     /// bucket 名
     #[prost(string, tag = "2")]
@@ -209,7 +225,8 @@ pub struct SizeReply {
     #[prost(int64, tag = "1")]
     pub size: i64,
 }
-#[derive(Clone, PartialEq, ::prost::Message, InputObject)]
+#[cfg_attr(feature = "graphql", derive(InputObject))]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetObjectRequest {
     /// 身份验证
     #[prost(string, optional, tag = "1")]
@@ -238,8 +255,9 @@ pub struct GetObjectListReply {
     #[prost(int64, tag = "2")]
     pub total: i64,
 }
-
-#[derive(Clone, PartialEq, ::prost::Message, Validate, Deserialize, InputObject)]
+#[cfg_attr(feature = "validate", derive(Validate))]
+#[cfg_attr(feature = "graphql", derive(InputObject))]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CreateObjectRequest {
     /// 路径
     #[prost(string, tag = "1")]
@@ -255,13 +273,14 @@ pub struct CreateObjectRequest {
     pub auth: ::core::option::Option<::prost::alloc::string::String>,
     /// 文件名
     #[prost(string, tag = "5")]
-    #[validate(custom = "validate_folder")]
+    #[cfg_attr(feature = "validate", validate(custom = "validate_folder"))]
     pub filename: ::prost::alloc::string::String,
     /// 内容
     #[prost(bytes = "vec", tag = "6")]
     pub content: ::prost::alloc::vec::Vec<u8>,
 }
-#[derive(Clone, PartialEq, ::prost::Message, InputObject)]
+#[cfg_attr(feature = "graphql", derive(InputObject))]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct DeleteObjectRequest {
     /// 路径
     #[prost(string, tag = "1")]
@@ -276,7 +295,9 @@ pub struct DeleteObjectRequest {
     #[prost(string, optional, tag = "4")]
     pub auth: ::core::option::Option<::prost::alloc::string::String>,
 }
-#[derive(Clone, PartialEq, ::prost::Message, Validate, Deserialize, InputObject)]
+#[cfg_attr(feature = "validate", derive(Validate))]
+#[cfg_attr(feature = "graphql", derive(InputObject))]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UpdateObjectRequest {
     /// 路径
     #[prost(string, tag = "1")]
@@ -292,7 +313,7 @@ pub struct UpdateObjectRequest {
     pub access: i32,
     /// 新文件名
     #[prost(string, tag = "6")]
-    #[validate(custom = "validate_folder")]
+    #[cfg_attr(feature = "validate", validate(custom = "validate_folder"))]
     pub new_filename: ::prost::alloc::string::String,
     /// 访问控制
     #[prost(string, optional, tag = "7")]
@@ -331,7 +352,10 @@ pub struct ObjectInfo {
     #[prost(message, repeated, tag = "9")]
     pub headers: ::prost::alloc::vec::Vec<Header>,
 }
-#[derive(Clone, PartialEq, ::prost::Message, Serialize, Deserialize, InputObject, SimpleObject)]
+
+#[cfg_attr(feature = "json", derive(serde::Serialize, serde::Deserialize,))]
+#[cfg_attr(feature = "graphql", derive(InputObject, SimpleObject))]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Header {
     #[prost(string, tag = "1")]
     pub key: ::prost::alloc::string::String,
@@ -339,7 +363,8 @@ pub struct Header {
     pub value: ::prost::alloc::string::String,
 }
 /// 访问权限类型
-#[derive(Enum, Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[cfg_attr(feature = "graphql", derive(Enum))]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum BucketAccess {
     /// 开放
@@ -350,7 +375,8 @@ pub enum BucketAccess {
     Private = 2,
 }
 /// 访问权限类型
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration, Enum)]
+#[cfg_attr(feature = "graphql", derive(Enum))]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum FolderAccess {
     /// 继承
@@ -362,7 +388,8 @@ pub enum FolderAccess {
     /// 开放
     OpenFolder = 3,
 }
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration, Enum)]
+#[cfg_attr(feature = "graphql", derive(Enum))]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum ObjectAccess {
     /// 继承

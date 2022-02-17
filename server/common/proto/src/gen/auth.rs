@@ -1,15 +1,20 @@
-use crate::validation::{name::validate_name, password::validate_password};
-use serde::Deserialize;
+#[cfg(feature = "validate")]
 use validator::Validate;
-#[derive(async_graphql::InputObject, Clone, PartialEq, ::prost::Message, Validate, Deserialize)]
+
+#[cfg(feature="validate")]
+use crate::validation::{name::validate_name, password::validate_password};
+
+#[cfg_attr(feature = "validate", derive(Validate))]
+#[cfg_attr(feature = "graphql", derive(async_graphql::InputObject))]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct LoginRequest {
     /// 账号
     #[prost(string, tag = "1")]
-    #[validate(custom = "validate_name")]
+    #[cfg_attr(feature = "validate", validate(custom = "validate_name"))]
     pub name: ::prost::alloc::string::String,
     /// 密码
     #[prost(string, tag = "2")]
-    #[validate(custom = "validate_password")]
+    #[cfg_attr(feature = "validate", validate(custom = "validate_password"))]
     pub password: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -17,7 +22,8 @@ pub struct LoginReply {
     #[prost(string, tag = "1")]
     pub auth: ::prost::alloc::string::String,
 }
-#[derive(async_graphql::InputObject, Clone, PartialEq, ::prost::Message)]
+#[cfg_attr(feature = "graphql", derive(async_graphql::InputObject))]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CheckRequest {
     #[prost(string, tag = "1")]
     pub auth: ::prost::alloc::string::String,
@@ -32,7 +38,9 @@ pub struct Empty {}
 #[doc = r" Generated client implementations."]
 pub mod login_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+
     use tonic::codegen::*;
+
     #[derive(Debug, Clone)]
     pub struct LoginClient<T> {
         inner: tonic::client::Grpc<T>,
@@ -124,7 +132,9 @@ pub mod login_client {
 #[doc = r" Generated client implementations."]
 pub mod check_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+
     use tonic::codegen::*;
+
     #[derive(Debug, Clone)]
     pub struct CheckClient<T> {
         inner: tonic::client::Grpc<T>,
@@ -216,7 +226,9 @@ pub mod check_client {
 #[doc = r" Generated server implementations."]
 pub mod login_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+
     use tonic::codegen::*;
+
     #[doc = "Generated trait containing gRPC methods that should be implemented for use with LoginServer."]
     #[async_trait]
     pub trait Login: Send + Sync + 'static {
@@ -370,7 +382,9 @@ pub mod login_server {
 #[doc = r" Generated server implementations."]
 pub mod check_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+
     use tonic::codegen::*;
+
     #[doc = "Generated trait containing gRPC methods that should be implemented for use with CheckServer."]
     #[async_trait]
     pub trait Check: Send + Sync + 'static {

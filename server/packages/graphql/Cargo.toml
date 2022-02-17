@@ -6,10 +6,10 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-tokio = { version = "1.16.1", features = ["macros", "rt-multi-thread"] }
-async-graphql = { version = "3.0.29", features = ["unblock"] }
+tokio = { version = "1.17.0", features = ["macros", "rt-multi-thread"] }
+async-graphql = { version = "3.0.31", features = ["unblock"] }
 axum = { version = "0.4.5", features = ["headers"] }
-async-graphql-axum = "3.0.29"
-proto = { path = "../../common/proto", features = ["core", "auth", "user"] }
+async-graphql-axum = "3.0.31"
+proto = { path = "../../common/proto", features = ["core", "auth", "user", "graphql"] }
 tower-http = { version = "0.2.2", features = ["cors"] }
 futures = "0.3.21"

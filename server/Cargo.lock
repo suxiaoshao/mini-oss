@@ -69,9 +69,9 @@ dependencies = [
 
 [[package]]
 name = "async-graphql"
-version = "3.0.29"
+version = "3.0.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fda6e2cbcf8c14b42975418325396a5bb76f134690fee86d3d5e204078cbc31b"
+checksum = "d1a994a60389a32a31304e46d437a11db46d5bbeb8c26de3dbfa309efd8b93e4"
 dependencies = [
  "async-graphql-derive",
  "async-graphql-parser",
@@ -100,9 +100,9 @@ dependencies = [
 
 [[package]]
 name = "async-graphql-axum"
-version = "3.0.29"
+version = "3.0.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "44847b2ddd057ba4ed1be2722315ae315e8c5dc0748ee01a163a08164390489c"
+checksum = "8c86f50317ed9b630eed6562e06ccbf48a0869cce4c47f9e2cedf3a69f92b914"
 dependencies = [
  "async-graphql",
  "async-trait",
@@ -118,9 +118,9 @@ dependencies = [
 
 [[package]]
 name = "async-graphql-derive"
-version = "3.0.29"
+version = "3.0.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "db4d33f4324be98cc45c45ffa014241ada7cf38431c4fca6cab57f4178a4deaf"
+checksum = "71011bef5fef3019016b17fb8ba588d562c128d2d7ea93c86093352d5fd51ccf"
 dependencies = [
  "Inflector",
  "async-graphql-parser",
@@ -134,9 +134,9 @@ dependencies = [
 
 [[package]]
 name = "async-graphql-parser"
-version = "3.0.29"
+version = "3.0.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3bcdef3fe2d50100cedfb66d1e3c21ad9462720f7e69d69dd662b168b942d3e1"
+checksum = "13b4caccb492c65240591a193c3e90ac11018dd25670544ce07360b7116c6153"
 dependencies = [
  "async-graphql-value",
  "pest",
@@ -147,9 +147,9 @@ dependencies = [
 
 [[package]]
 name = "async-graphql-value"
-version = "3.0.29"
+version = "3.0.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7823df27cdf608d408dcf404fc7d8e688aa3c91055af18832727edbd9ac91ba6"
+checksum = "30cd0d73a5a13fe9d1a7d5dd67c6394663dd531afb26a0c50c5da5b29cf7ba1f"
 dependencies = [
  "bytes",
  "indexmap",
@@ -1099,7 +1099,7 @@ dependencies = [
  "httpdate",
  "itoa 0.4.8",
  "pin-project-lite",
- "socket2 0.4.2",
+ "socket2 0.4.4",
  "tokio",
  "tower-service",
  "tracing",
@@ -1231,9 +1231,9 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
 name = "libc"
-version = "0.2.112"
+version = "0.2.118"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1b03d17f364a3a042d5e5d46b053bbbf82c92c9430c592dd4c064dc6ee997125"
+checksum = "06e509672465a0504304aa87f9f176f2b2b716ed8fb105ebe5c02dc6dce96a94"
 
 [[package]]
 name = "linked-hash-map"
@@ -1317,9 +1317,9 @@ checksum = "2a60c7ce501c71e03a9c9c0d35b861413ae925bd979cc7a4e30d060069aaac8d"
 
 [[package]]
 name = "mime_guess"
-version = "2.0.3"
+version = "2.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2684d4c2e97d99848d30b324b00c8fcc7e5c897b7cbb5819b09e7c90e8baf212"
+checksum = "4192263c238a5f0d0c6bfd21f336a313a4ce1c450542449ca191bb657b4642ef"
 dependencies = [
  "mime",
  "unicase",
@@ -1333,9 +1333,9 @@ checksum = "68354c5c6bd36d73ff3feceb05efa59b6acb7626617f4962be322a825e61f79a"
 
 [[package]]
 name = "mio"
-version = "0.7.14"
+version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8067b404fe97c70829f082dec8bcf4f71225d7eaea1d8645349cb76fa06205cc"
+checksum = "ba272f85fa0b41fc91872be579b3bbe0f56b792aa361a380eb669469f68dafb2"
 dependencies = [
  "libc",
  "log",
@@ -1384,7 +1384,7 @@ dependencies = [
  "serde_with",
  "sha-1 0.9.8",
  "sha2 0.9.8",
- "socket2 0.4.2",
+ "socket2 0.4.4",
  "stringprep",
  "strsim",
  "take_mut",
@@ -2238,9 +2238,9 @@ dependencies = [
 
 [[package]]
 name = "socket2"
-version = "0.4.2"
+version = "0.4.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5dc90fe6c7be1a323296982db1836d1ea9e47b6839496dde9a541bc496df3516"
+checksum = "66d72b759436ae32898a2af0a14218dbf55efde3feeb170eb623637db85ee1e0"
 dependencies = [
  "libc",
  "winapi",
@@ -2591,9 +2591,9 @@ checksum = "cda74da7e1a664f795bb1f8a87ec406fb89a02522cf6e50620d016add6dbbf5c"
 
 [[package]]
 name = "tokio"
-version = "1.16.1"
+version = "1.17.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0c27a64b625de6d309e8c57716ba93021dccf1b3b5c97edd6d3dd2d2135afc0a"
+checksum = "2af73ac49756f3f7c01172e34a23e5d0216f6c32333757c2c61feb2bbff5a5ee"
 dependencies = [
  "bytes",
  "libc",
@@ -2601,6 +2601,7 @@ dependencies = [
  "mio",
  "num_cpus",
  "pin-project-lite",
+ "socket2 0.4.4",
  "tokio-macros",
  "winapi",
 ]
