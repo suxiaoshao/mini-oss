@@ -283,3 +283,26 @@ async fn create_object(
     ObjectModal::create(input, pool).await?;
     Ok(())
 }
+
+#[cfg(test)]
+mod test {
+    use proto::core::object_client::ObjectClient;
+    use proto::core::{GetFolderRequest, SizeReply};
+    use proto::Request;
+
+    #[tokio::test]
+    async fn test() {
+        let mut client = ObjectClient::connect("http://localhost:80").await.unwrap();
+        let request = Request::new(GetFolderRequest {
+            auth: None,
+            path: "/dd".to_string(),
+            bucket_name: "as-sushao".to_string(),
+        });
+        let SizeReply { size } = client
+            .get_size_by_folder(request)
+            .await
+            .unwrap()
+            .into_inner();
+        println!("{}",size);
+    }
+}
