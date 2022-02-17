@@ -1,9 +1,9 @@
 import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material';
-import { FocusEventHandler, ReactChild } from 'react';
+import { FocusEventHandler, ReactNode } from 'react';
 import * as React from 'react';
 
 export interface ControllerRadioGroupProps<T extends string | number> {
-  label: ReactChild;
+  label: ReactNode;
   name?: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>, value: string) => void;
   onBlur: FocusEventHandler<HTMLInputElement> | undefined;

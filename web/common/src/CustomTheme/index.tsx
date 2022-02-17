@@ -7,7 +7,7 @@ import '@fontsource/roboto/700.css';
 import './index.css';
 
 export interface CustomThemeProps {
-  children?: React.ReactChild;
+  children?: React.ReactNode;
 }
 
 export function CustomTheme({ children }: CustomThemeProps): JSX.Element {

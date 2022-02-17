@@ -3,7 +3,7 @@ import axios, { AxiosError } from 'axios';
 import { enqueueSnackbar } from 'common';
 
 export function getPath(bucketName: string, path: string, filename: string): string {
-  const url = import.meta.env.OPEN_URL ?? 'open.mini-oss.sushao.top';
+  const url = import.meta.env.VITE_OPEN_URL ?? 'open.mini-oss.sushao.top';
   return `http://${bucketName}.${url}${path === '/' ? '' : path}/${filename}`;
 }
 

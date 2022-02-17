@@ -3,11 +3,13 @@ import { TableActions } from 'common';
 import { useDeleteFolderMutation, useDeleteObjectMutation } from 'graphql';
 import { FolderTableData } from '..';
 import UpdateFolderAction from './UpdateFolderAction';
+import ShowStatistics from '@/pages/Bucket/pages/BucketDetail/components/ShowStatistics';
 
 export interface FolderListActionsProps {
   item: FolderTableData;
   refetch: () => void;
 }
+
 export default function FolderListAction({ item, refetch }: FolderListActionsProps): JSX.Element {
   const auth = useAppSelector((state) => state.auth.value) ?? '';
   const [deleteFolder] = useDeleteFolderMutation();
@@ -25,6 +27,7 @@ export default function FolderListAction({ item, refetch }: FolderListActionsPro
             },
           },
           <UpdateFolderAction key={2} menuClose={onClose} refetch={refetch} {...item} />,
+          <ShowStatistics {...item} key={2} menuClose={onClose} />,
         ]}
       </TableActions>
     );

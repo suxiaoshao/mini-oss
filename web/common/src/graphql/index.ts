@@ -4,7 +4,7 @@ import { enqueueSnackbar } from '..';
 
 /**  */
 const link = createHttpLink({
-  uri: String(import.meta.env.GRAPHQL_URL ?? 'http://api.mini-oss.sushao.top'),
+  uri: String(import.meta.env.VITE_GRAPHQL_URL ?? 'http://api.mini-oss.sushao.top'),
   credentials: 'include',
 });
 

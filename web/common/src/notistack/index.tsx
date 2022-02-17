@@ -1,6 +1,6 @@
 import { IconButton } from '@mui/material';
 import { OptionsObject, SnackbarMessage, useSnackbar, SnackbarProvider as SourceSnackbarProvider } from 'notistack';
-import { ReactChild, useEffect, useRef } from 'react';
+import { ReactNode, useEffect, useRef } from 'react';
 import { Subject } from 'rxjs';
 import { Close } from '@mui/icons-material';
 
@@ -21,7 +21,7 @@ export function useSnackbarInit() {
     };
   }, [open]);
 }
-export function SnackbarProvider({ children }: { children: ReactChild }): JSX.Element {
+export function SnackbarProvider({ children }: { children: ReactNode }): JSX.Element {
   const ref = useRef<SourceSnackbarProvider>(null);
   return (
     <SourceSnackbarProvider

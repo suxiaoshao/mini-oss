@@ -3,12 +3,12 @@ import { Button, Box, Input, IconButton, FormHelperText } from '@mui/material';
 import { CustomColumnArray, CustomTable, useCustomTable } from 'common';
 import prettyBytes from 'pretty-bytes';
 import React, { ChangeEvent, useMemo } from 'react';
-import { ReactChild } from 'react';
+import { ReactNode } from 'react';
 import { Control, useFieldArray } from 'react-hook-form';
 import { CreateObjectForm } from '../pages/BucketDetail/components/UploadObjectButton';
 
 export interface ControllerFilesProps {
-  label: ReactChild;
+  label: ReactNode;
   name: string;
   value: File[];
   control: Control<CreateObjectForm, object>;

@@ -1,6 +1,6 @@
 import { MoreHoriz } from '@mui/icons-material';
 import { IconButton, Menu, MenuItem } from '@mui/material';
-import { ReactChild, useState } from 'react';
+import { ReactNode, useState } from 'react';
 
 export interface TableActionsProps {
   children: (handleClose: () => void) => Actions[];
@@ -8,7 +8,7 @@ export interface TableActionsProps {
 
 export type Actions =
   | {
-      text: ReactChild;
+      text: ReactNode;
       onClick?: () => void;
     }
   | JSX.Element;

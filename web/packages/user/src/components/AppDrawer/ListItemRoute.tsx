@@ -5,8 +5,8 @@ import { To, useLocation, useNavigate } from 'react-router-dom';
 export interface ListItemRouteProps {
   matchPaths: (string | RegExp)[];
   toPath: To;
-  text: React.ReactChild;
-  icon: React.ReactChild;
+  text: React.ReactNode;
+  icon: React.ReactNode;
 }
 export default function ListItemRoute({ matchPaths, toPath, text, icon }: ListItemRouteProps) {
   const { pathname } = useLocation();
