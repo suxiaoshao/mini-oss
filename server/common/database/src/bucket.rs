@@ -2,9 +2,8 @@ use std::time::SystemTime;
 
 use sqlx::{types::time::PrimitiveDateTime, FromRow, Pool, Postgres};
 
-use proto::{core::BucketInfo, Status};
-
-use crate::errors::grpc::ToStatusResult;
+use errors::TonicResult;
+use proto::core::BucketInfo;
 
 #[derive(sqlx::Type)]
 #[sqlx(type_name = "bucket_access_type")]
@@ -43,7 +42,7 @@ impl BucketModal {
         access: impl Into<BucketAccess>,
         username: &str,
         pool: &Pool<Postgres>,
-    ) -> Result<Self, Status> {
+    ) -> TonicResult<Self> {
         let access: BucketAccess = access.into();
         // 获取现在时间
         let time = PrimitiveDateTime::from(SystemTime::now());
@@ -54,24 +53,23 @@ impl BucketModal {
             .bind(access)
             .bind(username)
             .execute(pool)
-            .await
-            .to_status()?;
+            .await?;
         Self::find_one(name, pool).await
     }
     /// 判断是否存在
-    pub async fn exist(name: &str, pool: &Pool<Postgres>) -> Result<(), sqlx::Error> {
+    pub async fn exist(name: &str, pool: &Pool<Postgres>) -> TonicResult<()> {
         sqlx::query("select * from bucket where name = $1")
             .bind(name)
             .fetch_one(pool)
-            .await
-            .map(|_| ())
+            .await?;
+        Ok(())
     }
     /// 更新
     pub async fn update(
         name: &str,
         access: &BucketAccess,
         pool: &Pool<Postgres>,
-    ) -> Result<Self, Status> {
+    ) -> TonicResult<Self> {
         // 获取现在时间
         let time = PrimitiveDateTime::from(SystemTime::now());
         sqlx::query("update bucket set access = $1, update_time = $2 where name = $3")
@@ -79,37 +77,33 @@ impl BucketModal {
             .bind(time)
             .bind(name)
             .execute(pool)
-            .await
-            .to_status()?;
+            .await?;
         Self::find_one(name, pool).await
     }
     /// 获取第一项
-    pub async fn find_one(name: &str, pool: &Pool<Postgres>) -> Result<Self, Status> {
+    pub async fn find_one(name: &str, pool: &Pool<Postgres>) -> TonicResult<Self> {
         let bucket = sqlx::query_as(
             "select name,access,create_time,update_time,username from bucket where name = $1",
         )
         .bind(name)
         .fetch_one(pool)
-        .await
-        .to_status()?;
+        .await?;
         Ok(bucket)
     }
     /// 删除
-    pub async fn delete(name: &str, pool: &Pool<Postgres>) -> Result<(), Status> {
+    pub async fn delete(name: &str, pool: &Pool<Postgres>) -> TonicResult<()> {
         sqlx::query("delete from bucket where name = $1")
             .bind(name)
             .execute(pool)
-            .await
-            .to_status()?;
+            .await?;
         Ok(())
     }
     /// 删除某个用户下所有
-    pub async fn delete_by_user(username: &str, pool: &Pool<Postgres>) -> Result<(), Status> {
+    pub async fn delete_by_user(username: &str, pool: &Pool<Postgres>) -> TonicResult<()> {
         sqlx::query("delete from bucket where username = $1")
             .bind(username)
             .execute(pool)
-            .await
-            .to_status()?;
+            .await?;
         Ok(())
     }
     /// 获取列表
@@ -118,7 +112,7 @@ impl BucketModal {
         offset: u32,
         username: &str,
         pool: &Pool<Postgres>,
-    ) -> Result<Vec<Self>, Status> {
+    ) -> TonicResult<Vec<Self>> {
         let users = sqlx::query_as(
             "select name,access,create_time,update_time,username from bucket where username = $1 offset $2 limit $3",
         )
@@ -126,35 +120,32 @@ impl BucketModal {
         .bind(offset)
         .bind(limit)
         .fetch_all(pool)
-        .await
-        .to_status()?;
+        .await?;
         Ok(users)
     }
     /// 获取全部列表
     pub async fn find_total_by_user(
         username: &str,
         pool: &Pool<Postgres>,
-    ) -> Result<Vec<Self>, Status> {
+    ) -> TonicResult<Vec<Self>> {
         let users = sqlx::query_as(
             "select name,access,create_time,update_time,username from bucket where username = $1",
         )
         .bind(username)
         .fetch_all(pool)
-        .await
-        .to_status()?;
+        .await?;
         Ok(users)
     }
     /// 获取总数
-    pub async fn count_by_name(username: &str, pool: &Pool<Postgres>) -> Result<i64, Status> {
+    pub async fn count_by_name(username: &str, pool: &Pool<Postgres>) -> TonicResult<i64> {
         let (count,): (i64,) = sqlx::query_as("select count(name) from bucket where username = $1")
             .bind(username)
             .fetch_one(pool)
-            .await
-            .to_status()?;
+            .await?;
         Ok(count)
     }
     /// 判断读取访问权限
-    pub async fn read_open(bucket_name: &str, pool: &Pool<Postgres>) -> Result<bool, Status> {
+    pub async fn read_open(bucket_name: &str, pool: &Pool<Postgres>) -> TonicResult<bool> {
         let Self { access, .. } = Self::find_one(bucket_name, pool).await?;
         Ok(match access {
             BucketAccess::Open => true,
@@ -163,7 +154,7 @@ impl BucketModal {
         })
     }
     /// 判断写访问权限
-    pub async fn write_open(bucket_name: &str, pool: &Pool<Postgres>) -> Result<bool, Status> {
+    pub async fn write_open(bucket_name: &str, pool: &Pool<Postgres>) -> TonicResult<bool> {
         let Self { access, .. } = Self::find_one(bucket_name, pool).await?;
         Ok(match access {
             BucketAccess::Open => true,

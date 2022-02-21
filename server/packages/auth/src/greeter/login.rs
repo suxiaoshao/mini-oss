@@ -1,15 +1,11 @@
+use database::{Pool, Postgres};
 use proto::{
     async_trait,
     auth::{login_server::Login, LoginReply, LoginRequest},
-    validation::Validate,
     Request, Response, Status,
 };
 use std::sync::Arc;
-use utils::{
-    database::{Pool, Postgres},
-    errors::grpc::ToStatusResult,
-    validation::claims::Claims,
-};
+use validation::{claims::Claims, validate};
 
 pub struct LoginGreeter {
     pool: Arc<Pool<Postgres>>,
@@ -28,7 +24,7 @@ impl Login for LoginGreeter {
         request: Request<LoginRequest>,
     ) -> Result<Response<LoginReply>, Status> {
         // 验证
-        request.get_ref().validate().to_status()?;
+        validate(request.get_ref())?;
         let request = request.into_inner();
         let name = request.name;
         let password = request.password;
@@ -40,7 +36,7 @@ impl Login for LoginGreeter {
         request: Request<LoginRequest>,
     ) -> Result<Response<LoginReply>, Status> {
         // 验证
-        request.get_ref().validate().to_status()?;
+        validate(request.get_ref())?;
         let request = request.into_inner();
         let name = request.name;
         let password = request.password;

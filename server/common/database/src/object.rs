@@ -1,16 +1,13 @@
 use std::time::SystemTime;
-use num_traits::ToPrimitive;
 
+use num_traits::ToPrimitive;
 use sqlx::types::Decimal;
 use sqlx::{types::time::PrimitiveDateTime, FromRow, Pool, Postgres};
 
-use proto::{
-    core::{Header, ObjectInfo},
-    Status,
-};
+use errors::{TonicError, TonicResult};
+use proto::core::{Header, ObjectInfo};
 
-use crate::database::folder::FolderModal;
-use crate::errors::grpc::ToStatusResult;
+use crate::folder::FolderModal;
 
 #[derive(sqlx::Type, Debug)]
 #[sqlx(type_name = "object_access_type")]
@@ -79,12 +76,12 @@ impl ObjectModal {
             headers,
         }: ObjectCreateInput<'a>,
         pool: &Pool<Postgres>,
-    ) -> Result<Self, Status> {
+    ) -> TonicResult<Self> {
         // 获取现在时间
         let time = PrimitiveDateTime::from(SystemTime::now());
         let mut bind_headers = vec![];
         for header in headers {
-            bind_headers.push(serde_json::to_value(header).to_status()?);
+            bind_headers.push(serde_json::to_value(header)?);
         }
         sqlx::query(r#"insert into object
                             (path, create_time, update_time, access,bucket_name,filename,object_id,blake3,size,headers)
@@ -100,8 +97,7 @@ impl ObjectModal {
             .bind(size)
             .bind(bind_headers)
             .execute(pool)
-            .await
-            .to_status()?;
+            .await?;
         Self::find_one(path, bucket_name, filename, pool).await
     }
     /// 获取第一项
@@ -110,7 +106,7 @@ impl ObjectModal {
         bucket_name: &str,
         filename: &str,
         pool: &Pool<Postgres>,
-    ) -> Result<Self, Status> {
+    ) -> TonicResult<Self> {
         let object = sqlx::query_as(
             r##"select path,access,create_time,update_time,bucket_name,filename,object_id,blake3,size,headers
                         from object where path = $1 and bucket_name=$2 and filename = $3"##,
@@ -118,7 +114,7 @@ impl ObjectModal {
         .bind(path).bind(bucket_name).bind(filename)
         .fetch_one(pool)
         .await
-        .to_status()?;
+        ?;
         Ok(object)
     }
     /// 判断是否存在
@@ -127,14 +123,14 @@ impl ObjectModal {
         bucket_name: &str,
         filename: &str,
         pool: &Pool<Postgres>,
-    ) -> Result<(), sqlx::Error> {
+    ) -> TonicResult<()> {
         sqlx::query("select * from object where path = $1 and bucket_name = $2 and filename = $3")
             .bind(path)
             .bind(bucket_name)
             .bind(filename)
             .fetch_one(pool)
-            .await
-            .map(|_| ())
+            .await?;
+        Ok(())
     }
     /// 更新
     pub async fn update(
@@ -145,12 +141,12 @@ impl ObjectModal {
         new_filename: &str,
         headers: &[Header],
         pool: &Pool<Postgres>,
-    ) -> Result<Self, Status> {
+    ) -> TonicResult<Self> {
         // 获取现在时间
         let time = PrimitiveDateTime::from(SystemTime::now());
         let mut bind_headers = vec![];
         for header in headers {
-            bind_headers.push(serde_json::to_value(header).to_status()?);
+            bind_headers.push(serde_json::to_value(header)?);
         }
         sqlx::query(
             r#"update object set access = $1, update_time = $2,filename=$3,headers=$4
@@ -164,8 +160,7 @@ impl ObjectModal {
         .bind(bucket_name)
         .bind(filename)
         .execute(pool)
-        .await
-        .to_status()?;
+        .await?;
         Self::find_one(path, bucket_name, new_filename, pool).await
     }
     /// 删除
@@ -174,23 +169,21 @@ impl ObjectModal {
         bucket_name: &str,
         filename: &str,
         pool: &Pool<Postgres>,
-    ) -> Result<(), Status> {
+    ) -> TonicResult<()> {
         sqlx::query("delete from object where path = $1 and bucket_name = $2 and filename = $3")
             .bind(path)
             .bind(bucket_name)
             .bind(filename)
             .execute(pool)
-            .await
-            .to_status()?;
+            .await?;
         Ok(())
     }
     /// 删除某个 bucket 下所有
-    pub async fn delete_by_bucket(bucket_name: &str, pool: &Pool<Postgres>) -> Result<(), Status> {
+    pub async fn delete_by_bucket(bucket_name: &str, pool: &Pool<Postgres>) -> TonicResult<()> {
         sqlx::query("delete from object where bucket_name = $1")
             .bind(bucket_name)
             .execute(pool)
-            .await
-            .to_status()?;
+            .await?;
         Ok(())
     }
     /// 删除某个 path 下所有
@@ -198,13 +191,12 @@ impl ObjectModal {
         bucket_name: &str,
         father_path: &str,
         pool: &Pool<Postgres>,
-    ) -> Result<(), Status> {
+    ) -> TonicResult<()> {
         sqlx::query("delete from object where bucket_name = $1 and path like $2")
             .bind(bucket_name)
             .bind(format!("{}%", father_path))
             .execute(pool)
-            .await
-            .to_status()?;
+            .await?;
         Ok(())
     }
     /// 根据 paths 获取对象
@@ -212,13 +204,12 @@ impl ObjectModal {
         bucket_name: &str,
         father_path: &str,
         pool: &Pool<Postgres>,
-    ) -> Result<Vec<Self>, Status> {
+    ) -> TonicResult<Vec<Self>> {
         let users = sqlx::query_as(r#"select * from object where path like $1 and bucket_name=$2"#)
             .bind(format!("{}%", father_path))
             .bind(bucket_name)
             .fetch_all(pool)
-            .await
-            .to_status()?;
+            .await?;
         Ok(users)
     }
     /// 获取列表
@@ -228,7 +219,7 @@ impl ObjectModal {
         father_path: &str,
         bucket_name: &str,
         pool: &Pool<Postgres>,
-    ) -> Result<Vec<Self>, Status> {
+    ) -> TonicResult<Vec<Self>> {
         let users = sqlx::query_as(
             r#"select * from object where path = $1 and bucket_name=$2 offset $3 limit $4"#,
         )
@@ -237,8 +228,7 @@ impl ObjectModal {
         .bind(offset)
         .bind(limit)
         .fetch_all(pool)
-        .await
-        .to_status()?;
+        .await?;
         Ok(users)
     }
     /// 获取总数
@@ -246,14 +236,13 @@ impl ObjectModal {
         bucket_name: &str,
         father_path: &str,
         pool: &Pool<Postgres>,
-    ) -> Result<i64, Status> {
+    ) -> TonicResult<i64> {
         let (count,): (i64,) =
             sqlx::query_as("select count(path) from object where bucket_name = $1 and path=$2")
                 .bind(bucket_name)
                 .bind(father_path)
                 .fetch_one(pool)
-                .await
-                .to_status()?;
+                .await?;
         Ok(count)
     }
     /// 判断读取访问权限
@@ -262,7 +251,7 @@ impl ObjectModal {
         bucket_name: &str,
         filename: &str,
         pool: &Pool<Postgres>,
-    ) -> Result<bool, Status> {
+    ) -> TonicResult<bool> {
         let Self { access, .. } = Self::find_one(path, bucket_name, filename, pool).await?;
         Ok(match access {
             ObjectAccess::Inheritance => FolderModal::read_open(path, bucket_name, pool).await?,
@@ -276,7 +265,7 @@ impl ObjectModal {
         bucket_name: &str,
         filename: &str,
         pool: &Pool<Postgres>,
-    ) -> Result<bool, Status> {
+    ) -> TonicResult<bool> {
         let Self { access, .. } = Self::find_one(path, bucket_name, filename, pool).await?;
         Ok(match access {
             ObjectAccess::Inheritance => FolderModal::write_open(path, bucket_name, pool).await?,
@@ -288,15 +277,14 @@ impl ObjectModal {
         bucket_name: &str,
         father_path: &str,
         pool: &Pool<Postgres>,
-    ) -> Result<i64, Status> {
+    ) -> TonicResult<i64> {
         let (count,): (i64,) = sqlx::query_as(
             "select count(path) from object where bucket_name = $1 and path like $2",
         )
         .bind(bucket_name)
         .bind(format!("{}%", father_path))
         .fetch_one(pool)
-        .await
-        .to_status()?;
+        .await?;
         Ok(count)
     }
     /// 某个 path 下所有对象大小
@@ -304,22 +292,21 @@ impl ObjectModal {
         bucket_name: &str,
         father_path: &str,
         pool: &Pool<Postgres>,
-    ) -> Result<i64, Status> {
+    ) -> TonicResult<i64> {
         let (count,): (Option<Decimal>,) =
             sqlx::query_as("select sum(size) from object where bucket_name = $1 and path like $2")
                 .bind(bucket_name)
                 .bind(format!("{}%", father_path))
                 .fetch_one(pool)
-                .await
-                .to_status()?;
+                .await?;
         Ok(count.and_then(|x| x.to_i64()).unwrap_or(0))
     }
 }
 #[allow(clippy::from_over_into)]
 impl TryInto<ObjectInfo> for ObjectModal {
-    type Error = Status;
+    type Error = TonicError;
 
-    fn try_into(self) -> Result<ObjectInfo, Status> {
+    fn try_into(self) -> TonicResult<ObjectInfo> {
         let ObjectModal {
             path,
             create_time,
@@ -341,7 +328,7 @@ impl TryInto<ObjectInfo> for ObjectModal {
         let update_time = (update_time.assume_utc().unix_timestamp_nanos() / 1000000) as i64;
         let mut new_headers = vec![];
         for header in headers {
-            new_headers.push(serde_json::from_value(header).to_status()?);
+            new_headers.push(serde_json::from_value(header)?);
         }
         Ok(ObjectInfo {
             access,

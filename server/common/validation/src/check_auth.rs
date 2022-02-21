@@ -1,13 +1,12 @@
+use errors::TonicResult;
 use proto::{
     auth::{check_client::CheckClient, CheckRequest},
-    Request, Status,
+    Request,
 };
 
-use crate::errors::grpc::ToStatusResult;
-
 /// 验证管理员身份
-pub async fn check_manager(auth: &str) -> Result<(), Status> {
-    let mut client = CheckClient::connect("http://auth:80").await.to_status()?;
+pub async fn check_manager(auth: &str) -> TonicResult<()> {
+    let mut client = CheckClient::connect("http://auth:80").await?;
     let check_request = Request::new(CheckRequest {
         auth: auth.to_string(),
     });
@@ -16,8 +15,8 @@ pub async fn check_manager(auth: &str) -> Result<(), Status> {
 }
 
 /// 验证用户身份
-pub async fn check_user(auth: &str) -> Result<String, Status> {
-    let mut client = CheckClient::connect("http://auth:80").await.to_status()?;
+pub async fn check_user(auth: &str) -> TonicResult<String> {
+    let mut client = CheckClient::connect("http://auth:80").await?;
     let check_request = Request::new(CheckRequest {
         auth: auth.to_string(),
     });

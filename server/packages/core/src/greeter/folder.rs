@@ -1,5 +1,8 @@
 use std::sync::Arc;
 
+use database::folder::FolderModal;
+use database::object::ObjectModal;
+use database::{Pool, Postgres};
 use proto::core::{CountReply, GetFolderRequest};
 use proto::{
     async_trait,
@@ -8,14 +11,12 @@ use proto::{
         folder_server::Folder, CreateFolderRequest, DeleteFolderRequest, FolderInfo,
         GetFolderListReply, GetFolderListRequest, UpdateFolderRequest,
     },
-    validation::Validate,
     Request, Response, Status,
 };
-use utils::database::{folder::FolderModal, Pool, Postgres};
-use utils::mongo::Mongo;
-use utils::{database::object::ObjectModal, errors::grpc::ToStatusResult};
+use validation::validate;
 
 use crate::utils::check::{check_folder_readable, check_folder_writeable};
+use crate::utils::mongo::Mongo;
 
 #[derive(Clone)]
 pub struct FolderGreeter {
@@ -35,7 +36,7 @@ impl Folder for FolderGreeter {
         request: Request<CreateFolderRequest>,
     ) -> Result<Response<FolderInfo>, Status> {
         // 验证
-        request.get_ref().validate().to_status()?;
+        validate(request.get_ref())?;
         let pool = &self.pool;
         let access = request.get_ref().access();
         let CreateFolderRequest {
@@ -67,7 +68,7 @@ impl Folder for FolderGreeter {
         request: Request<DeleteFolderRequest>,
     ) -> Result<Response<Empty>, Status> {
         // 验证
-        request.get_ref().validate().to_status()?;
+        validate(request.get_ref())?;
         let pool = &self.pool;
         let DeleteFolderRequest {
             path,
@@ -98,7 +99,7 @@ impl Folder for FolderGreeter {
         request: Request<UpdateFolderRequest>,
     ) -> Result<Response<FolderInfo>, Status> {
         // 验证
-        request.get_ref().validate().to_status()?;
+        validate(request.get_ref())?;
         let pool = &self.pool;
         let access = request.get_ref().access();
         let UpdateFolderRequest {

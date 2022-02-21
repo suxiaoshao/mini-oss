@@ -1,11 +1,9 @@
 use std::time::SystemTime;
 
 use sqlx::{types::time::PrimitiveDateTime, FromRow, Pool, Postgres};
-use tonic::Status;
 
+use errors::TonicResult;
 use proto::user::UserInfo;
-
-use crate::errors::grpc::ToStatusResult;
 
 #[derive(Debug, FromRow)]
 pub struct UserModal {
@@ -27,7 +25,7 @@ impl UserModal {
         password: &str,
         description: &Option<String>,
         pool: &Pool<Postgres>,
-    ) -> Result<Self, Status> {
+    ) -> TonicResult<Self> {
         // 获取现在时间
         let time = PrimitiveDateTime::from(SystemTime::now());
         sqlx::query("insert into users(name, create_time, update_time, password, description) values ($1,$2,$3,$4,$5)")
@@ -37,24 +35,23 @@ impl UserModal {
             .bind(password)
             .bind(description)
             .execute(pool)
-            .await
-            .to_status()?;
+            .await?;
         Self::find_one(name, pool).await
     }
     /// 是否存在
-    pub async fn exist(name: &str, pool: &Pool<Postgres>) -> Result<(), sqlx::Error> {
+    pub async fn exist(name: &str, pool: &Pool<Postgres>) -> TonicResult<()> {
         sqlx::query("select * from users where name = $1")
             .bind(name)
             .fetch_one(pool)
-            .await
-            .map(|_| ())
+            .await?;
+        Ok(())
     }
     /// 更新
     pub async fn update(
         name: &str,
         description: &Option<String>,
         pool: &Pool<Postgres>,
-    ) -> Result<Self, Status> {
+    ) -> TonicResult<Self> {
         // 获取现在时间
         let time = PrimitiveDateTime::from(SystemTime::now());
         sqlx::query("update users set description = $1, update_time = $2 where name = $3")
@@ -62,8 +59,7 @@ impl UserModal {
             .bind(time)
             .bind(name)
             .execute(pool)
-            .await
-            .to_status()?;
+            .await?;
         Self::find_one(name, pool).await
     }
     /// 修改密码
@@ -71,7 +67,7 @@ impl UserModal {
         name: &str,
         new_password: &str,
         pool: &Pool<Postgres>,
-    ) -> Result<Self, Status> {
+    ) -> TonicResult<Self> {
         // 获取现在时间
         let time = PrimitiveDateTime::from(SystemTime::now());
         sqlx::query("update users set password = $1, update_time = $2 where name = $3")
@@ -79,28 +75,25 @@ impl UserModal {
             .bind(time)
             .bind(name)
             .execute(pool)
-            .await
-            .to_status()?;
+            .await?;
         Self::find_one(name, pool).await
     }
     /// 删除用户
-    pub async fn delete(name: &str, pool: &Pool<Postgres>) -> Result<(), Status> {
+    pub async fn delete(name: &str, pool: &Pool<Postgres>) -> TonicResult<()> {
         sqlx::query("delete from users where name = $1")
             .bind(name)
             .execute(pool)
-            .await
-            .to_status()?;
+            .await?;
         Ok(())
     }
     /// 获取第一项
-    pub async fn find_one(name: &str, pool: &Pool<Postgres>) -> Result<Self, Status> {
+    pub async fn find_one(name: &str, pool: &Pool<Postgres>) -> TonicResult<Self> {
         let user = sqlx::query_as(
             "select name,password,create_time,update_time,description from users where name = $1",
         )
         .bind(name)
         .fetch_one(pool)
-        .await
-        .to_status()?;
+        .await?;
         Ok(user)
     }
     /// 获取列表
@@ -108,16 +101,15 @@ impl UserModal {
         limit: u32,
         offset: u32,
         pool: &Pool<Postgres>,
-    ) -> Result<Vec<Self>, Status> {
-        let users =sqlx::query_as("select name,password,create_time,update_time,description from users offset $1 limit $2").bind(offset).bind(limit).fetch_all(pool).await.to_status()?;
+    ) -> TonicResult<Vec<Self>> {
+        let users =sqlx::query_as("select name,password,create_time,update_time,description from users offset $1 limit $2").bind(offset).bind(limit).fetch_all(pool).await?;
         Ok(users)
     }
     /// 获取总数
-    pub async fn count(pool: &Pool<Postgres>) -> Result<i64, Status> {
+    pub async fn count(pool: &Pool<Postgres>) -> TonicResult<i64> {
         let (count,): (i64,) = sqlx::query_as("select count(name) from users")
             .fetch_one(pool)
-            .await
-            .to_status()?;
+            .await?;
         Ok(count)
     }
 }

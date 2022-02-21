@@ -8,4 +8,6 @@ edition = "2021"
 [dependencies]
 tokio = { version = "1.17.0", features = ["rt-multi-thread", "time", "fs", "macros", "net"] }
 proto={path="../../common/proto",features=["user","core"]}
-utils={path="../../common/utils",features=["sql","password","jwt"]}
+errors ={path = "../../common/errors"}
+database={path = "../../common/database"}
+validation={path = "../../common/validation", features=["login"]}

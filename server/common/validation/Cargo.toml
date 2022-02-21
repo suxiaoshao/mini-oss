@@ -1,0 +1,20 @@
+[package]
+name = "validation"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+proto = { path = "../proto", features = ["auth","validate"] }
+errors ={ path = "../errors",features=["jwt","password"]}
+jsonwebtoken = { version = "8.0.1", optional = true }
+database={ path = "../database"}
+pbkdf2 = { version = "0.10.1", optional = true }
+serde = { version = "1.0.136", features = ["derive"] }
+
+
+[features]
+jwt = ["jsonwebtoken"]
+password = ["pbkdf2"]
+login=["jwt", "password"]

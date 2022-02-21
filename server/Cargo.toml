@@ -3,7 +3,9 @@
 members = [
     "packages/graphql",
     "common/proto",
-    "common/utils",
+    "common/errors",
+    "common/validation",
+    "common/database",
     "packages/auth",
     "packages/user",
     "packages/core",

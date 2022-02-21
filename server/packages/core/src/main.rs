@@ -1,13 +1,14 @@
-use std::sync::Arc;
-
-use ::utils::database::PgPoolOptions;
-use ::utils::mongo::Mongo;
+use database::PgPoolOptions;
 use proto::{
     core::{bucket_server::BucketServer, folder_server::FolderServer, object_server::ObjectServer},
     transport::Server,
 };
+use std::sync::Arc;
 
-use crate::greeter::{bucket::BucketGreeter, folder::FolderGreeter, object::ObjectGreeter};
+use crate::{
+    greeter::{bucket::BucketGreeter, folder::FolderGreeter, object::ObjectGreeter},
+    utils::mongo::Mongo,
+};
 
 mod greeter;
 mod utils;

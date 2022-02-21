@@ -1,5 +1,9 @@
 use std::sync::Arc;
 
+use database::bucket::{self, BucketModal};
+use database::folder::{FolderAccess, FolderModal};
+use database::object::ObjectModal;
+use database::{Pool, Postgres};
 use proto::core::GetBucketRequest;
 use proto::{
     async_trait,
@@ -9,23 +13,13 @@ use proto::{
         DeleteBucketsRequest, GetBucketListReply, UpdateBucketRequest,
     },
     user::GetListRequest,
-    validation::Validate,
     Request, Response, Status,
 };
-use utils::database::folder::FolderAccess;
-use utils::{
-    database::{
-        bucket::{self, BucketModal},
-        folder::FolderModal,
-        object::ObjectModal,
-        Pool, Postgres,
-    },
-    errors::grpc::ToStatusResult,
-    mongo::Mongo,
-    validation::check_auth::{check_manager, check_user},
-};
+use validation::check_auth::{check_manager, check_user};
+use validation::validate;
 
 use crate::utils::check::check_bucket;
+use crate::utils::mongo::Mongo;
 #[derive(Clone)]
 pub struct BucketGreeter {
     pool: Arc<Pool<Postgres>>,
@@ -44,7 +38,7 @@ impl Bucket for BucketGreeter {
         request: Request<CreateBucketRequest>,
     ) -> Result<Response<BucketInfo>, Status> {
         // 验证
-        request.get_ref().validate().to_status()?;
+        validate(request.get_ref())?;
         let access = request.get_ref().access();
         let CreateBucketRequest { name, auth, .. } = request.into_inner();
         let username = check_user(&auth).await?;

@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use database::{users::UserModal, Pool, Postgres};
 use proto::{
     async_trait,
     auth::LoginReply,
@@ -7,19 +8,14 @@ use proto::{
         self_manage_server::SelfManage, GetUserInfoRequest, UpdatePasswordRequest,
         UpdateUserInfoRequest, UserInfo,
     },
-    validation::Validate,
     Request, Response, Status,
 };
-use utils::{
-    database::{users::UserModal, Pool, Postgres},
-    errors::grpc::ToStatusResult,
-    validation::{
-        check_auth::check_user,
-        claims::Claims,
-        hash::{password_to_hash, validate_password_hash},
-    },
+use validation::{
+    check_auth::check_user,
+    claims::Claims,
+    hash::{password_to_hash, validate_password_hash},
+    validate,
 };
-
 pub struct SelfManageGreeter {
     pool: Arc<Pool<Postgres>>,
 }
@@ -54,7 +50,7 @@ impl SelfManage for SelfManageGreeter {
         request: Request<UpdatePasswordRequest>,
     ) -> Result<Response<LoginReply>, Status> {
         // 验证
-        request.get_ref().validate().to_status()?;
+        validate(request.get_ref())?;
         let UpdatePasswordRequest {
             old_password,
             new_password,

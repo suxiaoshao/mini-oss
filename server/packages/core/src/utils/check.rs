@@ -1,26 +1,21 @@
+use database::{bucket::BucketModal, folder::FolderModal, object::ObjectModal, Pool, Postgres};
+use errors::{TonicError, TonicResult};
 use proto::Status;
-use utils::{
-    database::{bucket::BucketModal, folder::FolderModal, object::ObjectModal, Pool, Postgres},
-    validation::check_auth::check_user,
-};
-pub async fn check_bucket(
-    auth: &str,
-    bucket_name: &str,
-    pool: &Pool<Postgres>,
-) -> Result<(), Status> {
+use validation::check_auth::check_user;
+pub async fn check_bucket(auth: &str, bucket_name: &str, pool: &Pool<Postgres>) -> TonicResult<()> {
     // 判断用户
     let username = check_user(auth).await?;
     // 判断该存储桶是否存在
     BucketModal::exist(bucket_name, pool)
         .await
-        .map_err(|_| Status::not_found("该存储桶不存在"))?;
+        .map_err(|_| TonicError::BucketNotFound(bucket_name.to_string()))?;
     // 判断用户是否一致
     let BucketModal {
         username: modal_username,
         ..
     } = BucketModal::find_one(bucket_name, pool).await?;
     if username != modal_username {
-        return Err(Status::permission_denied("没有权限操作不属于你的存储桶"));
+        return Err(TonicError::BucketPermission);
     }
     Ok(())
 }
@@ -30,7 +25,7 @@ async fn check_bucket_permission(
     auth: &str,
     bucket_name: &str,
     pool: &Pool<Postgres>,
-) -> Result<(), Status> {
+) -> TonicResult<()> {
     // 判断用户
     let username = check_user(auth).await?;
     // 判断用户是否一致
@@ -39,7 +34,7 @@ async fn check_bucket_permission(
         ..
     } = BucketModal::find_one(bucket_name, pool).await?;
     if username != modal_username {
-        return Err(Status::permission_denied("没有权限操作不属于你的存储桶"));
+        return Err(TonicError::BucketPermission);
     }
     Ok(())
 }
@@ -53,11 +48,11 @@ async fn check_folder_exits(
     // 判断该存储桶是否存在
     BucketModal::exist(bucket_name, pool)
         .await
-        .map_err(|_| Status::not_found("该存储桶不存在"))?;
+        .map_err(|_| TonicError::BucketNotFound(bucket_name.to_string()))?;
     // 判断该文件夹是否存在
     FolderModal::exist(path, bucket_name, pool)
         .await
-        .map_err(|_| Status::not_found("文件夹不存在"))?;
+        .map_err(|_| TonicError::FolderNotFound(bucket_name.to_string()))?;
     Ok(())
 }
 
@@ -67,7 +62,7 @@ pub async fn check_folder_readable(
     bucket_name: &str,
     path: &str,
     pool: &Pool<Postgres>,
-) -> Result<(), Status> {
+) -> TonicResult<()> {
     // 判断该文件夹是否存在
     check_folder_exits(bucket_name, path, pool).await?;
     if FolderModal::read_open(path, bucket_name, pool).await? {
@@ -76,7 +71,7 @@ pub async fn check_folder_readable(
     } else {
         match auth {
             Some(auth) => check_bucket_permission(auth, bucket_name, pool).await,
-            None => Err(Status::unauthenticated("私有权限的文件夹需要 auth")),
+            None => Err(TonicError::NoneAuth),
         }
     }
 }
@@ -87,7 +82,7 @@ pub async fn check_folder_writeable(
     bucket_name: &str,
     path: &str,
     pool: &Pool<Postgres>,
-) -> Result<(), Status> {
+) -> TonicResult<()> {
     // 判断该文件夹是否存在
     check_folder_exits(bucket_name, path, pool).await?;
     if FolderModal::write_open(path, bucket_name, pool).await? {
@@ -96,7 +91,7 @@ pub async fn check_folder_writeable(
     } else {
         match auth {
             Some(auth) => check_bucket_permission(auth, bucket_name, pool).await,
-            None => Err(Status::unauthenticated("私有权限的文件夹需要 auth")),
+            None => Err(TonicError::NoneAuth),
         }
     }
 }
@@ -113,7 +108,7 @@ async fn check_object_exits(
     // 判断对象是否存在
     ObjectModal::exist(path, bucket_name, filename, pool)
         .await
-        .map_err(|_| Status::not_found("该对象不存在"))?;
+        .map_err(|_| TonicError::ObjectNotFound(filename.to_string()))?;
     Ok(())
 }
 /// 判断对象是否可读
@@ -123,7 +118,7 @@ pub async fn check_object_readable(
     path: &str,
     filename: &str,
     pool: &Pool<Postgres>,
-) -> Result<(), Status> {
+) -> TonicResult<()> {
     // 判断对象是否存在
     check_object_exits(bucket_name, path, filename, pool).await?;
     if ObjectModal::read_open(path, bucket_name, filename, pool).await? {
@@ -132,7 +127,7 @@ pub async fn check_object_readable(
     } else {
         match auth {
             Some(auth) => check_bucket_permission(auth, bucket_name, pool).await,
-            None => Err(Status::unauthenticated("私有权限的文件夹需要 auth")),
+            None => Err(TonicError::NoneAuth),
         }
     }
 }
@@ -144,7 +139,7 @@ pub async fn check_object_writeable(
     path: &str,
     filename: &str,
     pool: &Pool<Postgres>,
-) -> Result<(), Status> {
+) -> TonicResult<()> {
     // 判断对象是否存在
     check_object_exits(bucket_name, path, filename, pool).await?;
     if ObjectModal::write_open(path, bucket_name, filename, pool).await? {
@@ -153,7 +148,7 @@ pub async fn check_object_writeable(
     } else {
         match auth {
             Some(auth) => check_bucket_permission(auth, bucket_name, pool).await,
-            None => Err(Status::unauthenticated("私有权限的文件夹需要 auth")),
+            None => Err(TonicError::NoneAuth),
         }
     }
 }

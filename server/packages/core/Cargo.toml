@@ -8,6 +8,12 @@ edition = "2021"
 [dependencies]
 tokio = { version = "1.17.0", features = ["rt-multi-thread", "time", "fs", "macros", "net"] }
 futures = "0.3.21"
-proto = { path = "../../common/proto", features = ["core", "user", "json"] }
-utils = { path = "../../common/utils", features = ["mongo", "sql", "recursion", "future", "json"] }
 mime_guess = "2.0.4"
+mongodb = "2.1.0"
+mongodb-gridfs = "0.2.2"
+blake3 = "1.3.1"
+
+proto = { path = "../../common/proto", features = ["core", "user", "json"] }
+errors = { path = "../../common/errors", features = ["mongo"] }
+database={path = "../../common/database", features = [ "recursion", "future", "json"]}
+validation={path = "../../common/validation", features =[]}

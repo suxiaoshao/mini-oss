@@ -1,5 +1,7 @@
 use std::sync::Arc;
 
+use database::object::{ObjectAccess, ObjectCreateInput, ObjectModal};
+use database::{Pool, Postgres};
 use proto::core::{
     CountReply, GetFolderRequest, GetObjectContentReply, GetObjectRequest, SizeReply,
 };
@@ -10,21 +12,12 @@ use proto::{
         object_server::Object, CreateObjectRequest, DeleteObjectRequest, GetFolderListRequest,
         GetObjectListReply, ObjectInfo, UpdateObjectRequest,
     },
-    validation::Validate,
     Request, Response, Status,
 };
-use utils::database::object::ObjectAccess;
-use utils::{
-    database::{
-        object::{ObjectCreateInput, ObjectModal},
-        Pool, Postgres,
-    },
-    errors::grpc::ToStatusResult,
-    mongo::Mongo,
-    validation::hash::file_hash,
-};
+use validation::validate;
 
 use crate::utils::check::{check_folder_writeable, check_object_writeable};
+use crate::utils::mongo::Mongo;
 use crate::utils::{
     check::{check_folder_readable, check_object_readable},
     headers::headers_from,
@@ -48,7 +41,7 @@ impl Object for ObjectGreeter {
         request: Request<CreateObjectRequest>,
     ) -> Result<Response<Empty>, Status> {
         // 验证
-        request.get_ref().validate().to_status()?;
+        validate(request.get_ref())?;
         let access = request.get_ref().access();
         let pool = &self.pool;
         let CreateObjectRequest {
@@ -100,7 +93,7 @@ impl Object for ObjectGreeter {
         request: Request<UpdateObjectRequest>,
     ) -> Result<Response<ObjectInfo>, Status> {
         // 验证
-        request.get_ref().validate().to_status()?;
+        validate(request.get_ref())?;
         let access = request.get_ref().access();
         let pool = &self.pool;
         let UpdateObjectRequest {
@@ -284,6 +277,10 @@ async fn create_object(
     Ok(())
 }
 
+/// 文件 hash
+pub fn file_hash(source: &[u8]) -> String {
+    blake3::hash(source).to_string()
+}
 #[cfg(test)]
 mod test {
     use proto::core::object_client::ObjectClient;
@@ -303,6 +300,6 @@ mod test {
             .await
             .unwrap()
             .into_inner();
-        println!("{}",size);
+        println!("{}", size);
     }
 }

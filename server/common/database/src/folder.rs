@@ -4,9 +4,8 @@ use std::time::SystemTime;
 use async_recursion::async_recursion;
 use sqlx::{types::time::PrimitiveDateTime, FromRow, Pool, Postgres};
 
-use proto::{core::FolderInfo, Status};
-
-use crate::errors::grpc::ToStatusResult;
+use errors::TonicResult;
+use proto::core::FolderInfo;
 
 #[derive(sqlx::Type, Debug)]
 #[sqlx(type_name = "folder_access_type")]
@@ -51,7 +50,7 @@ impl FolderModal {
         bucket_name: &str,
         father_path: &str,
         pool: &Pool<Postgres>,
-    ) -> Result<Self, Status> {
+    ) -> TonicResult<Self> {
         let access: FolderAccess = access.into();
         // 获取现在时间
         let time = PrimitiveDateTime::from(SystemTime::now());
@@ -63,22 +62,17 @@ impl FolderModal {
             .bind(bucket_name)
             .bind(father_path)
             .execute(pool)
-            .await
-            .to_status()?;
+            .await?;
         Self::find_one(path, bucket_name, pool).await
     }
     /// 判断是否存在
-    pub async fn exist(
-        path: &str,
-        bucket_name: &str,
-        pool: &Pool<Postgres>,
-    ) -> Result<(), sqlx::Error> {
+    pub async fn exist(path: &str, bucket_name: &str, pool: &Pool<Postgres>) -> TonicResult<()> {
         sqlx::query("select * from folder where path = $1 and bucket_name = $2")
             .bind(path)
             .bind(bucket_name)
             .fetch_one(pool)
-            .await
-            .map(|_| ())
+            .await?;
+        Ok(())
     }
     /// 更新
     pub async fn update(
@@ -86,7 +80,7 @@ impl FolderModal {
         access: impl Into<FolderAccess>,
         bucket_name: &str,
         pool: &Pool<Postgres>,
-    ) -> Result<Self, Status> {
+    ) -> TonicResult<Self> {
         // 获取现在时间
         let time = PrimitiveDateTime::from(SystemTime::now());
         sqlx::query(
@@ -97,8 +91,7 @@ impl FolderModal {
         .bind(path)
         .bind(bucket_name)
         .execute(pool)
-        .await
-        .to_status()?;
+        .await?;
         Self::find_one(path, bucket_name, pool).await
     }
     /// 获取第一项
@@ -106,23 +99,21 @@ impl FolderModal {
         path: &str,
         bucket_name: &str,
         pool: &Pool<Postgres>,
-    ) -> Result<Self, Status> {
+    ) -> TonicResult<Self> {
         let folder = sqlx::query_as(
             "select path,access,create_time,update_time,bucket_name,father_path from folder where path = $1 and bucket_name=$2",
         )
         .bind(path).bind(bucket_name)
         .fetch_one(pool)
-        .await
-        .to_status()?;
+        .await?;
         Ok(folder)
     }
     /// 删除某个 bucket 下所有
-    pub async fn delete_by_bucket(bucket_name: &str, pool: &Pool<Postgres>) -> Result<(), Status> {
+    pub async fn delete_by_bucket(bucket_name: &str, pool: &Pool<Postgres>) -> TonicResult<()> {
         sqlx::query("delete from folder where bucket_name = $1")
             .bind(bucket_name)
             .execute(pool)
-            .await
-            .to_status()?;
+            .await?;
         Ok(())
     }
     /// 删除某个 path 下所有
@@ -130,13 +121,12 @@ impl FolderModal {
         bucket_name: &str,
         father_path: &str,
         pool: &Pool<Postgres>,
-    ) -> Result<(), Status> {
+    ) -> TonicResult<()> {
         sqlx::query("delete from folder where bucket_name = $1 and path like $2")
             .bind(bucket_name)
             .bind(format!("{}%", father_path))
             .execute(pool)
-            .await
-            .to_status()?;
+            .await?;
         Ok(())
     }
     /// 某个 path 下所有文件夹个数
@@ -144,7 +134,7 @@ impl FolderModal {
         bucket_name: &str,
         father_path: &str,
         pool: &Pool<Postgres>,
-    ) -> Result<i64, Status> {
+    ) -> TonicResult<i64> {
         let father_path = if father_path == "/" {
             format!("{}%", father_path)
         } else {
@@ -156,8 +146,7 @@ impl FolderModal {
         .bind(bucket_name)
         .bind(father_path)
         .fetch_one(pool)
-        .await
-        .to_status()?;
+        .await?;
         Ok(count)
     }
     /// 判断读取访问权限
@@ -167,8 +156,8 @@ impl FolderModal {
         path: &str,
         bucket_name: &str,
         pool: &Pool<Postgres>,
-    ) -> Result<bool, Status> {
-        use crate::database::bucket::BucketModal;
+    ) -> TonicResult<bool> {
+        use crate::bucket::BucketModal;
         if path == "/" {
             return BucketModal::read_open(bucket_name, pool).await;
         }
@@ -191,8 +180,8 @@ impl FolderModal {
         path: &str,
         bucket_name: &str,
         pool: &Pool<Postgres>,
-    ) -> Result<bool, Status> {
-        use crate::database::bucket::BucketModal;
+    ) -> TonicResult<bool> {
+        use crate::bucket::BucketModal;
         if path == "/" {
             return BucketModal::write_open(bucket_name, pool).await;
         }
@@ -215,7 +204,7 @@ impl FolderModal {
         father_path: &str,
         bucket_name: &str,
         pool: &Pool<Postgres>,
-    ) -> Result<Vec<Self>, Status> {
+    ) -> TonicResult<Vec<Self>> {
         let users = sqlx::query_as(
             "select path,access,create_time,update_time,bucket_name,father_path from folder where father_path = $1 and bucket_name=$2 offset $3 limit $4",
         )
@@ -224,8 +213,7 @@ impl FolderModal {
         .bind(offset)
         .bind(limit)
         .fetch_all(pool)
-        .await
-        .to_status()?;
+        .await?;
         Ok(users)
     }
     /// 获取总数
@@ -233,15 +221,14 @@ impl FolderModal {
         bucket_name: &str,
         father_path: &str,
         pool: &Pool<Postgres>,
-    ) -> Result<i64, Status> {
+    ) -> TonicResult<i64> {
         let (count,): (i64,) = sqlx::query_as(
             "select count(path) from folder where bucket_name = $1 and father_path=$2",
         )
         .bind(bucket_name)
         .bind(father_path)
         .fetch_one(pool)
-        .await
-        .to_status()?;
+        .await?;
         Ok(count)
     }
 }

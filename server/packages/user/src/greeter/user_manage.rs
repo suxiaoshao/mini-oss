@@ -1,5 +1,8 @@
 use std::sync::Arc;
 
+use database::{users::UserModal, Pool, Postgres};
+
+use errors::{TonicError, TonicResult};
 use proto::{
     async_trait,
     auth::Empty,
@@ -8,14 +11,9 @@ use proto::{
         user_manage_server::UserManage, CreateUserRequest, DeleteUserRequest, GetListRequest,
         GetUserListReply, GetUserRequest, UpdateUserRequest, UserInfo,
     },
-    validation::Validate,
     Request, Response, Status,
 };
-use utils::{
-    database::{users::UserModal, Pool, Postgres},
-    errors::grpc::ToStatusResult,
-    validation::{check_auth::check_manager, hash::password_to_hash},
-};
+use validation::{check_auth::check_manager, hash::password_to_hash, validate};
 
 pub struct UserManageGreeter {
     pool: Arc<Pool<Postgres>>,
@@ -33,7 +31,7 @@ impl UserManage for UserManageGreeter {
         request: Request<CreateUserRequest>,
     ) -> Result<Response<UserInfo>, Status> {
         // 验证
-        request.get_ref().validate().to_status()?;
+        validate(request.get_ref())?;
         let CreateUserRequest {
             name,
             password,
@@ -69,7 +67,7 @@ impl UserManage for UserManageGreeter {
         // 判断该用户是否存在
         UserModal::exist(&name, &self.pool)
             .await
-            .map_err(|_| Status::not_found("该用户不存在"))?;
+            .map_err(|_| TonicError::UserNotFound)?;
         let user = UserModal::update(&name, &description, &self.pool).await?;
         Ok(Response::new(user.into()))
     }
@@ -81,17 +79,11 @@ impl UserManage for UserManageGreeter {
         // 判断该用户是否存在
         UserModal::exist(&name, &self.pool)
             .await
-            .map_err(|_| Status::not_found("该用户不存在"))?;
+            .map_err(|_| TonicError::UserNotFound)?;
         // 验证管理员身份
         check_manager(&auth).await?;
         // 删除 bucket
-        let mut client = BucketClient::connect("http://core:80").await.to_status()?;
-        let request = Request::new(DeleteBucketsRequest {
-            auth,
-            username: name.clone(),
-        });
-        client.delete_buckets(request).await?;
-        // 删除用户
+        delete_buckets(auth, name.to_string()).await?;
         UserModal::delete(&name, &self.pool).await?;
         Ok(Response::new(Empty {}))
     }
@@ -128,4 +120,14 @@ impl UserManage for UserManageGreeter {
         let user = UserModal::find_one(&name, &self.pool).await?;
         Ok(Response::new(user.into()))
     }
+}
+
+async fn delete_buckets(auth: String, name: String) -> TonicResult<()> {
+    let mut client = BucketClient::connect("http://core:80").await?;
+    let request = Request::new(DeleteBucketsRequest {
+        auth,
+        username: name.clone(),
+    });
+    client.delete_buckets(request).await?;
+    Ok(())
 }

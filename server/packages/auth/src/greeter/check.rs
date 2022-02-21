@@ -1,15 +1,12 @@
 use std::sync::Arc;
 
+use database::{users::UserModal, Pool, Postgres};
 use proto::{
     async_trait,
     auth::{check_server::Check, CheckReply, CheckRequest, Empty},
     Request, Response, Status,
 };
-use utils::{
-    database::{users::UserModal, Pool, Postgres},
-    validation::claims::Claims,
-};
-
+use validation::claims::Claims;
 pub struct CheckGreeter {
     pool: Arc<Pool<Postgres>>,
 }
