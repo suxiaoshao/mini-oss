@@ -15,5 +15,5 @@ blake3 = "1.3.1"
 
 proto = { path = "../../common/proto", features = ["core", "user", "json"] }
 errors = { path = "../../common/errors", features = ["mongo"] }
-database={path = "../../common/database", features = [ "recursion", "future", "json"]}
+database={path = "../../common/database", features = [ "core"]}
 validation={path = "../../common/validation", features =[]}

@@ -1,6 +1,5 @@
 use std::time::SystemTime;
 
-#[cfg(feature = "recursion")]
 use async_recursion::async_recursion;
 use sqlx::{types::time::PrimitiveDateTime, FromRow, Pool, Postgres};
 
@@ -150,7 +149,6 @@ impl FolderModal {
         Ok(count)
     }
     /// 判断读取访问权限
-    #[cfg(feature = "recursion")]
     #[async_recursion]
     pub async fn read_open(
         path: &str,
@@ -174,7 +172,6 @@ impl FolderModal {
         })
     }
     /// 判断读取访问权限
-    #[cfg(feature = "recursion")]
     #[async_recursion]
     pub async fn write_open(
         path: &str,
