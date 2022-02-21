@@ -225,9 +225,9 @@ impl FolderModal {
         Ok(count)
     }
 }
-#[allow(clippy::from_over_into)]
-impl Into<FolderInfo> for FolderModal {
-    fn into(self) -> FolderInfo {
+
+impl From<FolderModal> for FolderInfo {
+    fn from(value: FolderModal) -> FolderInfo {
         let FolderModal {
             path,
             create_time,
@@ -236,7 +236,7 @@ impl Into<FolderInfo> for FolderModal {
             bucket_name,
             father_path,
             ..
-        } = self;
+        } = value;
         let access: i32 = match access {
             FolderAccess::Inheritance => 0,
             FolderAccess::ReadOpen => 1,

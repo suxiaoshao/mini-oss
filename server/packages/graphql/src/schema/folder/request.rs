@@ -12,15 +12,14 @@ pub struct UpdateFolderRequest {
     pub access: FolderAccess,
 }
 
-#[allow(clippy::from_over_into)]
-impl Into<core::UpdateFolderRequest> for UpdateFolderRequest {
-    fn into(self) -> core::UpdateFolderRequest {
-        let Self {
+impl From<UpdateFolderRequest> for core::UpdateFolderRequest {
+    fn from(value: UpdateFolderRequest) -> core::UpdateFolderRequest {
+        let UpdateFolderRequest {
             path,
             access,
             auth,
             bucket_name,
-        } = self;
+        } = value;
         let mut request = core::UpdateFolderRequest {
             path,
             access: 0,
@@ -45,16 +44,15 @@ pub struct CreateFolderRequest {
     pub access: FolderAccess,
 }
 
-#[allow(clippy::from_over_into)]
-impl Into<core::CreateFolderRequest> for CreateFolderRequest {
-    fn into(self) -> core::CreateFolderRequest {
-        let Self {
+impl From<CreateFolderRequest> for core::CreateFolderRequest {
+    fn from(value: CreateFolderRequest) -> core::CreateFolderRequest {
+        let CreateFolderRequest {
             path,
             access,
             auth,
             father_path,
             bucket_name,
-        } = self;
+        } = value;
         let mut request = core::CreateFolderRequest {
             path,
             access: 0,

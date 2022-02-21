@@ -164,9 +164,8 @@ impl BucketModal {
     }
 }
 
-#[allow(clippy::from_over_into)]
-impl Into<BucketInfo> for BucketModal {
-    fn into(self) -> BucketInfo {
+impl From<BucketModal> for BucketInfo {
+    fn from(value: BucketModal) -> Self {
         let BucketModal {
             name,
             create_time,
@@ -174,7 +173,7 @@ impl Into<BucketInfo> for BucketModal {
             access,
             username,
             ..
-        } = self;
+        } = value;
         let access: i32 = match access {
             BucketAccess::Open => 0,
             BucketAccess::ReadOpen => 1,

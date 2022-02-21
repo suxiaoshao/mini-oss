@@ -113,16 +113,16 @@ impl UserModal {
         Ok(count)
     }
 }
-#[allow(clippy::from_over_into)]
-impl Into<UserInfo> for UserModal {
-    fn into(self) -> UserInfo {
+
+impl From<UserModal> for UserInfo {
+    fn from(value: UserModal) -> UserInfo {
         let UserModal {
             name,
             create_time,
             update_time,
             description,
             ..
-        } = self;
+        } = value;
         let create_time = (create_time.assume_utc().unix_timestamp_nanos() / 1000000) as i64;
         let update_time = (update_time.assume_utc().unix_timestamp_nanos() / 1000000) as i64;
         UserInfo {

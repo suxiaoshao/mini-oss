@@ -84,9 +84,8 @@ impl ErrorExtensions for GraphqlError {
     }
 }
 
-#[allow(clippy::from_over_into)]
-impl Into<async_graphql::Error> for GraphqlError {
-    fn into(self) -> async_graphql::Error {
-        self.extend()
+impl From<GraphqlError> for async_graphql::Error {
+    fn from(value: GraphqlError) -> async_graphql::Error {
+        value.extend()
     }
 }

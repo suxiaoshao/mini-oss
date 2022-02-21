@@ -7,10 +7,9 @@ pub struct UpdateBucketRequest {
     pub auth: String,
 }
 
-#[allow(clippy::from_over_into)]
-impl Into<core::UpdateBucketRequest> for UpdateBucketRequest {
-    fn into(self) -> core::UpdateBucketRequest {
-        let Self { name, access, auth } = self;
+impl From<UpdateBucketRequest> for core::UpdateBucketRequest {
+    fn from(value: UpdateBucketRequest) -> core::UpdateBucketRequest {
+        let UpdateBucketRequest { name, access, auth } = value;
         let mut request = core::UpdateBucketRequest {
             name,
             access: 0,
@@ -27,10 +26,9 @@ pub struct CreateBucketRequest {
     pub auth: String,
 }
 
-#[allow(clippy::from_over_into)]
-impl Into<core::CreateBucketRequest> for CreateBucketRequest {
-    fn into(self) -> core::CreateBucketRequest {
-        let Self { name, access, auth } = self;
+impl From<CreateBucketRequest> for core::CreateBucketRequest {
+    fn from(value: CreateBucketRequest) -> core::CreateBucketRequest {
+        let CreateBucketRequest { name, access, auth } = value;
         let mut request = core::CreateBucketRequest {
             name,
             access: 0,

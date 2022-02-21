@@ -25,10 +25,9 @@ pub struct UpdateObjectRequest {
     pub headers: Vec<HeaderType>,
 }
 
-#[allow(clippy::from_over_into)]
-impl Into<core::UpdateObjectRequest> for UpdateObjectRequest {
-    fn into(self) -> core::UpdateObjectRequest {
-        let Self {
+impl From<UpdateObjectRequest> for core::UpdateObjectRequest {
+    fn from(value: UpdateObjectRequest) -> core::UpdateObjectRequest {
+        let UpdateObjectRequest {
             path,
             filename,
             bucket_name,
@@ -36,7 +35,7 @@ impl Into<core::UpdateObjectRequest> for UpdateObjectRequest {
             new_filename,
             auth,
             headers,
-        } = self;
+        } = value;
         let mut request = core::UpdateObjectRequest {
             path,
             access: 0,

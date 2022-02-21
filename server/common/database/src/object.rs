@@ -302,11 +302,11 @@ impl ObjectModal {
         Ok(count.and_then(|x| x.to_i64()).unwrap_or(0))
     }
 }
-#[allow(clippy::from_over_into)]
-impl TryInto<ObjectInfo> for ObjectModal {
+
+impl TryFrom<ObjectModal> for ObjectInfo {
     type Error = TonicError;
 
-    fn try_into(self) -> TonicResult<ObjectInfo> {
+    fn try_from(value: ObjectModal) -> TonicResult<ObjectInfo> {
         let ObjectModal {
             path,
             create_time,
@@ -318,7 +318,7 @@ impl TryInto<ObjectInfo> for ObjectModal {
             headers,
             size,
             ..
-        } = self;
+        } = value;
         let access: i32 = match access {
             ObjectAccess::Inheritance => 0,
             ObjectAccess::ReadOpen => 1,
