@@ -7,12 +7,12 @@ export default function parsePath(path: string): Path[] {
   if (path === '/') {
     return [];
   }
-  let addPath = '';
+  let addPath = '/';
   return path
     .split('/')
-    .slice(1)
+    .slice(1, -1)
     .map((value) => {
-      addPath += `/${value}`;
+      addPath += `${value}/`;
       return { folderName: value, path: addPath } as Path;
     });
 }
