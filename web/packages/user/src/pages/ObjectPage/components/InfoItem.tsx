@@ -15,7 +15,7 @@ export default function InfoItem({
       <Typography sx={{ color: (theme) => theme.palette.text.secondary, width: (theme) => theme.spacing(15) }}>
         {label}
       </Typography>
-      <Typography>{value}</Typography>
+      <Typography sx={{ wordWrap: 'break-word', wordBreak: 'break-all', flex: '1 1 0' }}>{value}</Typography>
     </Box>
   );
 }
