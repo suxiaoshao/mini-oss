@@ -37,7 +37,7 @@ impl FromStr for PathWithName {
         };
         let path_list: Vec<_> = source_path.split('/').collect();
 
-        let path = format!("/{}", path_list[1..path_list.len() - 1].join("/"));
+        let path = format!("{}/", path_list[0..path_list.len() - 1].join("/"));
         match path_list.last().cloned() {
             Some(filename) => {
                 let filename = urlencoding::decode(filename)
@@ -66,7 +66,7 @@ mod test {
             path,
             Ok(PathWithName {
                 filename: "sushao.txt".to_string(),
-                path: "/test".to_string(),
+                path: "/test/".to_string(),
             })
         );
         let path = "/test/www/sushao.txt".parse::<PathWithName>();
@@ -74,7 +74,7 @@ mod test {
             path,
             Ok(PathWithName {
                 filename: "sushao.txt".to_string(),
-                path: "/test/www".to_string(),
+                path: "/test/www/".to_string(),
             })
         );
         let path = "/test/www/xixi/sushao.txt".parse::<PathWithName>();
@@ -82,7 +82,7 @@ mod test {
             path,
             Ok(PathWithName {
                 filename: "sushao.txt".to_string(),
-                path: "/test/www/xixi".to_string(),
+                path: "/test/www/xixi/".to_string(),
             })
         );
         let path = "/sushao.txt".parse::<PathWithName>();
@@ -101,12 +101,13 @@ mod test {
                 path: "/".to_string(),
             })
         );
-        let path = "/test/221500###_###__基于JavaEE的众筹网(系统开发类样例).pdf".parse::<PathWithName>();
+        let path =
+            "/test/221500###_###__基于JavaEE的众筹网(系统开发类样例).pdf".parse::<PathWithName>();
         assert_eq!(
             path,
             Ok(PathWithName {
                 filename: "221500###_###__基于JavaEE的众筹网(系统开发类样例).pdf".to_string(),
-                path: "/test".to_string(),
+                path: "/test/".to_string(),
             })
         );
     }

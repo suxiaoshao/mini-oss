@@ -29,7 +29,7 @@ impl FolderInfo {
     async fn folder_name(&self) -> GraphqlResult<String> {
         self.path
             .split('/')
-            .last()
+            .nth_back(1)
             .map(|x| x.to_string())
             .ok_or(GraphqlError::ParseFolderName)
     }

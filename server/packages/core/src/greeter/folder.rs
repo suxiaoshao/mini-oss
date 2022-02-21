@@ -48,11 +48,7 @@ impl Folder for FolderGreeter {
         } = request.into_inner();
         // 判断父文件夹是否可写
         check_folder_writeable(&auth, &bucket_name, &father_path, pool).await?;
-        let path = if father_path == "/" {
-            format!("/{path}")
-        } else {
-            format!("{father_path}/{path}")
-        };
+        let path = format!("{father_path}{path}/");
         // 判断该文件夹是否存在
         if FolderModal::exist(&path, &bucket_name, &self.pool)
             .await

@@ -128,17 +128,13 @@ impl FolderModal {
             .await?;
         Ok(())
     }
-    /// 某个 path 下所有文件夹个数
+    /// 某个 path 下所有文件夹个数(去除此文件夹)
     pub async fn count_by_path(
         bucket_name: &str,
         father_path: &str,
         pool: &Pool<Postgres>,
     ) -> TonicResult<i64> {
-        let father_path = if father_path == "/" {
-            format!("{}%", father_path)
-        } else {
-            format!("{}/%", father_path)
-        };
+        let father_path = format!("{}_%", father_path);
         let (count,): (i64,) = sqlx::query_as(
             "select count(path) from folder where bucket_name = $1 and path like $2",
         )

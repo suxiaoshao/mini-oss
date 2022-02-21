@@ -8,8 +8,8 @@ edition = "2021"
 [dependencies]
 thiserror = "1.0.30"
 tonic = "0.6.2"
-sqlx = { version = "0.5.10" }
-validator = { version = "0.14.0" }
+sqlx = "0.5.11"
+validator = "0.14.0"
 
 mongodb = { version = "2.1.0", optional = true }
 mongodb-gridfs = { version = "0.2.2", optional = true }
