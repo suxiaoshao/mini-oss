@@ -49,7 +49,7 @@ pub(crate) async fn get_object(
                 .into_inner();
             return res_content(object_info, content);
         } else {
-            return Ok(res_304());
+            return res_304(object_info);
         }
     };
 
@@ -67,7 +67,7 @@ pub(crate) async fn get_object(
                 .into_inner();
             return res_content(object_info, content);
         } else {
-            return Ok(res_304());
+            return res_304(object_info);
         }
     }
 
@@ -84,11 +84,18 @@ pub(crate) async fn get_object(
 }
 
 /// 返回缓存击中
-fn res_304() -> Response<BoxBody> {
-    StatusCode::NOT_MODIFIED.into_response()
+fn res_304(object_info: ObjectInfo) -> OpenResult<Response<BoxBody>> {
+    let headers = get_header_map(object_info)?;
+    Ok((StatusCode::NOT_MODIFIED, headers).into_response())
 }
 /// 返回内容
 fn res_content(object_info: ObjectInfo, content: Vec<u8>) -> OpenResult<Response<BoxBody>> {
+    let headers = get_header_map(object_info)?;
+    Ok((headers, content).into_response())
+}
+
+/// 获取头部
+fn get_header_map(object_info: ObjectInfo) -> OpenResult<HeaderMap> {
     let ObjectInfo {
         update_time,
         blake3,
@@ -110,7 +117,7 @@ fn res_content(object_info: ObjectInfo, content: Vec<u8>) -> OpenResult<Response
     for Header { key, value } in headers {
         header_map.insert(HeaderName::from_str(&key)?, HeaderValue::from_str(&value)?);
     }
-    Ok((header_map, content).into_response().into_response())
+    Ok(header_map)
 }
 
 /// 获取系统时间
