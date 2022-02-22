@@ -480,7 +480,7 @@ pub mod bucket_client {
         pub async fn delete_bucket(
             &mut self,
             request: impl tonic::IntoRequest<super::DeleteBucketRequest>,
-        ) -> Result<tonic::Response<super::super::auth::Empty>, tonic::Status> {
+        ) -> Result<tonic::Response<super::super::user::Empty>, tonic::Status> {
             self.inner.ready().await.map_err(|e| {
                 tonic::Status::new(
                     tonic::Code::Unknown,
@@ -495,7 +495,7 @@ pub mod bucket_client {
         pub async fn delete_buckets(
             &mut self,
             request: impl tonic::IntoRequest<super::DeleteBucketsRequest>,
-        ) -> Result<tonic::Response<super::super::auth::Empty>, tonic::Status> {
+        ) -> Result<tonic::Response<super::super::user::Empty>, tonic::Status> {
             self.inner.ready().await.map_err(|e| {
                 tonic::Status::new(
                     tonic::Code::Unknown,
@@ -634,7 +634,7 @@ pub mod folder_client {
         pub async fn delete_folder(
             &mut self,
             request: impl tonic::IntoRequest<super::DeleteFolderRequest>,
-        ) -> Result<tonic::Response<super::super::auth::Empty>, tonic::Status> {
+        ) -> Result<tonic::Response<super::super::user::Empty>, tonic::Status> {
             self.inner.ready().await.map_err(|e| {
                 tonic::Status::new(
                     tonic::Code::Unknown,
@@ -788,7 +788,7 @@ pub mod object_client {
         pub async fn create_object(
             &mut self,
             request: impl tonic::IntoRequest<super::CreateObjectRequest>,
-        ) -> Result<tonic::Response<super::super::auth::Empty>, tonic::Status> {
+        ) -> Result<tonic::Response<super::super::user::Empty>, tonic::Status> {
             self.inner.ready().await.map_err(|e| {
                 tonic::Status::new(
                     tonic::Code::Unknown,
@@ -803,7 +803,7 @@ pub mod object_client {
         pub async fn delete_object(
             &mut self,
             request: impl tonic::IntoRequest<super::DeleteObjectRequest>,
-        ) -> Result<tonic::Response<super::super::auth::Empty>, tonic::Status> {
+        ) -> Result<tonic::Response<super::super::user::Empty>, tonic::Status> {
             self.inner.ready().await.map_err(|e| {
                 tonic::Status::new(
                     tonic::Code::Unknown,
@@ -939,12 +939,12 @@ pub mod bucket_server {
         async fn delete_bucket(
             &self,
             request: tonic::Request<super::DeleteBucketRequest>,
-        ) -> Result<tonic::Response<super::super::auth::Empty>, tonic::Status>;
+        ) -> Result<tonic::Response<super::super::user::Empty>, tonic::Status>;
         #[doc = " 删除 某一个用户下的Bucket"]
         async fn delete_buckets(
             &self,
             request: tonic::Request<super::DeleteBucketsRequest>,
-        ) -> Result<tonic::Response<super::super::auth::Empty>, tonic::Status>;
+        ) -> Result<tonic::Response<super::super::user::Empty>, tonic::Status>;
         #[doc = " 修改 Bucket"]
         async fn update_bucket(
             &self,
@@ -1035,7 +1035,7 @@ pub mod bucket_server {
                     #[allow(non_camel_case_types)]
                     struct DeleteBucketSvc<T: Bucket>(pub Arc<T>);
                     impl<T: Bucket> tonic::server::UnaryService<super::DeleteBucketRequest> for DeleteBucketSvc<T> {
-                        type Response = super::super::auth::Empty;
+                        type Response = super::super::user::Empty;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
@@ -1066,7 +1066,7 @@ pub mod bucket_server {
                     #[allow(non_camel_case_types)]
                     struct DeleteBucketsSvc<T: Bucket>(pub Arc<T>);
                     impl<T: Bucket> tonic::server::UnaryService<super::DeleteBucketsRequest> for DeleteBucketsSvc<T> {
-                        type Response = super::super::auth::Empty;
+                        type Response = super::super::user::Empty;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
@@ -1241,7 +1241,7 @@ pub mod folder_server {
         async fn delete_folder(
             &self,
             request: tonic::Request<super::DeleteFolderRequest>,
-        ) -> Result<tonic::Response<super::super::auth::Empty>, tonic::Status>;
+        ) -> Result<tonic::Response<super::super::user::Empty>, tonic::Status>;
         #[doc = " 修改文件夹"]
         async fn update_folder(
             &self,
@@ -1342,7 +1342,7 @@ pub mod folder_server {
                     #[allow(non_camel_case_types)]
                     struct DeleteFolderSvc<T: Folder>(pub Arc<T>);
                     impl<T: Folder> tonic::server::UnaryService<super::DeleteFolderRequest> for DeleteFolderSvc<T> {
-                        type Response = super::super::auth::Empty;
+                        type Response = super::super::user::Empty;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
@@ -1572,12 +1572,12 @@ pub mod object_server {
         async fn create_object(
             &self,
             request: tonic::Request<super::CreateObjectRequest>,
-        ) -> Result<tonic::Response<super::super::auth::Empty>, tonic::Status>;
+        ) -> Result<tonic::Response<super::super::user::Empty>, tonic::Status>;
         #[doc = " 删除文件夹"]
         async fn delete_object(
             &self,
             request: tonic::Request<super::DeleteObjectRequest>,
-        ) -> Result<tonic::Response<super::super::auth::Empty>, tonic::Status>;
+        ) -> Result<tonic::Response<super::super::user::Empty>, tonic::Status>;
         #[doc = " 修改文件夹"]
         async fn update_object(
             &self,
@@ -1657,7 +1657,7 @@ pub mod object_server {
                     #[allow(non_camel_case_types)]
                     struct CreateObjectSvc<T: Object>(pub Arc<T>);
                     impl<T: Object> tonic::server::UnaryService<super::CreateObjectRequest> for CreateObjectSvc<T> {
-                        type Response = super::super::auth::Empty;
+                        type Response = super::super::user::Empty;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
@@ -1688,7 +1688,7 @@ pub mod object_server {
                     #[allow(non_camel_case_types)]
                     struct DeleteObjectSvc<T: Object>(pub Arc<T>);
                     impl<T: Object> tonic::server::UnaryService<super::DeleteObjectRequest> for DeleteObjectSvc<T> {
-                        type Response = super::super::auth::Empty;
+                        type Response = super::super::user::Empty;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,

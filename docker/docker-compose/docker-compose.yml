@@ -10,14 +10,6 @@ services:
     image: suxiaoshao/graphql:latest
     restart: always
     container_name: graphql
-  auth:
-    image: suxiaoshao/auth:latest
-    restart: always
-    depends_on:
-      - postgres
-    env_file:
-      - .env
-    container_name: auth
   user:
     image: suxiaoshao/user:latest
     restart: always

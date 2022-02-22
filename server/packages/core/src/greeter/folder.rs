@@ -4,9 +4,9 @@ use database::folder::FolderModal;
 use database::object::ObjectModal;
 use database::{Pool, Postgres};
 use proto::core::{CountReply, GetFolderRequest};
+use proto::user::Empty;
 use proto::{
     async_trait,
-    auth::Empty,
     core::{
         folder_server::Folder, CreateFolderRequest, DeleteFolderRequest, FolderInfo,
         GetFolderListReply, GetFolderListRequest, UpdateFolderRequest,

@@ -1,16 +1,15 @@
 syntax = "proto3";
 
 package core;
-import "auth.proto";
 import "user.proto";
 
 service Bucket {
   // 创建 Bucket
   rpc CreateBucket (CreateBucketRequest) returns (BucketInfo) {}
   // 删除 Bucket
-  rpc DeleteBucket (DeleteBucketRequest) returns (auth.Empty) {}
+  rpc DeleteBucket (DeleteBucketRequest) returns (user.Empty) {}
   // 删除 某一个用户下的Bucket
-  rpc DeleteBuckets (DeleteBucketsRequest) returns (auth.Empty) {}
+  rpc DeleteBuckets (DeleteBucketsRequest) returns (user.Empty) {}
   // 修改 Bucket
   rpc UpdateBucket (UpdateBucketRequest) returns (BucketInfo) {}
   // 获取用户 bucket 列表
@@ -92,7 +91,7 @@ service Folder {
   // 创建文件夹
   rpc CreateFolder (CreateFolderRequest) returns (FolderInfo) {}
   // 删除文件夹
-  rpc DeleteFolder (DeleteFolderRequest) returns (auth.Empty) {}
+  rpc DeleteFolder (DeleteFolderRequest) returns (user.Empty) {}
   // 修改文件夹
   rpc UpdateFolder (UpdateFolderRequest) returns (FolderInfo) {}
   // 获取 path 列表
@@ -212,9 +211,9 @@ enum ObjectAccess {
 
 service Object {
   // 创建文件夹
-  rpc CreateObject (CreateObjectRequest) returns (auth.Empty) {}
+  rpc CreateObject (CreateObjectRequest) returns (user.Empty) {}
   // 删除文件夹
-  rpc DeleteObject (DeleteObjectRequest) returns (auth.Empty) {}
+  rpc DeleteObject (DeleteObjectRequest) returns (user.Empty) {}
   // 修改文件夹
   rpc UpdateObject (UpdateObjectRequest) returns (ObjectInfo) {}
   // 获取path列表

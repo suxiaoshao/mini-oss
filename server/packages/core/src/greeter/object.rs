@@ -7,11 +7,11 @@ use proto::core::{
 };
 use proto::{
     async_trait,
-    auth::Empty,
     core::{
         object_server::Object, CreateObjectRequest, DeleteObjectRequest, GetFolderListRequest,
         GetObjectListReply, ObjectInfo, UpdateObjectRequest,
     },
+    user::Empty,
     Request, Response, Status,
 };
 use validation::validate;

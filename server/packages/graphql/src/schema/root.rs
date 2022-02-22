@@ -1,4 +1,6 @@
 use async_graphql::Object;
+use proto::user::login_client::LoginClient;
+use proto::user::{LoginReply, LoginRequest};
 
 use crate::errors::GraphqlResult;
 use crate::schema::folder::folder_list::FolderList;
@@ -8,7 +10,6 @@ use proto::core::{
     GetFolderRequest, GetObjectRequest,
 };
 use proto::{
-    auth::{login_client::LoginClient, LoginReply, LoginRequest},
     core::{
         bucket_client::BucketClient, folder_client::FolderClient, DeleteBucketRequest,
         DeleteFolderRequest,
@@ -42,14 +43,14 @@ pub struct QueryRoot;
 impl QueryRoot {
     /// 管理员登陆
     async fn manager_login(&self, data: LoginRequest) -> GraphqlResult<String> {
-        let mut client = LoginClient::connect("http://auth:80").await?;
+        let mut client = LoginClient::connect("http://user:80").await?;
         let request = Request::new(data);
         let res = client.manager_login(request).await?;
         Ok(res.get_ref().auth.to_string())
     }
     /// 用户登陆
     async fn user_login(&self, data: LoginRequest) -> GraphqlResult<String> {
-        let mut client = LoginClient::connect("http://auth:80").await?;
+        let mut client = LoginClient::connect("http://user:80").await?;
         let request = Request::new(data);
         let res = client.user_login(request).await?;
         Ok(res.get_ref().auth.to_string())

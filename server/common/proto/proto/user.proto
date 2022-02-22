@@ -1,7 +1,6 @@
 syntax = "proto3";
 
 package user;
-import "auth.proto";
 
 service UserManage {
   // 创建用户
@@ -9,7 +8,7 @@ service UserManage {
   // 用户更新
   rpc UpdateUser (UpdateUserRequest) returns (UserInfo) {}
   // 用户删除
-  rpc DeleteUser (DeleteUserRequest) returns (auth.Empty) {}
+  rpc DeleteUser (DeleteUserRequest) returns (Empty) {}
   // 用户列表
   rpc GetUserList (GetListRequest) returns (GetUserListReply){}
   // 用户信息
@@ -85,7 +84,7 @@ service SelfManage{
   // 获取自身信息
   rpc GetUserInfo(GetUserInfoRequest) returns (UserInfo){}
   // 修改密码
-  rpc UpdatePassword(UpdatePasswordRequest) returns (auth.LoginReply){}
+  rpc UpdatePassword(UpdatePasswordRequest) returns (LoginReply){}
 }
 
 message GetUserInfoRequest{
@@ -105,4 +104,38 @@ message UpdatePasswordRequest{
   string newPassword=2;
   // 身份验证
   string auth = 3;
+}
+
+service Login {
+  // 用户登陆
+  rpc UserLogin (LoginRequest) returns (LoginReply) {}
+  // 管理员登陆
+  rpc ManagerLogin (LoginRequest) returns (LoginReply) {}
+  // 验证用户登陆
+  rpc CheckUser(CheckRequest) returns(CheckReply){}
+  // 验证管理员登陆
+  rpc CheckManager(CheckRequest) returns(Empty){}
+}
+
+message LoginRequest {
+  // 账号
+  string name = 1;
+  // 密码
+  string password = 2;
+}
+
+message LoginReply {
+  string auth = 1;
+}
+
+message CheckRequest{
+  string auth = 1;
+}
+
+message CheckReply{
+  string name=1;
+}
+
+message Empty{
+
 }

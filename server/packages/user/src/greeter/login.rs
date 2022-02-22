@@ -1,7 +1,7 @@
-use database::{Pool, Postgres};
+use database::{users::UserModal, Pool, Postgres};
 use proto::{
     async_trait,
-    auth::{login_server::Login, LoginReply, LoginRequest},
+    user::{login_server::Login, CheckReply, CheckRequest, Empty, LoginReply, LoginRequest},
     Request, Response, Status,
 };
 use std::sync::Arc;
@@ -42,5 +42,21 @@ impl Login for LoginGreeter {
         let password = request.password;
         let token = Claims::manager_token(name, password)?;
         Ok(Response::new(LoginReply { auth: token }))
+    }
+    async fn check_manager(
+        &self,
+        request: Request<CheckRequest>,
+    ) -> Result<Response<Empty>, Status> {
+        let auth = request.into_inner().auth;
+        Claims::check_manager(auth)?;
+        Ok(Response::new(Empty {}))
+    }
+    async fn check_user(
+        &self,
+        request: Request<CheckRequest>,
+    ) -> Result<Response<CheckReply>, Status> {
+        let auth = request.into_inner().auth;
+        let UserModal { name, .. } = Claims::check_user(auth, &self.pool).await?;
+        Ok(Response::new(CheckReply { name }))
     }
 }

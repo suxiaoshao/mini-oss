@@ -6,7 +6,6 @@ members = [
     "common/errors",
     "common/validation",
     "common/database",
-    "packages/auth",
     "packages/user",
     "packages/core",
     "packages/open"

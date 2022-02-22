@@ -5,8 +5,8 @@ use database::{users::UserModal, Pool, Postgres};
 use errors::{TonicError, TonicResult};
 use proto::{
     async_trait,
-    auth::Empty,
     core::{bucket_client::BucketClient, DeleteBucketsRequest},
+    user::Empty,
     user::{
         user_manage_server::UserManage, CreateUserRequest, DeleteUserRequest, GetListRequest,
         GetUserListReply, GetUserRequest, UpdateUserRequest, UserInfo,

@@ -5,9 +5,9 @@ use database::folder::{FolderAccess, FolderModal};
 use database::object::ObjectModal;
 use database::{Pool, Postgres};
 use proto::core::GetBucketRequest;
+use proto::user::Empty;
 use proto::{
     async_trait,
-    auth::Empty,
     core::{
         bucket_server::Bucket, BucketInfo, CreateBucketRequest, DeleteBucketRequest,
         DeleteBucketsRequest, GetBucketListReply, UpdateBucketRequest,

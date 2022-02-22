@@ -3,9 +3,8 @@ use std::sync::Arc;
 use database::{users::UserModal, Pool, Postgres};
 use proto::{
     async_trait,
-    auth::LoginReply,
     user::{
-        self_manage_server::SelfManage, GetUserInfoRequest, UpdatePasswordRequest,
+        self_manage_server::SelfManage, GetUserInfoRequest, LoginReply, UpdatePasswordRequest,
         UpdateUserInfoRequest, UserInfo,
     },
     Request, Response, Status,
