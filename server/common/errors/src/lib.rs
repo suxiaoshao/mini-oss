@@ -137,11 +137,13 @@ impl From<TonicError> for Status {
                 Status::failed_precondition(message)
             }
 
-            TonicError::Sqlx(_) | TonicError::Json(_) => Status::internal(message),
+            TonicError::Sqlx(_) => Status::internal(message),
             #[cfg(feature = "mongo")]
             TonicError::Mongo(_) | TonicError::Bson(_) | TonicError::MongoGridfs(_) => {
                 Status::internal(message)
             }
+            #[cfg(feature = "json")]
+            TonicError::Json(_) => Status::internal(message),
 
             TonicError::Validate(_)
             | TonicError::UserNotFound
@@ -150,11 +152,13 @@ impl From<TonicError> for Status {
             | TonicError::NoneAuth
             | TonicError::ObjectNotFound(_) => Status::invalid_argument(message),
 
-            TonicError::Password
-            | TonicError::Jwt(_)
-            | TonicError::PasswordError
-            | TonicError::AuthTimeout
-            | TonicError::TokenError => Status::unauthenticated(message),
+            TonicError::PasswordError | TonicError::AuthTimeout | TonicError::TokenError => {
+                Status::unauthenticated(message)
+            }
+            #[cfg(feature = "jwt")]
+            TonicError::Jwt(_) => Status::unauthenticated(message),
+            #[cfg(feature = "password")]
+            TonicError::Password => Status::unauthenticated(message),
 
             TonicError::BucketPermission => Status::permission_denied(message),
         }
