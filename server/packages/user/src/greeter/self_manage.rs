@@ -9,11 +9,11 @@ use proto::{
     },
     Request, Response, Status,
 };
-use validation::{
-    check_auth::check_user,
+use validation::{check_auth::check_user, validate};
+
+use crate::utils::{
     claims::Claims,
     hash::{password_to_hash, validate_password_hash},
-    validate,
 };
 pub struct SelfManageGreeter {
     pool: Arc<Pool<Postgres>>,

@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 sqlx = { version = "0.5.11", features = ["runtime-tokio-rustls", "postgres", "time", "decimal"] }
-errors = { path = "../errors", features = ["json"] }
+errors = { path = "../errors" }
 serde_json = { version = "1.0.79", optional = true }
 proto = { path = "../proto" }
 async-recursion = { version = "1.0.0", optional = true }
@@ -15,7 +15,8 @@ futures = { version = "0.3.21", optional = true }
 num-traits = "0.2.14"
 
 [features]
-core=["serde_json","futures","async-recursion","proto/core"]
+core=["serde_json","futures","async-recursion","proto/core","errors/json"]
+user=[]
 
 [dev-dependencies]
 tokio = { version = "1.17.0", features = ["macros", "rt-multi-thread"] }

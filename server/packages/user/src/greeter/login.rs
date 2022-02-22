@@ -5,7 +5,9 @@ use proto::{
     Request, Response, Status,
 };
 use std::sync::Arc;
-use validation::{claims::Claims, validate};
+use validation::validate;
+
+use crate::utils::claims::Claims;
 
 pub struct LoginGreeter {
     pool: Arc<Pool<Postgres>>,

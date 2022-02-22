@@ -1,3 +1,4 @@
+#[cfg(feature = "user")]
 pub mod users;
 pub use sqlx::{pool::Pool, postgres::PgPoolOptions, Postgres};
 #[cfg(feature = "core")]

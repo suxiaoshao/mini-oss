@@ -13,7 +13,9 @@ use proto::{
     },
     Request, Response, Status,
 };
-use validation::{check_auth::check_manager, hash::password_to_hash, validate};
+use validation::{check_auth::check_manager, validate};
+
+use crate::utils::hash::password_to_hash;
 
 pub struct UserManageGreeter {
     pool: Arc<Pool<Postgres>>,
