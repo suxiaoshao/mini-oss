@@ -4,9 +4,6 @@ fn main() {
     std::fs::create_dir_all("./src/pre_gen").unwrap();
     tonic_build::configure()
         .out_dir("./src/pre_gen")
-        .compile(
-            &["proto/user.proto", "proto/core.proto"],
-            &["proto"],
-        )
+        .compile(&["proto/user.proto", "proto/core.proto"], &["proto"])
         .unwrap();
 }

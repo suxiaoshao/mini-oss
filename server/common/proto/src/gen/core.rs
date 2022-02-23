@@ -399,6 +399,7 @@ pub enum ObjectAccess {
     /// 不开放
     PrivateObject = 2,
 }
+#[cfg(feature = "core_cient")]
 #[doc = r" Generated client implementations."]
 pub mod bucket_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
@@ -553,6 +554,7 @@ pub mod bucket_client {
         }
     }
 }
+#[cfg(feature = "core_cient")]
 #[doc = r" Generated client implementations."]
 pub mod folder_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
@@ -722,6 +724,7 @@ pub mod folder_client {
         }
     }
 }
+#[cfg(feature = "core_cient")]
 #[doc = r" Generated client implementations."]
 pub mod object_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
@@ -921,6 +924,7 @@ pub mod object_client {
         }
     }
 }
+#[cfg(feature = "core_server")]
 #[doc = r" Generated server implementations."]
 pub mod bucket_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
@@ -1223,6 +1227,7 @@ pub mod bucket_server {
         const NAME: &'static str = "core.Bucket";
     }
 }
+#[cfg(feature = "core_server")]
 #[doc = r" Generated server implementations."]
 pub mod folder_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
@@ -1559,6 +1564,7 @@ pub mod folder_server {
         const NAME: &'static str = "core.Folder";
     }
 }
+#[cfg(feature = "core_server")]
 #[doc = r" Generated server implementations."]
 pub mod object_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]

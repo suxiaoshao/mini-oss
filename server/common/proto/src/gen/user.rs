@@ -156,6 +156,7 @@ pub struct CheckReply {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Empty {}
+#[cfg(feature="user_client")]
 #[doc = r" Generated client implementations."]
 pub mod user_manage_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
@@ -167,20 +168,20 @@ pub mod user_manage_client {
     impl UserManageClient<tonic::transport::Channel> {
         #[doc = r" Attempt to create a new client by connecting to a given endpoint."]
         pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
-            where
-                D: std::convert::TryInto<tonic::transport::Endpoint>,
-                D::Error: Into<StdError>,
+        where
+            D: std::convert::TryInto<tonic::transport::Endpoint>,
+            D::Error: Into<StdError>,
         {
             let conn = tonic::transport::Endpoint::new(dst)?.connect().await?;
             Ok(Self::new(conn))
         }
     }
     impl<T> UserManageClient<T>
-        where
-            T: tonic::client::GrpcService<tonic::body::BoxBody>,
-            T::ResponseBody: Body + Send + 'static,
-            T::Error: Into<StdError>,
-            <T::ResponseBody as Body>::Error: Into<StdError> + Send,
+    where
+        T: tonic::client::GrpcService<tonic::body::BoxBody>,
+        T::ResponseBody: Body + Send + 'static,
+        T::Error: Into<StdError>,
+        <T::ResponseBody as Body>::Error: Into<StdError> + Send,
     {
         pub fn new(inner: T) -> Self {
             let inner = tonic::client::Grpc::new(inner);
@@ -190,15 +191,15 @@ pub mod user_manage_client {
             inner: T,
             interceptor: F,
         ) -> UserManageClient<InterceptedService<T, F>>
-            where
-                F: tonic::service::Interceptor,
-                T: tonic::codegen::Service<
-                    http::Request<tonic::body::BoxBody>,
-                    Response = http::Response<
-                        <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
-                    >,
+        where
+            F: tonic::service::Interceptor,
+            T: tonic::codegen::Service<
+                http::Request<tonic::body::BoxBody>,
+                Response = http::Response<
+                    <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
                 >,
-                <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
+            >,
+            <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
                 Into<StdError> + Send + Sync,
         {
             UserManageClient::new(InterceptedService::new(inner, interceptor))
@@ -293,6 +294,7 @@ pub mod user_manage_client {
         }
     }
 }
+#[cfg(feature="user_client")]
 #[doc = r" Generated client implementations."]
 pub mod self_manage_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
@@ -305,20 +307,20 @@ pub mod self_manage_client {
     impl SelfManageClient<tonic::transport::Channel> {
         #[doc = r" Attempt to create a new client by connecting to a given endpoint."]
         pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
-            where
-                D: std::convert::TryInto<tonic::transport::Endpoint>,
-                D::Error: Into<StdError>,
+        where
+            D: std::convert::TryInto<tonic::transport::Endpoint>,
+            D::Error: Into<StdError>,
         {
             let conn = tonic::transport::Endpoint::new(dst)?.connect().await?;
             Ok(Self::new(conn))
         }
     }
     impl<T> SelfManageClient<T>
-        where
-            T: tonic::client::GrpcService<tonic::body::BoxBody>,
-            T::ResponseBody: Body + Send + 'static,
-            T::Error: Into<StdError>,
-            <T::ResponseBody as Body>::Error: Into<StdError> + Send,
+    where
+        T: tonic::client::GrpcService<tonic::body::BoxBody>,
+        T::ResponseBody: Body + Send + 'static,
+        T::Error: Into<StdError>,
+        <T::ResponseBody as Body>::Error: Into<StdError> + Send,
     {
         pub fn new(inner: T) -> Self {
             let inner = tonic::client::Grpc::new(inner);
@@ -328,15 +330,15 @@ pub mod self_manage_client {
             inner: T,
             interceptor: F,
         ) -> SelfManageClient<InterceptedService<T, F>>
-            where
-                F: tonic::service::Interceptor,
-                T: tonic::codegen::Service<
-                    http::Request<tonic::body::BoxBody>,
-                    Response = http::Response<
-                        <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
-                    >,
+        where
+            F: tonic::service::Interceptor,
+            T: tonic::codegen::Service<
+                http::Request<tonic::body::BoxBody>,
+                Response = http::Response<
+                    <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
                 >,
-                <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
+            >,
+            <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
                 Into<StdError> + Send + Sync,
         {
             SelfManageClient::new(InterceptedService::new(inner, interceptor))
@@ -401,6 +403,7 @@ pub mod self_manage_client {
         }
     }
 }
+#[cfg(feature="user_client")]
 #[doc = r" Generated client implementations."]
 pub mod login_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
@@ -412,20 +415,20 @@ pub mod login_client {
     impl LoginClient<tonic::transport::Channel> {
         #[doc = r" Attempt to create a new client by connecting to a given endpoint."]
         pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
-            where
-                D: std::convert::TryInto<tonic::transport::Endpoint>,
-                D::Error: Into<StdError>,
+        where
+            D: std::convert::TryInto<tonic::transport::Endpoint>,
+            D::Error: Into<StdError>,
         {
             let conn = tonic::transport::Endpoint::new(dst)?.connect().await?;
             Ok(Self::new(conn))
         }
     }
     impl<T> LoginClient<T>
-        where
-            T: tonic::client::GrpcService<tonic::body::BoxBody>,
-            T::ResponseBody: Body + Send + 'static,
-            T::Error: Into<StdError>,
-            <T::ResponseBody as Body>::Error: Into<StdError> + Send,
+    where
+        T: tonic::client::GrpcService<tonic::body::BoxBody>,
+        T::ResponseBody: Body + Send + 'static,
+        T::Error: Into<StdError>,
+        <T::ResponseBody as Body>::Error: Into<StdError> + Send,
     {
         pub fn new(inner: T) -> Self {
             let inner = tonic::client::Grpc::new(inner);
@@ -435,15 +438,15 @@ pub mod login_client {
             inner: T,
             interceptor: F,
         ) -> LoginClient<InterceptedService<T, F>>
-            where
-                F: tonic::service::Interceptor,
-                T: tonic::codegen::Service<
-                    http::Request<tonic::body::BoxBody>,
-                    Response = http::Response<
-                        <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
-                    >,
+        where
+            F: tonic::service::Interceptor,
+            T: tonic::codegen::Service<
+                http::Request<tonic::body::BoxBody>,
+                Response = http::Response<
+                    <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
                 >,
-                <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
+            >,
+            <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
                 Into<StdError> + Send + Sync,
         {
             LoginClient::new(InterceptedService::new(inner, interceptor))
@@ -523,6 +526,7 @@ pub mod login_client {
         }
     }
 }
+#[cfg(feature="user_server")]
 #[doc = r" Generated server implementations."]
 pub mod user_manage_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
@@ -574,17 +578,17 @@ pub mod user_manage_server {
             }
         }
         pub fn with_interceptor<F>(inner: T, interceptor: F) -> InterceptedService<Self, F>
-            where
-                F: tonic::service::Interceptor,
+        where
+            F: tonic::service::Interceptor,
         {
             InterceptedService::new(Self::new(inner), interceptor)
         }
     }
     impl<T, B> tonic::codegen::Service<http::Request<B>> for UserManageServer<T>
-        where
-            T: UserManage,
-            B: Body + Send + 'static,
-            B::Error: Into<StdError> + Send + 'static,
+    where
+        T: UserManage,
+        B: Body + Send + 'static,
+        B::Error: Into<StdError> + Send + 'static,
     {
         type Response = http::Response<tonic::body::BoxBody>;
         type Error = Never;
@@ -785,6 +789,7 @@ pub mod user_manage_server {
         const NAME: &'static str = "user.UserManage";
     }
 }
+#[cfg(feature="user_server")]
 #[doc = r" Generated server implementations."]
 pub mod self_manage_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
@@ -827,17 +832,17 @@ pub mod self_manage_server {
             }
         }
         pub fn with_interceptor<F>(inner: T, interceptor: F) -> InterceptedService<Self, F>
-            where
-                F: tonic::service::Interceptor,
+        where
+            F: tonic::service::Interceptor,
         {
             InterceptedService::new(Self::new(inner), interceptor)
         }
     }
     impl<T, B> tonic::codegen::Service<http::Request<B>> for SelfManageServer<T>
-        where
-            T: SelfManage,
-            B: Body + Send + 'static,
-            B::Error: Into<StdError> + Send + 'static,
+    where
+        T: SelfManage,
+        B: Body + Send + 'static,
+        B::Error: Into<StdError> + Send + 'static,
     {
         type Response = http::Response<tonic::body::BoxBody>;
         type Error = Never;
@@ -852,7 +857,7 @@ pub mod self_manage_server {
                     #[allow(non_camel_case_types)]
                     struct UpdateUserInfoSvc<T: SelfManage>(pub Arc<T>);
                     impl<T: SelfManage> tonic::server::UnaryService<super::UpdateUserInfoRequest>
-                    for UpdateUserInfoSvc<T>
+                        for UpdateUserInfoSvc<T>
                     {
                         type Response = super::UserInfo;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
@@ -916,7 +921,7 @@ pub mod self_manage_server {
                     #[allow(non_camel_case_types)]
                     struct UpdatePasswordSvc<T: SelfManage>(pub Arc<T>);
                     impl<T: SelfManage> tonic::server::UnaryService<super::UpdatePasswordRequest>
-                    for UpdatePasswordSvc<T>
+                        for UpdatePasswordSvc<T>
                     {
                         type Response = super::LoginReply;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
@@ -980,6 +985,7 @@ pub mod self_manage_server {
         const NAME: &'static str = "user.SelfManage";
     }
 }
+#[cfg(feature="user_server")]
 #[doc = r" Generated server implementations."]
 pub mod login_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
@@ -1026,17 +1032,17 @@ pub mod login_server {
             }
         }
         pub fn with_interceptor<F>(inner: T, interceptor: F) -> InterceptedService<Self, F>
-            where
-                F: tonic::service::Interceptor,
+        where
+            F: tonic::service::Interceptor,
         {
             InterceptedService::new(Self::new(inner), interceptor)
         }
     }
     impl<T, B> tonic::codegen::Service<http::Request<B>> for LoginServer<T>
-        where
-            T: Login,
-            B: Body + Send + 'static,
-            B::Error: Into<StdError> + Send + 'static,
+    where
+        T: Login,
+        B: Body + Send + 'static,
+        B::Error: Into<StdError> + Send + 'static,
     {
         type Response = http::Response<tonic::body::BoxBody>;
         type Error = Never;
