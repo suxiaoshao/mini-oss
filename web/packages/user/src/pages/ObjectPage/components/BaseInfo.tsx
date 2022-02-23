@@ -33,10 +33,10 @@ export default function BaseInfo({ objectInfo }: BaseInfoProps): JSX.Element {
           label="对象地址"
           value={
             <>
-              {url}
+              {decodeURI(url)}
               <IconButton
                 onClick={async () => {
-                  await window.navigator.clipboard.writeText(url);
+                  await window.navigator.clipboard.writeText(decodeURI(url));
                   enqueueSnackbar('复制到剪切板成功', { variant: 'success' });
                 }}
               >
