@@ -5,7 +5,7 @@ use proto::{
     Request, Response, Status,
 };
 use std::sync::Arc;
-use validation::validate;
+use validation::TonicValidate;
 
 use crate::utils::claims::Claims;
 
@@ -26,7 +26,7 @@ impl Login for LoginGreeter {
         request: Request<LoginRequest>,
     ) -> Result<Response<LoginReply>, Status> {
         // 验证
-        validate(request.get_ref())?;
+        request.get_ref().validate()?;
         let request = request.into_inner();
         let name = request.name;
         let password = request.password;
@@ -38,7 +38,7 @@ impl Login for LoginGreeter {
         request: Request<LoginRequest>,
     ) -> Result<Response<LoginReply>, Status> {
         // 验证
-        validate(request.get_ref())?;
+        request.get_ref().validate()?;
         let request = request.into_inner();
         let name = request.name;
         let password = request.password;

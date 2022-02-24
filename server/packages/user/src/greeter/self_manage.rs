@@ -9,7 +9,7 @@ use proto::{
     },
     Request, Response, Status,
 };
-use validation::{check_auth::check_user, validate};
+use validation::{check_auth::check_user, TonicValidate};
 
 use crate::utils::{
     claims::Claims,
@@ -49,7 +49,7 @@ impl SelfManage for SelfManageGreeter {
         request: Request<UpdatePasswordRequest>,
     ) -> Result<Response<LoginReply>, Status> {
         // 验证
-        validate(request.get_ref())?;
+        request.get_ref().validate()?;
         let UpdatePasswordRequest {
             old_password,
             new_password,

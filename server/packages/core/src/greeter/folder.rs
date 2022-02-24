@@ -13,7 +13,7 @@ use proto::{
     },
     Request, Response, Status,
 };
-use validation::validate;
+use validation::TonicValidate;
 
 use crate::utils::check::{check_folder_readable, check_folder_writeable};
 use crate::utils::mongo::Mongo;
@@ -36,7 +36,7 @@ impl Folder for FolderGreeter {
         request: Request<CreateFolderRequest>,
     ) -> Result<Response<FolderInfo>, Status> {
         // 验证
-        validate(request.get_ref())?;
+        request.get_ref().validate()?;
         let pool = &self.pool;
         let access = request.get_ref().access();
         let CreateFolderRequest {
@@ -64,7 +64,7 @@ impl Folder for FolderGreeter {
         request: Request<DeleteFolderRequest>,
     ) -> Result<Response<Empty>, Status> {
         // 验证
-        validate(request.get_ref())?;
+        request.get_ref().validate()?;
         let pool = &self.pool;
         let DeleteFolderRequest {
             path,
@@ -95,7 +95,7 @@ impl Folder for FolderGreeter {
         request: Request<UpdateFolderRequest>,
     ) -> Result<Response<FolderInfo>, Status> {
         // 验证
-        validate(request.get_ref())?;
+        request.get_ref().validate()?;
         let pool = &self.pool;
         let access = request.get_ref().access();
         let UpdateFolderRequest {

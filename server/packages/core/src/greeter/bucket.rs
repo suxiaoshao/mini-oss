@@ -15,8 +15,10 @@ use proto::{
     user::GetListRequest,
     Request, Response, Status,
 };
-use validation::check_auth::{check_manager, check_user};
-use validation::validate;
+use validation::{
+    check_auth::{check_manager, check_user},
+    TonicValidate,
+};
 
 use crate::utils::check::check_bucket;
 use crate::utils::mongo::Mongo;
@@ -38,7 +40,7 @@ impl Bucket for BucketGreeter {
         request: Request<CreateBucketRequest>,
     ) -> Result<Response<BucketInfo>, Status> {
         // 验证
-        validate(request.get_ref())?;
+        request.get_ref().validate()?;
         let access = request.get_ref().access();
         let CreateBucketRequest { name, auth, .. } = request.into_inner();
         let username = check_user(&auth).await?;

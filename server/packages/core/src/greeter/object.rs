@@ -14,7 +14,7 @@ use proto::{
     user::Empty,
     Request, Response, Status,
 };
-use validation::validate;
+use validation::TonicValidate;
 
 use crate::utils::check::{check_folder_writeable, check_object_writeable};
 use crate::utils::mongo::Mongo;
@@ -41,7 +41,7 @@ impl Object for ObjectGreeter {
         request: Request<CreateObjectRequest>,
     ) -> Result<Response<Empty>, Status> {
         // 验证
-        validate(request.get_ref())?;
+        request.get_ref().validate()?;
         let access = request.get_ref().access();
         let pool = &self.pool;
         let CreateObjectRequest {
@@ -93,7 +93,7 @@ impl Object for ObjectGreeter {
         request: Request<UpdateObjectRequest>,
     ) -> Result<Response<ObjectInfo>, Status> {
         // 验证
-        validate(request.get_ref())?;
+        request.get_ref().validate()?;
         let access = request.get_ref().access();
         let pool = &self.pool;
         let UpdateObjectRequest {

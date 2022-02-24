@@ -13,7 +13,7 @@ use proto::{
     },
     Request, Response, Status,
 };
-use validation::{check_auth::check_manager, validate};
+use validation::{check_auth::check_manager, TonicValidate};
 
 use crate::utils::hash::password_to_hash;
 
@@ -33,7 +33,7 @@ impl UserManage for UserManageGreeter {
         request: Request<CreateUserRequest>,
     ) -> Result<Response<UserInfo>, Status> {
         // 验证
-        validate(request.get_ref())?;
+        request.get_ref().validate()?;
         let CreateUserRequest {
             name,
             password,

@@ -52,7 +52,7 @@ async fn check_folder_exits(
     // 判断该文件夹是否存在
     FolderModal::exist(path, bucket_name, pool)
         .await
-        .map_err(|_| TonicError::FolderNotFound(bucket_name.to_string()))?;
+        .map_err(|_| TonicError::FolderNotFound(path.to_string()))?;
     Ok(())
 }
 

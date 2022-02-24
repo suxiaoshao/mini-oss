@@ -3,7 +3,10 @@ use proto::validation::Validate;
 
 pub mod check_auth;
 
-pub fn validate<T: Validate>(data: &T) -> TonicResult<()> {
-    data.validate()?;
-    Ok(())
+pub trait TonicValidate: Validate {
+    fn validate(&self) -> TonicResult<()> {
+        Validate::validate(self)?;
+        Ok(())
+    }
 }
+impl<T: Validate> TonicValidate for T {}
