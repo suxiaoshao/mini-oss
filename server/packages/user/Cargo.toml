@@ -7,10 +7,10 @@ edition = "2021"
 
 [dependencies]
 tokio = { version = "1.17.0", features = ["rt-multi-thread", "time", "fs", "macros", "net"] }
-proto={path="../../common/proto",features=["user_server","core_cient"]}
-errors ={path = "../../common/errors",features=["password","jwt"]}
-database={path = "../../common/database",features=["user"]}
-validation={path = "../../common/validation"}
+proto = { path = "../../common/proto", features = ["user_server", "core_cient"] }
+errors = { path = "../../common/errors", features = ["password", "jwt", "grpc"] }
+database = { path = "../../common/database", features = ["user"] }
+validation = { path = "../../common/validation" }
 
 jsonwebtoken = "8.0.1"
 pbkdf2 = "0.10.1"

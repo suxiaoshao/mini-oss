@@ -1,18 +1,21 @@
 use std::env::VarError;
 
 use thiserror::Error;
+#[cfg(feature = "grpc")]
 use tonic::Status;
 
 pub type TonicResult<T> = Result<T, TonicError>;
 
 #[derive(Error, Debug)]
 pub enum TonicError {
+    #[cfg(feature = "grpc")]
     #[error("{}",.0.message())]
     Status(#[source] Status),
     #[error("管理员配置缺失")]
     NoneConfiguration(#[source] VarError),
     #[error("数据库错误:{}",.0)]
     Sqlx(#[source] sqlx::Error),
+    #[cfg(feature = "grpc")]
     #[error("验证错误:{}",.0)]
     Validate(#[source] validator::ValidationErrors),
     #[cfg(feature = "mongo")]
@@ -24,6 +27,7 @@ pub enum TonicError {
     #[cfg(feature = "mongo")]
     #[error("gridfs 错误:{}",.0)]
     MongoGridfs(#[source] mongodb_gridfs::GridFSError),
+    #[cfg(feature = "grpc")]
     #[error("内部连接错误:{}",.0)]
     Transport(#[source] tonic::transport::Error),
     #[cfg(feature = "json")]
@@ -55,12 +59,14 @@ pub enum TonicError {
     ObjectNotFound(String),
 }
 
+#[cfg(feature = "grpc")]
 impl From<Status> for TonicError {
     fn from(value: Status) -> Self {
         Self::Status(value)
     }
 }
 
+#[cfg(feature = "grpc")]
 impl From<tonic::transport::Error> for TonicError {
     fn from(value: tonic::transport::Error) -> Self {
         Self::Transport(value)
@@ -121,12 +127,14 @@ impl From<pbkdf2::password_hash::Error> for TonicError {
     }
 }
 
+#[cfg(feature = "grpc")]
 impl From<validator::ValidationErrors> for TonicError {
     fn from(value: validator::ValidationErrors) -> Self {
         Self::Validate(value)
     }
 }
 
+#[cfg(feature = "grpc")]
 impl From<TonicError> for Status {
     fn from(error: TonicError) -> Self {
         let message = error.to_string();

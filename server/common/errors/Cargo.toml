@@ -7,9 +7,10 @@ edition = "2021"
 
 [dependencies]
 thiserror = "1.0.30"
-tonic = "0.6.2"
 sqlx = "0.5.11"
-validator = "0.14.0"
+
+tonic = { version = "0.6.2", optional = true }
+validator = { version = "0.14.0", optional = true }
 
 mongodb = { version = "2.1.0", optional = true }
 mongodb-gridfs = { version = "0.2.2", optional = true }
@@ -25,3 +26,4 @@ mongo = ["mongodb", "mongodb-gridfs", "blake3"]
 json = ["serde_json"]
 jwt = ["jsonwebtoken"]
 password = ["pbkdf2"]
+grpc = ["tonic", "validator"]

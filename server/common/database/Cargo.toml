@@ -15,8 +15,8 @@ futures = { version = "0.3.21", optional = true }
 num-traits = "0.2.14"
 
 [features]
-core=["serde_json","futures","async-recursion","proto/core","errors/json"]
-user=[]
+core = ["serde_json", "futures", "async-recursion", "proto/core", "errors/json", "proto/json"]
+user = []
 
 [dev-dependencies]
 tokio = { version = "1.17.0", features = ["macros", "rt-multi-thread"] }

@@ -8,5 +8,6 @@ members = [
     "common/database",
     "packages/user",
     "packages/core",
-    "packages/open"
+    "packages/open",
+    "packages/stat"
 ]

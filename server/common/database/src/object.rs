@@ -178,73 +178,6 @@ impl ObjectModal {
             .await?;
         Ok(())
     }
-    /// 删除某个 bucket 下所有
-    pub async fn delete_by_bucket(bucket_name: &str, pool: &Pool<Postgres>) -> TonicResult<()> {
-        sqlx::query("delete from object where bucket_name = $1")
-            .bind(bucket_name)
-            .execute(pool)
-            .await?;
-        Ok(())
-    }
-    /// 删除某个 path 下所有
-    pub async fn delete_by_path(
-        bucket_name: &str,
-        father_path: &str,
-        pool: &Pool<Postgres>,
-    ) -> TonicResult<()> {
-        sqlx::query("delete from object where bucket_name = $1 and path like $2")
-            .bind(bucket_name)
-            .bind(format!("{}%", father_path))
-            .execute(pool)
-            .await?;
-        Ok(())
-    }
-    /// 根据 paths 获取对象
-    pub async fn find_by_paths(
-        bucket_name: &str,
-        father_path: &str,
-        pool: &Pool<Postgres>,
-    ) -> TonicResult<Vec<Self>> {
-        let users = sqlx::query_as(r#"select * from object where path like $1 and bucket_name=$2"#)
-            .bind(format!("{}%", father_path))
-            .bind(bucket_name)
-            .fetch_all(pool)
-            .await?;
-        Ok(users)
-    }
-    /// 获取列表
-    pub async fn find_many_by_path(
-        limit: u32,
-        offset: u32,
-        father_path: &str,
-        bucket_name: &str,
-        pool: &Pool<Postgres>,
-    ) -> TonicResult<Vec<Self>> {
-        let users = sqlx::query_as(
-            r#"select * from object where path = $1 and bucket_name=$2 offset $3 limit $4"#,
-        )
-        .bind(father_path)
-        .bind(bucket_name)
-        .bind(offset)
-        .bind(limit)
-        .fetch_all(pool)
-        .await?;
-        Ok(users)
-    }
-    /// 获取总数
-    pub async fn count_by_father_path(
-        bucket_name: &str,
-        father_path: &str,
-        pool: &Pool<Postgres>,
-    ) -> TonicResult<i64> {
-        let (count,): (i64,) =
-            sqlx::query_as("select count(path) from object where bucket_name = $1 and path=$2")
-                .bind(bucket_name)
-                .bind(father_path)
-                .fetch_one(pool)
-                .await?;
-        Ok(count)
-    }
     /// 判断读取访问权限
     pub async fn read_open(
         path: &str,
@@ -272,6 +205,39 @@ impl ObjectModal {
             _ => false,
         })
     }
+}
+
+/// path 的
+impl ObjectModal {
+    /// path
+
+    /// 某个 path 下所有对象大小
+    pub async fn size_by_path(
+        bucket_name: &str,
+        father_path: &str,
+        pool: &Pool<Postgres>,
+    ) -> TonicResult<i64> {
+        let (count,): (Option<Decimal>,) =
+            sqlx::query_as("select sum(size) from object where bucket_name = $1 and path like $2")
+                .bind(bucket_name)
+                .bind(format!("{}%", father_path))
+                .fetch_one(pool)
+                .await?;
+        Ok(count.and_then(|x| x.to_i64()).unwrap_or(0))
+    }
+    /// 根据 paths 获取对象
+    pub async fn find_by_paths(
+        bucket_name: &str,
+        father_path: &str,
+        pool: &Pool<Postgres>,
+    ) -> TonicResult<Vec<Self>> {
+        let users = sqlx::query_as(r#"select * from object where path like $1 and bucket_name=$2"#)
+            .bind(format!("{}%", father_path))
+            .bind(bucket_name)
+            .fetch_all(pool)
+            .await?;
+        Ok(users)
+    }
     /// 某个 path 下所有对象个数
     pub async fn count_by_path(
         bucket_name: &str,
@@ -287,19 +253,82 @@ impl ObjectModal {
         .await?;
         Ok(count)
     }
-    /// 某个 path 下所有对象大小
-    pub async fn size_by_path(
+    /// 删除某个 path 下所有
+    pub async fn delete_by_path(
+        bucket_name: &str,
+        father_path: &str,
+        pool: &Pool<Postgres>,
+    ) -> TonicResult<()> {
+        sqlx::query("delete from object where bucket_name = $1 and path like $2")
+            .bind(bucket_name)
+            .bind(format!("{}%", father_path))
+            .execute(pool)
+            .await?;
+        Ok(())
+    }
+
+    /// father path
+
+    /// 获取总数
+    pub async fn count_by_father_path(
         bucket_name: &str,
         father_path: &str,
         pool: &Pool<Postgres>,
     ) -> TonicResult<i64> {
-        let (count,): (Option<Decimal>,) =
-            sqlx::query_as("select sum(size) from object where bucket_name = $1 and path like $2")
+        let (count,): (i64,) =
+            sqlx::query_as("select count(path) from object where bucket_name = $1 and path=$2")
                 .bind(bucket_name)
-                .bind(format!("{}%", father_path))
+                .bind(father_path)
                 .fetch_one(pool)
                 .await?;
-        Ok(count.and_then(|x| x.to_i64()).unwrap_or(0))
+        Ok(count)
+    }
+    /// 获取列表
+    pub async fn find_many_by_father_path(
+        limit: u32,
+        offset: u32,
+        father_path: &str,
+        bucket_name: &str,
+        pool: &Pool<Postgres>,
+    ) -> TonicResult<Vec<Self>> {
+        let users = sqlx::query_as(
+            r#"select * from object where path = $1 and bucket_name=$2 offset $3 limit $4"#,
+        )
+        .bind(father_path)
+        .bind(bucket_name)
+        .bind(offset)
+        .bind(limit)
+        .fetch_all(pool)
+        .await?;
+        Ok(users)
+    }
+}
+
+/// bucket
+impl ObjectModal {
+    /// 删除某个 bucket 下所有
+    pub async fn delete_by_bucket(bucket_name: &str, pool: &Pool<Postgres>) -> TonicResult<()> {
+        sqlx::query("delete from object where bucket_name = $1")
+            .bind(bucket_name)
+            .execute(pool)
+            .await?;
+        Ok(())
+    }
+    /// 获取某个 bucket 下对象大小和数量
+    pub async fn size_count_by_bucket(
+        pool: &Pool<Postgres>,
+    ) -> TonicResult<Vec<(Decimal, i64, String)>> {
+        let result: Vec<(Option<Decimal>, i64, String)> = sqlx::query_as(
+            "select sum(size),count(object_id),bucket_name from object group by bucket_name",
+        )
+        .fetch_all(pool)
+        .await?;
+        Ok(result
+            .into_iter()
+            .map(|(size, num, bucket_name)| {
+                (size.unwrap_or_else(|| Decimal::from(0)), num, bucket_name)
+            })
+            .collect())
     }
 }
 

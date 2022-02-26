@@ -147,7 +147,7 @@ impl Object for ObjectGreeter {
         check_folder_readable(&auth, &bucket_name, &path, pool).await?;
         let (count, list) = futures::future::try_join(
             ObjectModal::count_by_father_path(&bucket_name, &path, pool),
-            ObjectModal::find_many_by_path(*limit, *offset, &path, &bucket_name, pool),
+            ObjectModal::find_many_by_father_path(*limit, *offset, &path, &bucket_name, pool),
         )
         .await?;
         let mut data = vec![];
