@@ -47,7 +47,7 @@ export default function ShowStatistics({ menuClose, folderName, bucketName, path
           <InfoItem label={'当前目录'} value={folderName} />
           <InfoItem label={'文件夹数量'} value={folderInfo?.folderCount} />
           <InfoItem label={'对象数量'} value={folderInfo?.objectCount} />
-          <InfoItem label={'对象大小'} value={prettyBytes(folderInfo?.objectSize ?? 0)} />
+          <InfoItem label={'对象大小'} value={prettyBytes(parseInt(folderInfo?.objectSize ?? '0'))} />
         </DialogContent>
       </Dialog>
     </>

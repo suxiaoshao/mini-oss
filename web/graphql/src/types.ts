@@ -136,7 +136,7 @@ export type FolderInfo = {
   folderCount: Scalars['Int'];
   folderName: Scalars['String'];
   objectCount: Scalars['Int'];
-  objectSize: Scalars['Int'];
+  objectSize: Scalars['String'];
   /** 路径 */
   path: Scalars['String'];
   /** 创建时间 */
@@ -602,7 +602,7 @@ export type FolderStatisticsQueryVariables = Exact<{
 
 export type FolderStatisticsQuery = {
   __typename?: 'QueryRoot';
-  folderInfo: { __typename?: 'FolderInfo'; folderCount: number; objectCount: number; objectSize: number };
+  folderInfo: { __typename?: 'FolderInfo'; folderCount: number; objectCount: number; objectSize: string };
 };
 
 export type UserLoginQueryVariables = Exact<{
