@@ -232,7 +232,7 @@ service Object {
 
 message SizeReply{
   // 对象大小
-  int64 size = 1;
+  string size = 1;
 }
 
 message GetObjectRequest{

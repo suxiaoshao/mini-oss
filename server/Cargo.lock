@@ -721,7 +721,6 @@ dependencies = [
  "async-recursion",
  "errors",
  "futures",
- "num-traits",
  "proto",
  "serde_json",
  "sqlx",

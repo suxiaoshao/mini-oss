@@ -236,7 +236,9 @@ impl Object for ObjectGreeter {
         } = request.into_inner();
         check_folder_readable(&auth, &bucket_name, &path, pool).await?;
         let size = ObjectModal::size_by_path(&bucket_name, &path, pool).await?;
-        Ok(Response::new(SizeReply { size }))
+        Ok(Response::new(SizeReply {
+            size: size.to_string(),
+        }))
     }
 }
 

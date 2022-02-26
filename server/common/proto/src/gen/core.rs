@@ -221,9 +221,9 @@ pub struct FolderInfo {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SizeReply {
-    /// 对象总数
-    #[prost(int64, tag = "1")]
-    pub size: i64,
+    /// 对象大小
+    #[prost(string, tag = "1")]
+    pub size: ::prost::alloc::string::String,
 }
 #[cfg_attr(feature = "graphql", derive(InputObject))]
 #[derive(Clone, PartialEq, ::prost::Message)]

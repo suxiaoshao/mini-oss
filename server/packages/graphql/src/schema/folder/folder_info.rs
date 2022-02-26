@@ -53,7 +53,7 @@ impl FolderInfo {
         let CountReply { total } = client.get_total_by_folder(request).await?.into_inner();
         Ok(total)
     }
-    async fn object_size(&self) -> GraphqlResult<i64> {
+    async fn object_size(&self) -> GraphqlResult<String> {
         let mut client = ObjectClient::connect("http://core:80").await?;
         let request = GetFolderRequest {
             auth: self.auth.clone(),

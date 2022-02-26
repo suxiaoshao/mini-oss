@@ -190,8 +190,8 @@ pub struct FolderInfo {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SizeReply {
     /// 对象大小
-    #[prost(int64, tag = "1")]
-    pub size: i64,
+    #[prost(string, tag = "1")]
+    pub size: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetObjectRequest {

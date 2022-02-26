@@ -1,6 +1,5 @@
 use std::time::SystemTime;
 
-use num_traits::ToPrimitive;
 use sqlx::types::Decimal;
 use sqlx::{types::time::PrimitiveDateTime, FromRow, Pool, Postgres};
 
@@ -216,14 +215,14 @@ impl ObjectModal {
         bucket_name: &str,
         father_path: &str,
         pool: &Pool<Postgres>,
-    ) -> TonicResult<i64> {
+    ) -> TonicResult<Decimal> {
         let (count,): (Option<Decimal>,) =
             sqlx::query_as("select sum(size) from object where bucket_name = $1 and path like $2")
                 .bind(bucket_name)
                 .bind(format!("{}%", father_path))
                 .fetch_one(pool)
                 .await?;
-        Ok(count.and_then(|x| x.to_i64()).unwrap_or(0))
+        Ok(count.unwrap_or_default())
     }
     /// 根据 paths 获取对象
     pub async fn find_by_paths(
@@ -325,9 +324,7 @@ impl ObjectModal {
         .await?;
         Ok(result
             .into_iter()
-            .map(|(size, num, bucket_name)| {
-                (size.unwrap_or_else(|| Decimal::from(0)), num, bucket_name)
-            })
+            .map(|(size, num, bucket_name)| (size.unwrap_or_default(), num, bucket_name))
             .collect())
     }
 }
