@@ -6,7 +6,7 @@ pub mod bucket;
 pub mod folder;
 #[cfg(feature = "core")]
 pub mod object;
-#[cfg(feature = "user")]
-pub mod users;
 #[cfg(feature = "core")]
 pub mod storage;
+#[cfg(feature = "user")]
+pub mod users;

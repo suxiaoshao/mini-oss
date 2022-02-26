@@ -1,7 +1,7 @@
 use std::time::SystemTime;
 
 use async_recursion::async_recursion;
-use sqlx::{types::time::PrimitiveDateTime, FromRow, Pool, Postgres};
+use sqlx::{FromRow, Pool, Postgres, types::time::PrimitiveDateTime};
 
 use errors::TonicResult;
 use proto::core::FolderInfo;
@@ -107,43 +107,6 @@ impl FolderModal {
         .await?;
         Ok(folder)
     }
-    /// 删除某个 bucket 下所有
-    pub async fn delete_by_bucket(bucket_name: &str, pool: &Pool<Postgres>) -> TonicResult<()> {
-        sqlx::query("delete from folder where bucket_name = $1")
-            .bind(bucket_name)
-            .execute(pool)
-            .await?;
-        Ok(())
-    }
-    /// 删除某个 path 下所有
-    pub async fn delete_by_path(
-        bucket_name: &str,
-        father_path: &str,
-        pool: &Pool<Postgres>,
-    ) -> TonicResult<()> {
-        sqlx::query("delete from folder where bucket_name = $1 and path like $2")
-            .bind(bucket_name)
-            .bind(format!("{}%", father_path))
-            .execute(pool)
-            .await?;
-        Ok(())
-    }
-    /// 某个 path 下所有文件夹个数(去除此文件夹)
-    pub async fn count_by_path(
-        bucket_name: &str,
-        father_path: &str,
-        pool: &Pool<Postgres>,
-    ) -> TonicResult<i64> {
-        let father_path = format!("{}_%", father_path);
-        let (count,): (i64,) = sqlx::query_as(
-            "select count(path) from folder where bucket_name = $1 and path like $2",
-        )
-        .bind(bucket_name)
-        .bind(father_path)
-        .fetch_one(pool)
-        .await?;
-        Ok(count)
-    }
     /// 判断读取访问权限
     #[async_recursion]
     pub async fn read_open(
@@ -190,6 +153,42 @@ impl FolderModal {
             FolderAccess::Open => true,
         })
     }
+}
+
+/// path
+impl FolderModal {
+    /// path
+
+    /// 删除某个 path 下所有
+    pub async fn delete_by_path(
+        bucket_name: &str,
+        father_path: &str,
+        pool: &Pool<Postgres>,
+    ) -> TonicResult<()> {
+        sqlx::query("delete from folder where bucket_name = $1 and path like $2")
+            .bind(bucket_name)
+            .bind(format!("{}%", father_path))
+            .execute(pool)
+            .await?;
+        Ok(())
+    }
+    /// 某个 path 下所有文件夹个数(去除此文件夹)
+    pub async fn count_by_path(
+        bucket_name: &str,
+        father_path: &str,
+        pool: &Pool<Postgres>,
+    ) -> TonicResult<i64> {
+        let father_path = format!("{}_%", father_path);
+        let (count,): (i64,) = sqlx::query_as(
+            "select count(path) from folder where bucket_name = $1 and path like $2",
+        )
+            .bind(bucket_name)
+            .bind(father_path)
+            .fetch_one(pool)
+            .await?;
+        Ok(count)
+    }
+    /// father path
     /// 获取列表
     pub async fn find_many_by_father_path(
         limit: u32,
@@ -201,12 +200,12 @@ impl FolderModal {
         let users = sqlx::query_as(
             "select path,access,create_time,update_time,bucket_name,father_path from folder where father_path = $1 and bucket_name=$2 offset $3 limit $4",
         )
-        .bind(father_path)
-        .bind(bucket_name)
-        .bind(offset)
-        .bind(limit)
-        .fetch_all(pool)
-        .await?;
+            .bind(father_path)
+            .bind(bucket_name)
+            .bind(offset)
+            .bind(limit)
+            .fetch_all(pool)
+            .await?;
         Ok(users)
     }
     /// 获取总数
@@ -218,11 +217,23 @@ impl FolderModal {
         let (count,): (i64,) = sqlx::query_as(
             "select count(path) from folder where bucket_name = $1 and father_path=$2",
         )
-        .bind(bucket_name)
-        .bind(father_path)
-        .fetch_one(pool)
-        .await?;
+            .bind(bucket_name)
+            .bind(father_path)
+            .fetch_one(pool)
+            .await?;
         Ok(count)
+    }
+}
+
+/// bucket
+impl FolderModal{
+    /// 删除某个 bucket 下所有
+    pub async fn delete_by_bucket(bucket_name: &str, pool: &Pool<Postgres>) -> TonicResult<()> {
+        sqlx::query("delete from folder where bucket_name = $1")
+            .bind(bucket_name)
+            .execute(pool)
+            .await?;
+        Ok(())
     }
 }
 

@@ -27,6 +27,15 @@ services:
       - postgres
       - mongo
     container_name: core
+  stat:
+    image: suxiaoshao/stat:latest
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - mongo
+    container_name: stat
   open:
     image: suxiaoshao/open:latest
     restart: always

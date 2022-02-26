@@ -3,9 +3,9 @@ use std::thread::park;
 use anyhow::Result;
 use delay_timer::prelude::*;
 
-use database::PgPoolOptions;
 use database::object::ObjectModal;
 use database::storage::StorageModal;
+use database::PgPoolOptions;
 
 #[tokio::main]
 async fn main() -> Result<()> {

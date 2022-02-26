@@ -156,7 +156,7 @@ pub struct CheckReply {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Empty {}
-#[cfg(feature="user_client")]
+#[cfg(feature = "user_client")]
 #[doc = r" Generated client implementations."]
 pub mod user_manage_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
@@ -294,7 +294,7 @@ pub mod user_manage_client {
         }
     }
 }
-#[cfg(feature="user_client")]
+#[cfg(feature = "user_client")]
 #[doc = r" Generated client implementations."]
 pub mod self_manage_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
@@ -403,7 +403,7 @@ pub mod self_manage_client {
         }
     }
 }
-#[cfg(feature="user_client")]
+#[cfg(feature = "user_client")]
 #[doc = r" Generated client implementations."]
 pub mod login_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
@@ -526,7 +526,7 @@ pub mod login_client {
         }
     }
 }
-#[cfg(feature="user_server")]
+#[cfg(feature = "user_server")]
 #[doc = r" Generated server implementations."]
 pub mod user_manage_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
@@ -789,7 +789,7 @@ pub mod user_manage_server {
         const NAME: &'static str = "user.UserManage";
     }
 }
-#[cfg(feature="user_server")]
+#[cfg(feature = "user_server")]
 #[doc = r" Generated server implementations."]
 pub mod self_manage_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
@@ -985,7 +985,7 @@ pub mod self_manage_server {
         const NAME: &'static str = "user.SelfManage";
     }
 }
-#[cfg(feature="user_server")]
+#[cfg(feature = "user_server")]
 #[doc = r" Generated server implementations."]
 pub mod login_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]

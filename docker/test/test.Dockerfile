@@ -1,7 +1,7 @@
 FROM suxiaoshao/rust:latest
 
 # cargo 配置
-COPY ./server/.cargo/config /usr/local/cargo
+COPY ./docker/test/config /usr/local/cargo
 RUN cargo install cargo-watch
 
 # zsh 下载

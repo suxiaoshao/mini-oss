@@ -1,8 +1,11 @@
 use std::sync::Arc;
 
-use database::bucket::{self, BucketModal};
 use database::folder::{FolderAccess, FolderModal};
 use database::object::ObjectModal;
+use database::{
+    bucket::{self, BucketModal},
+    storage::StorageModal,
+};
 use database::{Pool, Postgres};
 use proto::core::GetBucketRequest;
 use proto::user::Empty;
@@ -22,6 +25,7 @@ use validation::{
 
 use crate::utils::check::check_bucket;
 use crate::utils::mongo::Mongo;
+
 #[derive(Clone)]
 pub struct BucketGreeter {
     pool: Arc<Pool<Postgres>>,
@@ -68,6 +72,7 @@ impl Bucket for BucketGreeter {
             BucketModal::delete(&name, pool),
             FolderModal::delete_by_bucket(&name, pool),
             ObjectModal::delete_by_bucket(&name, pool),
+            StorageModal::delete_by_bucket(&name, pool),
             self.mongo.drop_self(name.clone())
         )?;
         Ok(Response::new(Empty {}))
