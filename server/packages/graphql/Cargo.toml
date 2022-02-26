@@ -13,3 +13,6 @@ async-graphql-axum = "3.0.31"
 proto = { path = "../../common/proto", features = ["core_cient", "user_client", "graphql"] }
 tower-http = { version = "0.2.3", features = ["cors"] }
 futures = "0.3.21"
+
+[profile.release]
+strip = "symbols"

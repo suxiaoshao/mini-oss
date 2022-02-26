@@ -12,3 +12,6 @@ tokio = { version = "1.17.0", features = ["macros", "rt-multi-thread"] }
 futures = "0.3.21"
 
 database = { path = "../../common/database", features = ["core"] }
+
+[profile.release]
+strip = "symbols"

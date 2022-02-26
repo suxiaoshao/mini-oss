@@ -3,6 +3,7 @@ FROM suxiaoshao/rust:latest
 # cargo 配置
 COPY ./docker/test/config /usr/local/cargo
 RUN cargo install cargo-watch
+RUN cargo install cargo-cache
 
 # zsh 下载
 RUN apk add zsh

@@ -19,3 +19,6 @@ nom = "7.1.0"
 futures = "0.3.21"
 time = { version = "0.3.7", features = ["std"] }
 urlencoding = "2.1.0"
+
+[profile.release]
+strip = "symbols"
