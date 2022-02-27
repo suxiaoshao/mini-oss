@@ -23,11 +23,11 @@ use crate::middleware::identity::Identity;
 /// 获取文件
 pub(crate) async fn get_object(
     Extension(identity): Extension<Arc<Identity>>,
-    path: OpenResult<PathWithName>,
+    path: PathWithName,
     headers: HeaderMap,
 ) -> OpenResult<Response<BoxBody>> {
     let Identity { bucket_name, auth } = identity.deref();
-    let PathWithName { path, filename } = path?;
+    let PathWithName { path, filename } = path;
     let mut client = ObjectClient::connect("http://core:80").await?;
     let request = GetObjectRequest {
         bucket_name: bucket_name.clone(),
@@ -50,7 +50,7 @@ pub(crate) async fn get_object(
             res_content(object_info, content)
         } else {
             res_304(object_info)
-        }
+        };
     };
 
     // last modified 缓存处理
@@ -68,7 +68,7 @@ pub(crate) async fn get_object(
             res_content(object_info, content)
         } else {
             res_304(object_info)
-        }
+        };
     }
 
     // 未命中缓存

@@ -7,4 +7,4 @@
 **/target
 **/*.pnpm-debug.log
 web/.npmrc
-server/.cargo/config
+server/.cargo/config.toml
