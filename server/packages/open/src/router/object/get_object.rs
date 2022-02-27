@@ -17,8 +17,8 @@ use proto::core::object_client::ObjectClient;
 use proto::core::{GetObjectContentReply, GetObjectRequest, Header, ObjectInfo};
 
 use crate::errors::{OpenError, OpenResult};
+use crate::extract::path_with_name::PathWithName;
 use crate::middleware::identity::Identity;
-use crate::middleware::path_with_name::PathWithName;
 
 /// 获取文件
 pub(crate) async fn get_object(
@@ -42,14 +42,14 @@ pub(crate) async fn get_object(
             .get_object(Request::new(request.clone()))
             .await?
             .into_inner();
-        if if_none_match.precondition_passes(&etag(&object_info.blake3)?) {
+        return if if_none_match.precondition_passes(&etag(&object_info.blake3)?) {
             let GetObjectContentReply { content } = client
                 .get_object_content(Request::new(request.clone()))
                 .await?
                 .into_inner();
-            return res_content(object_info, content);
+            res_content(object_info, content)
         } else {
-            return res_304(object_info);
+            res_304(object_info)
         }
     };
 
@@ -60,14 +60,14 @@ pub(crate) async fn get_object(
             .await?
             .into_inner();
         let system_time = system_time(object_info.update_time)?;
-        if if_modified_since.is_modified(system_time) {
+        return if if_modified_since.is_modified(system_time) {
             let GetObjectContentReply { content } = client
                 .get_object_content(Request::new(request.clone()))
                 .await?
                 .into_inner();
-            return res_content(object_info, content);
+            res_content(object_info, content)
         } else {
-            return res_304(object_info);
+            res_304(object_info)
         }
     }
 

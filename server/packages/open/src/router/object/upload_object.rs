@@ -1,8 +1,6 @@
 use crate::errors::response::OpenResponse;
 use crate::errors::OpenResult;
 use crate::middleware::identity::Identity;
-use crate::middleware::object_access::ObjectAccess;
-use crate::middleware::path_with_name::PathWithName;
 use axum::body::Bytes;
 use axum::extract::Extension;
 use proto::core::object_client::ObjectClient;
@@ -10,6 +8,8 @@ use proto::core::CreateObjectRequest;
 use std::ops::Deref;
 use std::sync::Arc;
 use tonic::Request;
+use crate::extract::object_access::ObjectAccess;
+use crate::extract::path_with_name::PathWithName;
 
 /// 上传文件
 pub(crate) async fn upload_object(

@@ -52,8 +52,7 @@ impl FromStr for PathWithName {
 
 #[cfg(test)]
 mod test {
-    use crate::errors::OpenError;
-    use crate::middleware::path_with_name::PathWithName;
+    use crate::{errors::OpenError, extract::path_with_name::PathWithName};
 
     #[test]
     fn test() {

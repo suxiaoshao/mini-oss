@@ -11,3 +11,5 @@ members = [
     "packages/open",
     "packages/stat"
 ]
+[profile.release]
+strip = "symbols"

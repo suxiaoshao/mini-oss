@@ -7,6 +7,7 @@ use crate::router::get_router;
 mod errors;
 mod middleware;
 mod router;
+mod extract;
 
 #[tokio::main]
 async fn main() {
