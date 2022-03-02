@@ -39,6 +39,11 @@ services:
   open:
     image: suxiaoshao/open:latest
     restart: always
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - mongo
     container_name: open
   mongo:
     image: mongo:latest

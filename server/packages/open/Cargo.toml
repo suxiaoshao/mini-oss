@@ -8,7 +8,14 @@ edition = "2021"
 [dependencies]
 tokio = { version = "1.17.0", features = ["macros", "rt-multi-thread"] }
 axum = { version = "0.4.6", features = ["headers", "json"] }
+
+# 中间件
 tower-http = { version = "0.2.3", features = ["cors"] }
+tower = "0.4.12"
+hyper = "0.14.17"
+bytes = "1.1.0"
+http-body = "0.4.4"
+pin-project-lite = "0.2.8"
 
 axum-extra = "0.1.4"
 nom = "7.1.0"
@@ -25,3 +32,7 @@ futures = "0.3.21"
 
 time = { version = "0.3.7", features = ["std"] }
 urlencoding = "2.1.0"
+
+bson = "2.1.0"
+
+database = { path = "../../common/database", features = ["core"]}
