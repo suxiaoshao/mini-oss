@@ -262,7 +262,9 @@ impl Object for ObjectGreeter {
         let GetBucketRequest { auth, bucket_name } = request.into_inner();
         // 判断权限
         check_bucket(&auth, &bucket_name, pool).await?;
-        let size = ObjectModal::size_by_bucket(&bucket_name, pool).await?.to_string();
+        let size = ObjectModal::size_by_bucket(&bucket_name, pool)
+            .await?
+            .to_string();
         Ok(Response::new(SizeReply { size }))
     }
 }

@@ -124,3 +124,15 @@ impl RequestModal {
         }
     }
 }
+
+/// bucket
+impl RequestModal {
+    /// 删除某个 bucket 下所有
+    pub async fn delete_by_bucket(bucket_name: &str, pool: &Pool<Postgres>) -> TonicResult<()> {
+        sqlx::query("delete from request where bucket_name = $1")
+            .bind(bucket_name)
+            .execute(pool)
+            .await?;
+        Ok(())
+    }
+}

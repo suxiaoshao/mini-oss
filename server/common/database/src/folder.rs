@@ -1,7 +1,7 @@
 use std::time::SystemTime;
 
 use async_recursion::async_recursion;
-use sqlx::{FromRow, Pool, Postgres, types::time::PrimitiveDateTime};
+use sqlx::{types::time::PrimitiveDateTime, FromRow, Pool, Postgres};
 
 use errors::TonicResult;
 use proto::core::FolderInfo;
@@ -182,10 +182,10 @@ impl FolderModal {
         let (count,): (i64,) = sqlx::query_as(
             "select count(path) from folder where bucket_name = $1 and path like $2",
         )
-            .bind(bucket_name)
-            .bind(father_path)
-            .fetch_one(pool)
-            .await?;
+        .bind(bucket_name)
+        .bind(father_path)
+        .fetch_one(pool)
+        .await?;
         Ok(count)
     }
     /// father path
@@ -217,16 +217,16 @@ impl FolderModal {
         let (count,): (i64,) = sqlx::query_as(
             "select count(path) from folder where bucket_name = $1 and father_path=$2",
         )
-            .bind(bucket_name)
-            .bind(father_path)
-            .fetch_one(pool)
-            .await?;
+        .bind(bucket_name)
+        .bind(father_path)
+        .fetch_one(pool)
+        .await?;
         Ok(count)
     }
 }
 
 /// bucket
-impl FolderModal{
+impl FolderModal {
     /// 删除某个 bucket 下所有
     pub async fn delete_by_bucket(bucket_name: &str, pool: &Pool<Postgres>) -> TonicResult<()> {
         sqlx::query("delete from folder where bucket_name = $1")

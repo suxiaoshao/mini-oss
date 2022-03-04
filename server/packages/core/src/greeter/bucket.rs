@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use database::folder::{FolderAccess, FolderModal};
 use database::object::ObjectModal;
+use database::request::RequestModal;
 use database::{
     bucket::{self, BucketModal},
     storage::StorageModal,
@@ -73,6 +74,7 @@ impl Bucket for BucketGreeter {
             FolderModal::delete_by_bucket(&name, pool),
             ObjectModal::delete_by_bucket(&name, pool),
             StorageModal::delete_by_bucket(&name, pool),
+            RequestModal::delete_by_bucket(&name, pool),
             self.mongo.drop_self(name.clone())
         )?;
         Ok(Response::new(Empty {}))

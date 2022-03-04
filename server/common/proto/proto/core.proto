@@ -329,3 +329,21 @@ message Header{
   string key = 1;
   string value = 2;
 }
+
+service Request {
+  // 获取上传数据大小
+  rpc GetUploadSizeByBucket(GetTimeRequest) returns (SizeReply){}
+  // 获取下载数据大小
+  rpc GetDownloadSizeByBucket(GetTimeRequest) returns (SizeReply){}
+}
+
+message GetTimeRequest{
+  // bucket 名
+  string bucketName = 1;
+  // 权限
+  string auth = 2;
+  // 开始时间
+  int64 startTime = 3;
+  // 结束时间
+  int64 endTime = 4;
+}
