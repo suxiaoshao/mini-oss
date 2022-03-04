@@ -228,6 +228,10 @@ service Object {
   rpc GetTotalByFolder(GetFolderRequest) returns (CountReply){}
   // 获取 path 下所有 object 大小
   rpc GetSizeByFolder(GetFolderRequest) returns (SizeReply){}
+  // 获取 bucket 下所有 object 总数
+  rpc GetTotalByBucket(GetBucketRequest) returns (CountReply){}
+  // 获取 bucket 下所有 object 大小
+  rpc GetSizeByBucket(GetBucketRequest) returns (SizeReply){}
 }
 
 message SizeReply{

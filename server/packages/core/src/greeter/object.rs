@@ -3,7 +3,8 @@ use std::sync::Arc;
 use database::object::{ObjectAccess, ObjectCreateInput, ObjectModal};
 use database::{Pool, Postgres};
 use proto::core::{
-    CountReply, GetFolderRequest, GetObjectContentReply, GetObjectRequest, SizeReply,
+    CountReply, GetBucketRequest, GetFolderRequest, GetObjectContentReply, GetObjectRequest,
+    SizeReply,
 };
 use proto::{
     async_trait,
@@ -16,7 +17,7 @@ use proto::{
 };
 use validation::TonicValidate;
 
-use crate::utils::check::{check_folder_writeable, check_object_writeable};
+use crate::utils::check::{check_bucket, check_folder_writeable, check_object_writeable};
 use crate::utils::mongo::Mongo;
 use crate::utils::{
     check::{check_folder_readable, check_object_readable},
@@ -239,6 +240,30 @@ impl Object for ObjectGreeter {
         Ok(Response::new(SizeReply {
             size: size.to_string(),
         }))
+    }
+
+    async fn get_total_by_bucket(
+        &self,
+        request: Request<GetBucketRequest>,
+    ) -> Result<Response<CountReply>, Status> {
+        let pool = &self.pool;
+        let GetBucketRequest { auth, bucket_name } = request.into_inner();
+        // 判断权限
+        check_bucket(&auth, &bucket_name, pool).await?;
+        let total = ObjectModal::count_by_bucket(&bucket_name, pool).await?;
+        Ok(Response::new(CountReply { total }))
+    }
+
+    async fn get_size_by_bucket(
+        &self,
+        request: Request<GetBucketRequest>,
+    ) -> Result<Response<SizeReply>, Status> {
+        let pool = &self.pool;
+        let GetBucketRequest { auth, bucket_name } = request.into_inner();
+        // 判断权限
+        check_bucket(&auth, &bucket_name, pool).await?;
+        let size = ObjectModal::size_by_bucket(&bucket_name, pool).await?.to_string();
+        Ok(Response::new(SizeReply { size }))
     }
 }
 

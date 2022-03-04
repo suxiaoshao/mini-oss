@@ -399,7 +399,7 @@ pub enum ObjectAccess {
     /// 不开放
     PrivateObject = 2,
 }
-#[cfg(feature = "core_cient")]
+#[cfg(feature = "core_client")]
 #[doc = r" Generated client implementations."]
 pub mod bucket_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
@@ -554,7 +554,7 @@ pub mod bucket_client {
         }
     }
 }
-#[cfg(feature = "core_cient")]
+#[cfg(feature = "core_client")]
 #[doc = r" Generated client implementations."]
 pub mod folder_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
@@ -724,13 +724,11 @@ pub mod folder_client {
         }
     }
 }
-#[cfg(feature = "core_cient")]
+#[cfg(feature = "core_client")]
 #[doc = r" Generated client implementations."]
 pub mod object_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
-
     use tonic::codegen::*;
-
     #[derive(Debug, Clone)]
     pub struct ObjectClient<T> {
         inner: tonic::client::Grpc<T>,
@@ -738,20 +736,20 @@ pub mod object_client {
     impl ObjectClient<tonic::transport::Channel> {
         #[doc = r" Attempt to create a new client by connecting to a given endpoint."]
         pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
-        where
-            D: std::convert::TryInto<tonic::transport::Endpoint>,
-            D::Error: Into<StdError>,
+            where
+                D: std::convert::TryInto<tonic::transport::Endpoint>,
+                D::Error: Into<StdError>,
         {
             let conn = tonic::transport::Endpoint::new(dst)?.connect().await?;
             Ok(Self::new(conn))
         }
     }
     impl<T> ObjectClient<T>
-    where
-        T: tonic::client::GrpcService<tonic::body::BoxBody>,
-        T::ResponseBody: Body + Send + 'static,
-        T::Error: Into<StdError>,
-        <T::ResponseBody as Body>::Error: Into<StdError> + Send,
+        where
+            T: tonic::client::GrpcService<tonic::body::BoxBody>,
+            T::ResponseBody: Body + Send + 'static,
+            T::Error: Into<StdError>,
+            <T::ResponseBody as Body>::Error: Into<StdError> + Send,
     {
         pub fn new(inner: T) -> Self {
             let inner = tonic::client::Grpc::new(inner);
@@ -761,15 +759,15 @@ pub mod object_client {
             inner: T,
             interceptor: F,
         ) -> ObjectClient<InterceptedService<T, F>>
-        where
-            F: tonic::service::Interceptor,
-            T: tonic::codegen::Service<
-                http::Request<tonic::body::BoxBody>,
-                Response = http::Response<
-                    <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
+            where
+                F: tonic::service::Interceptor,
+                T: tonic::codegen::Service<
+                    http::Request<tonic::body::BoxBody>,
+                    Response = http::Response<
+                        <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
+                    >,
                 >,
-            >,
-            <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
+                <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
                 Into<StdError> + Send + Sync,
         {
             ObjectClient::new(InterceptedService::new(inner, interceptor))
@@ -920,6 +918,36 @@ pub mod object_client {
             })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static("/core.Object/GetSizeByFolder");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        #[doc = " 获取 bucket 下所有 object 总数"]
+        pub async fn get_total_by_bucket(
+            &mut self,
+            request: impl tonic::IntoRequest<super::GetBucketRequest>,
+        ) -> Result<tonic::Response<super::CountReply>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/core.Object/GetTotalByBucket");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        #[doc = " 获取 bucket 下所有 object 大小"]
+        pub async fn get_size_by_bucket(
+            &mut self,
+            request: impl tonic::IntoRequest<super::GetBucketRequest>,
+        ) -> Result<tonic::Response<super::SizeReply>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/core.Object/GetSizeByBucket");
             self.inner.unary(request.into_request(), path, codec).await
         }
     }
@@ -1568,9 +1596,7 @@ pub mod folder_server {
 #[doc = r" Generated server implementations."]
 pub mod object_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
-
     use tonic::codegen::*;
-
     #[doc = "Generated trait containing gRPC methods that should be implemented for use with ObjectServer."]
     #[async_trait]
     pub trait Object: Send + Sync + 'static {
@@ -1619,6 +1645,16 @@ pub mod object_server {
             &self,
             request: tonic::Request<super::GetFolderRequest>,
         ) -> Result<tonic::Response<super::SizeReply>, tonic::Status>;
+        #[doc = " 获取 bucket 下所有 object 总数"]
+        async fn get_total_by_bucket(
+            &self,
+            request: tonic::Request<super::GetBucketRequest>,
+        ) -> Result<tonic::Response<super::CountReply>, tonic::Status>;
+        #[doc = " 获取 bucket 下所有 object 大小"]
+        async fn get_size_by_bucket(
+            &self,
+            request: tonic::Request<super::GetBucketRequest>,
+        ) -> Result<tonic::Response<super::SizeReply>, tonic::Status>;
     }
     #[derive(Debug)]
     pub struct ObjectServer<T: Object> {
@@ -1638,17 +1674,17 @@ pub mod object_server {
             }
         }
         pub fn with_interceptor<F>(inner: T, interceptor: F) -> InterceptedService<Self, F>
-        where
-            F: tonic::service::Interceptor,
+            where
+                F: tonic::service::Interceptor,
         {
             InterceptedService::new(Self::new(inner), interceptor)
         }
     }
     impl<T, B> tonic::codegen::Service<http::Request<B>> for ObjectServer<T>
-    where
-        T: Object,
-        B: Body + Send + 'static,
-        B::Error: Into<StdError> + Send + 'static,
+        where
+            T: Object,
+            B: Body + Send + 'static,
+            B::Error: Into<StdError> + Send + 'static,
     {
         type Response = http::Response<tonic::body::BoxBody>;
         type Error = Never;
@@ -1928,6 +1964,68 @@ pub mod object_server {
                     let fut = async move {
                         let inner = inner.0;
                         let method = GetSizeByFolderSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
+                            accept_compression_encodings,
+                            send_compression_encodings,
+                        );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/core.Object/GetTotalByBucket" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetTotalByBucketSvc<T: Object>(pub Arc<T>);
+                    impl<T: Object> tonic::server::UnaryService<super::GetBucketRequest> for GetTotalByBucketSvc<T> {
+                        type Response = super::CountReply;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::GetBucketRequest>,
+                        ) -> Self::Future {
+                            let inner = self.0.clone();
+                            let fut = async move { (*inner).get_total_by_bucket(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = GetTotalByBucketSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
+                            accept_compression_encodings,
+                            send_compression_encodings,
+                        );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/core.Object/GetSizeByBucket" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetSizeByBucketSvc<T: Object>(pub Arc<T>);
+                    impl<T: Object> tonic::server::UnaryService<super::GetBucketRequest> for GetSizeByBucketSvc<T> {
+                        type Response = super::SizeReply;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::GetBucketRequest>,
+                        ) -> Self::Future {
+                            let inner = self.0.clone();
+                            let fut = async move { (*inner).get_size_by_bucket(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = GetSizeByBucketSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
                             accept_compression_encodings,
