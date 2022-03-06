@@ -1,7 +1,8 @@
 use std::time::SystemTime;
 
-use sqlx::{types::time::PrimitiveDateTime, FromRow, Pool, Postgres};
+use sqlx::{FromRow, Pool, Postgres};
 
+use crate::time::OffsetDateTime;
 use errors::TonicResult;
 use proto::core::BucketInfo;
 
@@ -27,9 +28,9 @@ pub struct BucketModal {
     /// 名字
     pub name: String,
     /// 创建时间
-    pub create_time: PrimitiveDateTime,
+    pub create_time: OffsetDateTime,
     /// 更新时间
-    pub update_time: PrimitiveDateTime,
+    pub update_time: OffsetDateTime,
     /// 访问权限
     pub access: BucketAccess,
     /// 用户名
@@ -45,7 +46,7 @@ impl BucketModal {
     ) -> TonicResult<Self> {
         let access: BucketAccess = access.into();
         // 获取现在时间
-        let time = PrimitiveDateTime::from(SystemTime::now());
+        let time = OffsetDateTime::from(SystemTime::now());
         sqlx::query("insert into bucket(name, create_time, update_time, access, username) values ($1,$2,$3,$4,$5)")
             .bind(name)
             .bind(&time)
@@ -71,7 +72,7 @@ impl BucketModal {
         pool: &Pool<Postgres>,
     ) -> TonicResult<Self> {
         // 获取现在时间
-        let time = PrimitiveDateTime::from(SystemTime::now());
+        let time = OffsetDateTime::from(SystemTime::now());
         sqlx::query("update bucket set access = $1, update_time = $2 where name = $3")
             .bind(access)
             .bind(time)
@@ -179,8 +180,8 @@ impl From<BucketModal> for BucketInfo {
             BucketAccess::ReadOpen => 1,
             BucketAccess::Private => 2,
         };
-        let create_time = (create_time.assume_utc().unix_timestamp_nanos() / 1000000) as i64;
-        let update_time = (update_time.assume_utc().unix_timestamp_nanos() / 1000000) as i64;
+        let create_time = (create_time.unix_timestamp_nanos() / 1000000) as i64;
+        let update_time = (update_time.unix_timestamp_nanos() / 1000000) as i64;
         BucketInfo {
             name,
             access,

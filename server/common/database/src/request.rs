@@ -1,10 +1,7 @@
 use std::time::SystemTime;
 
 use sqlx::{
-    types::{
-        time::{OffsetDateTime, PrimitiveDateTime},
-        Decimal,
-    },
+    types::{time::OffsetDateTime, Decimal},
     FromRow, Pool, Postgres,
 };
 
@@ -13,7 +10,7 @@ use errors::TonicResult;
 #[derive(FromRow, Debug)]
 pub struct RequestModal {
     /// 创建时间
-    pub time: PrimitiveDateTime,
+    pub time: OffsetDateTime,
     /// bucket 名
     pub bucket_name: String,
     /// 对象大小
@@ -34,7 +31,7 @@ impl RequestModal {
         pool: &Pool<Postgres>,
     ) -> TonicResult<Self> {
         // 获取现在时间
-        let time = PrimitiveDateTime::from(SystemTime::now());
+        let time = OffsetDateTime::from(SystemTime::now());
         sqlx::query(
             r#"insert into request
                             (object_id,bucket_name,upload_size,download_size,time)

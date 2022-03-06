@@ -1,6 +1,6 @@
 use std::time::SystemTime;
 
-use sqlx::{types::time::PrimitiveDateTime, FromRow, Pool, Postgres};
+use sqlx::{types::time::OffsetDateTime, FromRow, Pool, Postgres};
 
 use errors::TonicResult;
 use proto::user::UserInfo;
@@ -12,9 +12,9 @@ pub struct UserModal {
     /// 密码
     pub password: String,
     /// 创建时间
-    pub create_time: PrimitiveDateTime,
+    pub create_time: OffsetDateTime,
     /// 更新时间
-    pub update_time: PrimitiveDateTime,
+    pub update_time: OffsetDateTime,
     /// 描述
     pub description: Option<String>,
 }
@@ -27,7 +27,7 @@ impl UserModal {
         pool: &Pool<Postgres>,
     ) -> TonicResult<Self> {
         // 获取现在时间
-        let time = PrimitiveDateTime::from(SystemTime::now());
+        let time = OffsetDateTime::from(SystemTime::now());
         sqlx::query("insert into users(name, create_time, update_time, password, description) values ($1,$2,$3,$4,$5)")
             .bind(name)
             .bind(&time)
@@ -53,7 +53,7 @@ impl UserModal {
         pool: &Pool<Postgres>,
     ) -> TonicResult<Self> {
         // 获取现在时间
-        let time = PrimitiveDateTime::from(SystemTime::now());
+        let time = OffsetDateTime::from(SystemTime::now());
         sqlx::query("update users set description = $1, update_time = $2 where name = $3")
             .bind(description)
             .bind(time)
@@ -69,7 +69,7 @@ impl UserModal {
         pool: &Pool<Postgres>,
     ) -> TonicResult<Self> {
         // 获取现在时间
-        let time = PrimitiveDateTime::from(SystemTime::now());
+        let time = OffsetDateTime::from(SystemTime::now());
         sqlx::query("update users set password = $1, update_time = $2 where name = $3")
             .bind(new_password)
             .bind(time)
@@ -123,8 +123,8 @@ impl From<UserModal> for UserInfo {
             description,
             ..
         } = value;
-        let create_time = (create_time.assume_utc().unix_timestamp_nanos() / 1000000) as i64;
-        let update_time = (update_time.assume_utc().unix_timestamp_nanos() / 1000000) as i64;
+        let create_time = (create_time.unix_timestamp_nanos() / 1000000) as i64;
+        let update_time = (update_time.unix_timestamp_nanos() / 1000000) as i64;
         UserInfo {
             name,
             description,

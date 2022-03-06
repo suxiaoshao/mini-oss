@@ -1,14 +1,14 @@
 use std::time::SystemTime;
 
 use sqlx::types::Decimal;
-use sqlx::{types::time::PrimitiveDateTime, FromRow, Pool, Postgres};
+use sqlx::{types::time::OffsetDateTime, FromRow, Pool, Postgres};
 
 use errors::TonicResult;
 
 #[derive(FromRow, Debug)]
 pub struct StorageModal {
     /// 创建时间
-    pub time: PrimitiveDateTime,
+    pub time: OffsetDateTime,
     /// bucket 名
     pub bucket_name: String,
     /// 对象大小
@@ -25,7 +25,7 @@ impl StorageModal {
         pool: &Pool<Postgres>,
     ) -> TonicResult<Self> {
         // 获取现在时间
-        let time = PrimitiveDateTime::from(SystemTime::now());
+        let time = OffsetDateTime::from(SystemTime::now());
         sqlx::query(
             r#"insert into storage
                             ( bucket_name,size,num,time)
@@ -42,7 +42,7 @@ impl StorageModal {
     /// 获取第一项
     pub async fn find_one(
         bucket_name: &str,
-        time: &PrimitiveDateTime,
+        time: &OffsetDateTime,
         pool: &Pool<Postgres>,
     ) -> TonicResult<Self> {
         let object = sqlx::query_as(

@@ -1,7 +1,7 @@
 use std::time::SystemTime;
 
 use sqlx::types::Decimal;
-use sqlx::{types::time::PrimitiveDateTime, FromRow, Pool, Postgres};
+use sqlx::{types::time::OffsetDateTime, FromRow, Pool, Postgres};
 
 use errors::{TonicError, TonicResult};
 use proto::core::{Header, ObjectInfo};
@@ -31,9 +31,9 @@ pub struct ObjectModal {
     /// 目录
     pub path: String,
     /// 创建时间
-    pub create_time: PrimitiveDateTime,
+    pub create_time: OffsetDateTime,
     /// 更新时间
-    pub update_time: PrimitiveDateTime,
+    pub update_time: OffsetDateTime,
     /// 访问权限
     pub access: ObjectAccess,
     /// bucket 名
@@ -77,7 +77,7 @@ impl ObjectModal {
         pool: &Pool<Postgres>,
     ) -> TonicResult<Self> {
         // 获取现在时间
-        let time = PrimitiveDateTime::from(SystemTime::now());
+        let time = OffsetDateTime::from(SystemTime::now());
         let mut bind_headers = vec![];
         for header in headers {
             bind_headers.push(serde_json::to_value(header)?);
@@ -142,7 +142,7 @@ impl ObjectModal {
         pool: &Pool<Postgres>,
     ) -> TonicResult<Self> {
         // 获取现在时间
-        let time = PrimitiveDateTime::from(SystemTime::now());
+        let time = OffsetDateTime::from(SystemTime::now());
         let mut bind_headers = vec![];
         for header in headers {
             bind_headers.push(serde_json::to_value(header)?);
@@ -368,8 +368,8 @@ impl TryFrom<ObjectModal> for ObjectInfo {
             ObjectAccess::ReadOpen => 1,
             ObjectAccess::Private => 2,
         };
-        let create_time = (create_time.assume_utc().unix_timestamp_nanos() / 1000000) as i64;
-        let update_time = (update_time.assume_utc().unix_timestamp_nanos() / 1000000) as i64;
+        let create_time = (create_time.unix_timestamp_nanos() / 1000000) as i64;
+        let update_time = (update_time.unix_timestamp_nanos() / 1000000) as i64;
         let mut new_headers = vec![];
         for header in headers {
             new_headers.push(serde_json::from_value(header)?);

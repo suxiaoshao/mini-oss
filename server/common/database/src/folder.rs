@@ -1,7 +1,7 @@
 use std::time::SystemTime;
 
 use async_recursion::async_recursion;
-use sqlx::{types::time::PrimitiveDateTime, FromRow, Pool, Postgres};
+use sqlx::{types::time::OffsetDateTime, FromRow, Pool, Postgres};
 
 use errors::TonicResult;
 use proto::core::FolderInfo;
@@ -31,9 +31,9 @@ pub struct FolderModal {
     /// 名字
     pub path: String,
     /// 创建时间
-    pub create_time: PrimitiveDateTime,
+    pub create_time: OffsetDateTime,
     /// 更新时间
-    pub update_time: PrimitiveDateTime,
+    pub update_time: OffsetDateTime,
     /// 访问权限
     pub access: FolderAccess,
     /// bucket 名
@@ -52,7 +52,7 @@ impl FolderModal {
     ) -> TonicResult<Self> {
         let access: FolderAccess = access.into();
         // 获取现在时间
-        let time = PrimitiveDateTime::from(SystemTime::now());
+        let time = OffsetDateTime::from(SystemTime::now());
         sqlx::query("insert into folder(path, create_time, update_time, access,bucket_name,father_path) values ($1,$2,$3,$4,$5,$6)")
             .bind(path)
             .bind(&time)
@@ -81,7 +81,7 @@ impl FolderModal {
         pool: &Pool<Postgres>,
     ) -> TonicResult<Self> {
         // 获取现在时间
-        let time = PrimitiveDateTime::from(SystemTime::now());
+        let time = OffsetDateTime::from(SystemTime::now());
         sqlx::query(
             "update folder set access = $1, update_time = $2 where path = $3 and bucket_name=$4",
         )
@@ -254,8 +254,8 @@ impl From<FolderModal> for FolderInfo {
             FolderAccess::Private => 2,
             FolderAccess::Open => 3,
         };
-        let create_time = (create_time.assume_utc().unix_timestamp_nanos() / 1000000) as i64;
-        let update_time = (update_time.assume_utc().unix_timestamp_nanos() / 1000000) as i64;
+        let create_time = (create_time.unix_timestamp_nanos() / 1000000) as i64;
+        let update_time = (update_time.unix_timestamp_nanos() / 1000000) as i64;
         FolderInfo {
             access,
             create_time,
