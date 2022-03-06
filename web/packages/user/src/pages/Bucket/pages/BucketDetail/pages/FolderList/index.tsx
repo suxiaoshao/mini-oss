@@ -75,7 +75,7 @@ export default function FolderList(): JSX.Element {
       {
         Header: '大小',
         id: 'size',
-        accessor: (row) => ('size' in row ? prettyBytes(row.size) : '-'),
+        accessor: (row) => ('size' in row ? prettyBytes(Number(row.size)) : '-'),
       },
       {
         Header: '创建时间',

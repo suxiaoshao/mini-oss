@@ -338,7 +338,7 @@ export type ObjectInfo = {
   /** 路径 */
   path: Scalars['String'];
   /** 大小 */
-  size: Scalars['Int'];
+  size: Scalars['String'];
   /** 创建时间 */
   updateTime: Scalars['Int'];
 };
@@ -589,7 +589,7 @@ export type FolderListQuery = {
           bucketName: string;
           createTime: number;
           updateTime: number;
-          size: number;
+          size: string;
           objectAccess: ObjectAccess;
         }
     >;
@@ -700,7 +700,7 @@ export type GetObjectQuery = {
     __typename?: 'ObjectInfo';
     filename: string;
     blake3: string;
-    size: number;
+    size: string;
     updateTime: number;
     bucketName: string;
     access: ObjectAccess;
