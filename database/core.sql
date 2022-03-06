@@ -26,7 +26,7 @@ create table if not exists object
     object_id   varchar(24)        not null,
     filename    text               not null,
     blake3      varchar(64)        not null,
-    size        bigint             not null,
+    size        numeric            not null,
     access      object_access_type not null,
     headers     jsonb[]            not null,
     primary key (path, filename, bucket_name)

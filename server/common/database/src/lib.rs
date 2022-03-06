@@ -1,4 +1,4 @@
-pub use sqlx::{pool::Pool, postgres::PgPoolOptions, types::time, Postgres};
+pub use sqlx::{pool::Pool, postgres::PgPoolOptions, types::time, types::Decimal, Postgres};
 
 #[cfg(feature = "core")]
 pub mod bucket;

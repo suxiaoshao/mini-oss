@@ -303,8 +303,8 @@ pub struct ObjectInfo {
     #[prost(int64, tag = "6")]
     pub update_time: i64,
     /// 大小
-    #[prost(int64, tag = "7")]
-    pub size: i64,
+    #[prost(string, tag = "7")]
+    pub size: ::prost::alloc::string::String,
     /// 摘要
     #[prost(string, tag = "8")]
     pub blake3: ::prost::alloc::string::String,

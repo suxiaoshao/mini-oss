@@ -16,7 +16,7 @@ pub struct ObjectInfo {
     /// 创建时间
     pub update_time: i64,
     /// 大小
-    pub size: i64,
+    pub size: String,
     /// 摘要
     pub blake3: String,
     /// 自定义 header

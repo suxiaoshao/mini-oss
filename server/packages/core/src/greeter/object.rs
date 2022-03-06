@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use database::object::{ObjectAccess, ObjectCreateInput, ObjectModal};
-use database::{Pool, Postgres};
+use database::{Decimal, Pool, Postgres};
 use proto::core::{
     CountReply, GetBucketRequest, GetFolderRequest, GetObjectContentReply, GetObjectRequest,
     SizeReply,
@@ -299,7 +299,7 @@ async fn create_object(
         filename,
         blake3: &blake3,
         object_id: &object_id,
-        size: size as i64,
+        size: &Decimal::from(size),
         headers: &headers_from(filename),
     };
     ObjectModal::create(input, pool).await?;

@@ -45,7 +45,7 @@ pub struct ObjectModal {
     /// 文件摘要
     pub blake3: String,
     /// 文件大小
-    pub size: i64,
+    pub size: Decimal,
     /// 自定义头部
     pub headers: Vec<serde_json::Value>,
 }
@@ -57,7 +57,7 @@ pub struct ObjectCreateInput<'a> {
     pub filename: &'a str,
     pub blake3: &'a str,
     pub object_id: &'a str,
-    pub size: i64,
+    pub size: &'a Decimal,
     pub headers: &'a [Header],
 }
 
@@ -383,7 +383,7 @@ impl TryFrom<ObjectModal> for ObjectInfo {
             filename,
             blake3,
             headers: new_headers,
-            size,
+            size: size.to_string(),
         })
     }
 }

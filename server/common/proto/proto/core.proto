@@ -318,7 +318,7 @@ message ObjectInfo {
   // 创建时间
   int64 updateTime = 6;
   // 大小
-  int64 size = 7;
+  string size = 7;
   // 摘要
   string blake3 = 8;
   // 自定义 header
