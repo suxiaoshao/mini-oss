@@ -1,5 +1,7 @@
 use async_graphql::InputObject;
 use proto::core::{self, FolderAccess};
+use proto::{IntoRequest, Request};
+
 #[derive(InputObject)]
 pub struct UpdateFolderRequest {
     /// 路径
@@ -10,6 +12,12 @@ pub struct UpdateFolderRequest {
     pub auth: Option<String>,
     /// 访问控制
     pub access: FolderAccess,
+}
+
+impl IntoRequest<core::UpdateFolderRequest> for UpdateFolderRequest {
+    fn into_request(self) -> Request<core::UpdateFolderRequest> {
+        Request::new(self.into())
+    }
 }
 
 impl From<UpdateFolderRequest> for core::UpdateFolderRequest {
@@ -42,6 +50,12 @@ pub struct CreateFolderRequest {
     pub auth: Option<String>,
     /// 访问控制
     pub access: FolderAccess,
+}
+
+impl IntoRequest<core::CreateFolderRequest> for CreateFolderRequest {
+    fn into_request(self) -> Request<core::CreateFolderRequest> {
+        Request::new(self.into())
+    }
 }
 
 impl From<CreateFolderRequest> for core::CreateFolderRequest {

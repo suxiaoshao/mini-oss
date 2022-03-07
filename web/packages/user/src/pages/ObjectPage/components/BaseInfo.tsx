@@ -24,7 +24,7 @@ export default function BaseInfo({ objectInfo }: BaseInfoProps): JSX.Element {
       <CardHeader title="基本信息" />
       <CardContent>
         <InfoItem label="对象名称" value={objectInfo.filename} />
-        <InfoItem label="对象大小" value={prettyBytes(objectInfo.size)} />
+        <InfoItem label="对象大小" value={prettyBytes(Number(objectInfo.size))} />
         <InfoItem label="访问权限" value={<AccessFormat access={objectInfo.access} />} />
         <InfoItem label="修改时间" value={format(objectInfo.updateTime)} />
         <InfoItem label="Etag" value={`"${objectInfo.blake3}"`} />

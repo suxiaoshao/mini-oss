@@ -1,6 +1,8 @@
 use async_graphql::InputObject;
 
 use proto::core::{self, Header, ObjectAccess};
+use proto::{IntoRequest, Request};
+
 #[derive(InputObject)]
 pub struct HeaderType {
     pub key: String,
@@ -23,6 +25,12 @@ pub struct UpdateObjectRequest {
     pub auth: Option<String>,
     /// 自定义 header
     pub headers: Vec<HeaderType>,
+}
+
+impl IntoRequest<core::UpdateObjectRequest> for UpdateObjectRequest {
+    fn into_request(self) -> Request<core::UpdateObjectRequest> {
+        Request::new(self.into())
+    }
 }
 
 impl From<UpdateObjectRequest> for core::UpdateObjectRequest {
