@@ -69,35 +69,26 @@ impl RequestModal {
     pub async fn add_upload_size(
         object_id: &str,
         bucket_name: &str,
-        size: usize,
+        size: &Decimal,
         pool: &Pool<Postgres>,
     ) -> TonicResult<Self> {
         match Self::exist(object_id, pool).await {
             Ok(_) => {
                 sqlx::query("update request set upload_size=upload_size + $1 where object_id = $2")
-                    .bind(size as i64)
+                    .bind(size)
                     .bind(object_id)
                     .execute(pool)
                     .await?;
                 Self::find_one(object_id, pool).await
             }
-            Err(_) => {
-                Self::create(
-                    object_id,
-                    bucket_name,
-                    &Decimal::from(size),
-                    &Decimal::from(0),
-                    pool,
-                )
-                .await
-            }
+            Err(_) => Self::create(object_id, bucket_name, size, &Decimal::default(), pool).await,
         }
     }
     /// 添加下载大小
     pub async fn add_download_size(
         object_id: &str,
         bucket_name: &str,
-        size: usize,
+        size: &Decimal,
         pool: &Pool<Postgres>,
     ) -> TonicResult<Self> {
         match Self::exist(object_id, pool).await {
@@ -105,22 +96,13 @@ impl RequestModal {
                 sqlx::query(
                     "update request set download_size=download_size + $1 where object_id = $2",
                 )
-                .bind(size as i64)
+                .bind(size)
                 .bind(object_id)
                 .execute(pool)
                 .await?;
                 Self::find_one(object_id, pool).await
             }
-            Err(_) => {
-                Self::create(
-                    object_id,
-                    bucket_name,
-                    &Decimal::from(0),
-                    &Decimal::from(size),
-                    pool,
-                )
-                .await
-            }
+            Err(_) => Self::create(object_id, bucket_name, &Decimal::default(), size, pool).await,
         }
     }
 }

@@ -1,8 +1,9 @@
 use std::sync::Arc;
 
 use axum::body::Body;
+use axum::extract::Extension;
 use axum::routing::put;
-use axum::{AddExtensionLayer, Router};
+use axum::Router;
 use axum_extra::middleware;
 use database::PgPoolOptions;
 
@@ -26,6 +27,6 @@ pub(crate) async fn get_router() -> Router<Body> {
         // `GET /` goes to `root`
         .route("/*path", put(upload_object).get(get_object))
         .layer(RequestStatLayer)
-        .layer(AddExtensionLayer::new(pool))
+        .layer(Extension(pool))
         .layer(middleware::from_fn(identity))
 }

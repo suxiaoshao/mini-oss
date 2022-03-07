@@ -5,10 +5,10 @@ mod utils;
 use async_graphql::http::{playground_source, GraphQLPlaygroundConfig};
 use async_graphql::{EmptySubscription, Schema};
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
-use axum::extract::{self};
+use axum::extract::{self, Extension};
 use axum::response::{self, IntoResponse};
 use axum::routing::{get, post};
-use axum::{AddExtensionLayer, Router, Server};
+use axum::{Router, Server};
 use schema::RootSchema;
 
 use crate::schema::root::{MutationRoot, QueryRoot};
@@ -37,7 +37,7 @@ async fn main() {
     let app = Router::new()
         .route("/", get(graphql_playground).post(graphql_handler))
         .route("/graphql", post(graphql_handler))
-        .layer(AddExtensionLayer::new(schema))
+        .layer(Extension(schema))
         .layer(cors);
 
     // 打印 ip

@@ -94,9 +94,9 @@ dependencies = [
 
 [[package]]
 name = "async-graphql"
-version = "3.0.31"
+version = "3.0.34"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d1a994a60389a32a31304e46d437a11db46d5bbeb8c26de3dbfa309efd8b93e4"
+checksum = "3f4454d5e58ac88102a1850d6263a6a92095d9175ed59b2e57b541a6b1d528f1"
 dependencies = [
  "async-graphql-derive",
  "async-graphql-parser",
@@ -125,9 +125,9 @@ dependencies = [
 
 [[package]]
 name = "async-graphql-axum"
-version = "3.0.31"
+version = "3.0.34"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8c86f50317ed9b630eed6562e06ccbf48a0869cce4c47f9e2cedf3a69f92b914"
+checksum = "a561c1a2d5b0aa1890e5ede9a838df7401bb34c0285a005c54669dbce986647c"
 dependencies = [
  "async-graphql",
  "async-trait",
@@ -143,9 +143,9 @@ dependencies = [
 
 [[package]]
 name = "async-graphql-derive"
-version = "3.0.31"
+version = "3.0.34"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "71011bef5fef3019016b17fb8ba588d562c128d2d7ea93c86093352d5fd51ccf"
+checksum = "ee84be2afd0af8960c20e95acba1e088429bc81231b42f2a1eb36191a8ee494e"
 dependencies = [
  "Inflector",
  "async-graphql-parser",
@@ -159,9 +159,9 @@ dependencies = [
 
 [[package]]
 name = "async-graphql-parser"
-version = "3.0.31"
+version = "3.0.34"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "13b4caccb492c65240591a193c3e90ac11018dd25670544ce07360b7116c6153"
+checksum = "b9e576afb92e8c3719750edd3b7736cfc0b8926db5fba130040f20f416b56f8c"
 dependencies = [
  "async-graphql-value",
  "pest",
@@ -172,9 +172,9 @@ dependencies = [
 
 [[package]]
 name = "async-graphql-value"
-version = "3.0.31"
+version = "3.0.34"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "30cd0d73a5a13fe9d1a7d5dd67c6394663dd531afb26a0c50c5da5b29cf7ba1f"
+checksum = "4f02d0742c5d976da31fd4fe587b127da4bff70f674a25c4a84ae55386d241f2"
 dependencies = [
  "bytes",
  "indexmap",
@@ -310,9 +310,9 @@ checksum = "cdb031dd78e28731d87d56cc8ffef4a8f36ca26c38fe2de700543e627f8a464a"
 
 [[package]]
 name = "axum"
-version = "0.4.6"
+version = "0.4.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "157d3c6bef9a248ecf0492f05bb91019ced3c5b0f4cd9ec09b16d06596e1e743"
+checksum = "c9f346c92c1e9a71d14fe4aaf7c2a5d9932cc4e5e48d8fb6641524416eb79ddd"
 dependencies = [
  "async-trait",
  "axum-core",
@@ -358,9 +358,9 @@ dependencies = [
 
 [[package]]
 name = "axum-extra"
-version = "0.1.4"
+version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9892171874d3463e88a37b7bdee28a266eb79447e3b152e062892f0e04055c99"
+checksum = "b5b6d79bc9c2975821d39c7df31ea766026beb9efe28c076a48cfd7d50f34f18"
 dependencies = [
  "axum",
  "bytes",
@@ -729,9 +729,9 @@ dependencies = [
 
 [[package]]
 name = "delay_timer"
-version = "0.11.0"
+version = "0.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0d7d70ebd33bc670320439f3ca3a981b1278e3a35206a57b1d16c5f85208c81a"
+checksum = "68db8078186fbb91582bc7ba4f7b90e52cc4618a585748dd6a9fb6f4a25ea3c4"
 dependencies = [
  "anyhow",
  "async-trait",
