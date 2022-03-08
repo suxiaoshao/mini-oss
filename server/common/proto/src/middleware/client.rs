@@ -1,12 +1,18 @@
 use tonic::transport::Channel;
 use tower::ServiceBuilder;
 
+#[cfg(feature = "core_client")]
 use crate::core::bucket_client::BucketClient;
+#[cfg(feature = "core_client")]
 use crate::core::folder_client::FolderClient;
+#[cfg(feature = "core_client")]
 use crate::core::object_client::ObjectClient;
 use crate::middleware::client::service::{Auth, AuthService};
+#[cfg(feature = "user_client")]
 use crate::user::login_client::LoginClient;
+#[cfg(feature = "user_client")]
 use crate::user::self_manage_client::SelfManageClient;
+#[cfg(feature = "user_client")]
 use crate::user::user_manage_client::UserManageClient;
 
 #[cfg(feature = "core_client")]
