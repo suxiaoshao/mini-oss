@@ -8,3 +8,5 @@ pub use gen::user;
 mod gen;
 #[cfg(feature = "validate")]
 pub mod validation;
+
+pub mod middleware;

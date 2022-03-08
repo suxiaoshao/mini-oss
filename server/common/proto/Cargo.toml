@@ -16,6 +16,10 @@ validator = { version = "0.14.0", features = ["derive"], optional = true }
 regex = { version = "1.5.4", optional = true }
 lazy_static = { version = "1.4.0", optional = true }
 
+# client
+tower = { version = "0.4.12", optional = true }
+http = { version = "0.2.6", optional = true }
+
 [build-dependencies]
 tonic-build = "0.6.2"
 [features]
@@ -24,7 +28,9 @@ user = []
 validate = ["validator", "regex", "lazy_static"]
 json = ["serde"]
 graphql = ["async-graphql"]
-core_server = ["core"]
-user_server = ["user"]
-core_client = ["core"]
-user_client = ["user"]
+core_server = ["core", "server"]
+user_server = ["user", "server"]
+core_client = ["core", "client"]
+user_client = ["user", "client"]
+server = []
+client = ["tower", "http"]

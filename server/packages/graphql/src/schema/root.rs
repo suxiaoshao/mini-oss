@@ -1,19 +1,17 @@
-use async_graphql::Object;
+use async_graphql::{Context, Object};
 
-use proto::core::object_client::ObjectClient;
 use proto::core::{
     CountReply, DeleteObjectRequest, GetBucketRequest, GetFolderListReply, GetFolderListRequest,
     GetFolderRequest, GetObjectRequest,
 };
-use proto::user::login_client::LoginClient;
+use proto::middleware::client::{
+    bucket_client, folder_client, login_client, object_client, self_manage_client,
+    user_manage_client,
+};
 use proto::user::{LoginReply, LoginRequest};
 use proto::{
-    core::{
-        bucket_client::BucketClient, folder_client::FolderClient, DeleteBucketRequest,
-        DeleteFolderRequest,
-    },
+    core::{DeleteBucketRequest, DeleteFolderRequest},
     user::{
-        self_manage_client::SelfManageClient, user_manage_client::UserManageClient,
         CreateUserRequest, DeleteUserRequest, GetListRequest, GetUserInfoRequest, GetUserRequest,
         UpdatePasswordRequest, UpdateUserInfoRequest, UpdateUserRequest,
     },
@@ -42,43 +40,77 @@ pub struct QueryRoot;
 #[Object]
 impl QueryRoot {
     /// 管理员登陆
-    async fn manager_login(&self, data: LoginRequest) -> GraphqlResult<String> {
-        let mut client = LoginClient::connect("http://user:80").await?;
+    async fn manager_login<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        data: LoginRequest,
+    ) -> GraphqlResult<String> {
+        let auth = ctx.data::<String>().ok().cloned();
+        let mut client = login_client(auth).await?;
         let res = client.manager_login(data).await?;
         Ok(res.get_ref().auth.to_string())
     }
     /// 用户登陆
-    async fn user_login(&self, data: LoginRequest) -> GraphqlResult<String> {
-        let mut client = LoginClient::connect("http://user:80").await?;
+    async fn user_login<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        data: LoginRequest,
+    ) -> GraphqlResult<String> {
+        let auth = ctx.data::<String>().ok().cloned();
+        let mut client = login_client(auth).await?;
         let res = client.user_login(data).await?;
         Ok(res.get_ref().auth.to_string())
     }
     /// 用户列表
-    async fn user_list(&self, data: GetListRequest) -> GraphqlResult<UserList> {
-        let mut client = UserManageClient::connect("http://user:80").await?;
+    async fn user_list<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        data: GetListRequest,
+    ) -> GraphqlResult<UserList> {
+        let auth = ctx.data::<String>().ok().cloned();
+        let mut client = user_manage_client(auth).await?;
         let reply = client.get_user_list(data).await?;
         Ok(UserList::from(reply.into_inner()))
     }
     /// 用户信息
-    async fn user_info(&self, data: GetUserRequest) -> GraphqlResult<UserInfo> {
-        let mut client = UserManageClient::connect("http://user:80").await?;
+    async fn user_info<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        data: GetUserRequest,
+    ) -> GraphqlResult<UserInfo> {
+        let auth = ctx.data::<String>().ok().cloned();
+        let mut client = user_manage_client(auth).await?;
         let reply = client.get_user(data).await?;
         Ok(UserInfo::from(reply.into_inner()))
     }
     /// 获取自身用户信息
-    async fn self_user_info(&self, data: GetUserInfoRequest) -> GraphqlResult<UserInfo> {
-        let mut client = SelfManageClient::connect("http://user:80").await?;
+    async fn self_user_info<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        data: GetUserInfoRequest,
+    ) -> GraphqlResult<UserInfo> {
+        let auth = ctx.data::<String>().ok().cloned();
+        let mut client = self_manage_client(auth).await?;
         let reply = client.get_user_info(data).await?;
         Ok(UserInfo::from(reply.into_inner()))
     }
     /// 用户存储桶列表
-    async fn bucket_list(&self, data: GetListRequest) -> GraphqlResult<BucketList> {
-        let mut client = BucketClient::connect("http://core:80").await?;
+    async fn bucket_list<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        data: GetListRequest,
+    ) -> GraphqlResult<BucketList> {
+        let auth = ctx.data::<String>().ok().cloned();
+        let mut client = bucket_client(auth).await?;
         let res = client.get_bucket_list(data).await?;
         Ok(BucketList::from(res.into_inner()))
     }
     /// 文件夹列表
-    async fn folder_list(&self, data: GetFolderListRequest) -> GraphqlResult<FolderList> {
+    async fn folder_list<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        data: GetFolderListRequest,
+    ) -> GraphqlResult<FolderList> {
         let GetFolderListRequest {
             limit,
             offset,
@@ -91,7 +123,8 @@ impl QueryRoot {
         let require_count = limit + offset;
 
         // 获取文件夹总数
-        let mut folder_client = FolderClient::connect("http://core:80").await?;
+        let _auth = ctx.data::<String>().ok().cloned();
+        let mut folder_client = folder_client(_auth.clone()).await?;
         let request = Request::new(GetFolderRequest {
             auth: auth.clone(),
             path: path.clone(),
@@ -102,7 +135,7 @@ impl QueryRoot {
         } = folder_client.get_folder_count(request).await?.into_inner();
 
         // 获取对象总数
-        let mut object_client = ObjectClient::connect("http://core:80").await?;
+        let mut object_client = object_client(_auth).await?;
         let request = GetFolderRequest {
             auth: auth.clone(),
             path: path.clone(),
@@ -182,21 +215,36 @@ impl QueryRoot {
         }
     }
     /// 获取存储桶信息
-    async fn bucket_info(&self, data: GetBucketRequest) -> GraphqlResult<BucketInfo> {
-        let mut client = BucketClient::connect("http://core:80").await?;
+    async fn bucket_info<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        data: GetBucketRequest,
+    ) -> GraphqlResult<BucketInfo> {
+        let auth = ctx.data::<String>().ok().cloned();
+        let mut client = bucket_client(auth).await?;
         let res = client.get_bucket(data).await?.into_inner();
         Ok(res.into())
     }
     /// 获取文件夹信息
-    async fn folder_info(&self, data: GetFolderRequest) -> GraphqlResult<FolderInfo> {
-        let mut client = FolderClient::connect("http://core:80").await?;
+    async fn folder_info<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        data: GetFolderRequest,
+    ) -> GraphqlResult<FolderInfo> {
+        let auth = ctx.data::<String>().ok().cloned();
+        let mut client = folder_client(auth).await?;
         let auth = data.auth.clone();
         let res = client.get_folder(data).await?.into_inner();
         Ok((res, auth).into())
     }
     /// 获取对象信息
-    async fn object_info(&self, data: GetObjectRequest) -> GraphqlResult<ObjectInfo> {
-        let mut client = ObjectClient::connect("http://core:80").await?;
+    async fn object_info<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        data: GetObjectRequest,
+    ) -> GraphqlResult<ObjectInfo> {
+        let auth = ctx.data::<String>().ok().cloned();
+        let mut client = object_client(auth).await?;
         let res = client.get_object(data).await?.into_inner();
         Ok(res.into())
     }
@@ -206,82 +254,147 @@ pub struct MutationRoot;
 #[Object]
 impl MutationRoot {
     /// 用户创建
-    async fn manage_user_create(&self, data: CreateUserRequest) -> GraphqlResult<UserInfo> {
-        let mut client = UserManageClient::connect("http://user:80").await?;
+    async fn manage_user_create<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        data: CreateUserRequest,
+    ) -> GraphqlResult<UserInfo> {
+        let auth = ctx.data::<String>().ok().cloned();
+        let mut client = user_manage_client(auth).await?;
         let res = client.create_user(data).await?;
         Ok(UserInfo::from(res.into_inner()))
     }
     /// 用户更新
-    async fn manage_user_update(&self, data: UpdateUserRequest) -> GraphqlResult<UserInfo> {
-        let mut client = UserManageClient::connect("http://user:80").await?;
+    async fn manage_user_update<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        data: UpdateUserRequest,
+    ) -> GraphqlResult<UserInfo> {
+        let auth = ctx.data::<String>().ok().cloned();
+        let mut client = user_manage_client(auth).await?;
         let res = client.update_user(data).await?;
         Ok(UserInfo::from(res.into_inner()))
     }
     /// 用户删除
-    async fn manage_user_delete(&self, data: DeleteUserRequest) -> GraphqlResult<bool> {
-        let mut client = UserManageClient::connect("http://user:80").await?;
+    async fn manage_user_delete<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        data: DeleteUserRequest,
+    ) -> GraphqlResult<bool> {
+        let auth = ctx.data::<String>().ok().cloned();
+        let mut client = user_manage_client(auth).await?;
         client.delete_user(data).await?;
         Ok(true)
     }
     /// 用户更新密码
-    async fn update_password(&self, data: UpdatePasswordRequest) -> GraphqlResult<String> {
-        let mut client = SelfManageClient::connect("http://user:80").await?;
+    async fn update_password<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        data: UpdatePasswordRequest,
+    ) -> GraphqlResult<String> {
+        let auth = ctx.data::<String>().ok().cloned();
+        let mut client = self_manage_client(auth).await?;
         let LoginReply { auth } = client.update_password(data).await?.into_inner();
         Ok(auth)
     }
     /// 用户更新信息
-    async fn update_info(&self, data: UpdateUserInfoRequest) -> GraphqlResult<UserInfo> {
-        let mut client = SelfManageClient::connect("http://user:80").await?;
+    async fn update_info<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        data: UpdateUserInfoRequest,
+    ) -> GraphqlResult<UserInfo> {
+        let auth = ctx.data::<String>().ok().cloned();
+        let mut client = self_manage_client(auth).await?;
         let res = client.update_user_info(data).await?;
         Ok(UserInfo::from(res.into_inner()))
     }
     /// 创建存储桶
-    async fn create_bucket(&self, data: CreateBucketRequest) -> GraphqlResult<BucketInfo> {
-        let mut client = BucketClient::connect("http://core:80").await?;
+    async fn create_bucket<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        data: CreateBucketRequest,
+    ) -> GraphqlResult<BucketInfo> {
+        let auth = ctx.data::<String>().ok().cloned();
+        let mut client = bucket_client(auth).await?;
         let res = client.create_bucket(data).await?;
         Ok(BucketInfo::from(res.into_inner()))
     }
     /// 更新存储桶
-    async fn update_bucket(&self, data: UpdateBucketRequest) -> GraphqlResult<BucketInfo> {
-        let mut client = BucketClient::connect("http://core:80").await?;
+    async fn update_bucket<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        data: UpdateBucketRequest,
+    ) -> GraphqlResult<BucketInfo> {
+        let auth = ctx.data::<String>().ok().cloned();
+        let mut client = bucket_client(auth).await?;
         let res = client.update_bucket(data).await?;
         Ok(BucketInfo::from(res.into_inner()))
     }
     /// 删除存储桶
-    async fn delete_bucket(&self, data: DeleteBucketRequest) -> GraphqlResult<bool> {
-        let mut client = BucketClient::connect("http://core:80").await?;
+    async fn delete_bucket<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        data: DeleteBucketRequest,
+    ) -> GraphqlResult<bool> {
+        let auth = ctx.data::<String>().ok().cloned();
+        let mut client = bucket_client(auth).await?;
         client.delete_bucket(data).await?;
         Ok(true)
     }
     /// 创建目录
-    async fn create_folder(&self, data: CreateFolderRequest) -> GraphqlResult<FolderInfo> {
-        let mut client = FolderClient::connect("http://core:80").await?;
+    async fn create_folder<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        data: CreateFolderRequest,
+    ) -> GraphqlResult<FolderInfo> {
+        let auth = ctx.data::<String>().ok().cloned();
+        let mut client = folder_client(auth).await?;
         let auth = data.auth.clone();
         let res = client.create_folder(data).await?.into_inner();
         Ok(FolderInfo::from((res, auth)))
     }
     /// 更新目录
-    async fn update_folder(&self, data: UpdateFolderRequest) -> GraphqlResult<FolderInfo> {
-        let mut client = FolderClient::connect("http://core:80").await?;
+    async fn update_folder<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        data: UpdateFolderRequest,
+    ) -> GraphqlResult<FolderInfo> {
+        let auth = ctx.data::<String>().ok().cloned();
+        let mut client = folder_client(auth).await?;
         let auth = data.auth.clone();
         let res = client.update_folder(data).await?.into_inner();
         Ok(FolderInfo::from((res, auth)))
     }
     /// 删除目录
-    async fn delete_folder(&self, data: DeleteFolderRequest) -> GraphqlResult<bool> {
-        let mut client = FolderClient::connect("http://core:80").await?;
+    async fn delete_folder<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        data: DeleteFolderRequest,
+    ) -> GraphqlResult<bool> {
+        let auth = ctx.data::<String>().ok().cloned();
+        let mut client = folder_client(auth).await?;
         client.delete_folder(data).await?;
         Ok(true)
     }
     /// 更新对象
-    async fn update_object(&self, data: UpdateObjectRequest) -> GraphqlResult<ObjectInfo> {
-        let mut client = ObjectClient::connect("http://core:80").await?;
+    async fn update_object<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        data: UpdateObjectRequest,
+    ) -> GraphqlResult<ObjectInfo> {
+        let auth = ctx.data::<String>().ok().cloned();
+        let mut client = object_client(auth).await?;
         let res = client.update_object(data).await?;
         Ok(res.into_inner().into())
     }
     /// 删除对象
-    async fn delete_object(&self, data: DeleteObjectRequest) -> GraphqlResult<bool> {
-        let mut client = ObjectClient::connect("http://core:80").await?;
+    async fn delete_object<'ctx>(
+        &self,
+        ctx: &Context<'ctx>,
+        data: DeleteObjectRequest,
+    ) -> GraphqlResult<bool> {
+        let auth = ctx.data::<String>().ok().cloned();
+        let mut client = object_client(auth).await?;
         client.delete_object(data).await?;
         Ok(true)
     }

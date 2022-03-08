@@ -1,4 +1,5 @@
 use database::PgPoolOptions;
+use proto::middleware::server::{add_auth, interceptor};
 use proto::{
     transport::Server,
     user::{
@@ -34,6 +35,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("GreeterServer listening on {addr}");
 
     Server::builder()
+        .layer(interceptor(add_auth))
         .add_service(UserManageServer::new(user_manage_greeter))
         .add_service(SelfManageServer::new(self_manage_greeter))
         .add_service(LoginServer::new(login_greeter))

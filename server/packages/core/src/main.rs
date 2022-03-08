@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use database::PgPoolOptions;
 use proto::core::request_server::RequestServer;
+use proto::middleware::server::{add_auth, interceptor};
 use proto::{
     core::{bucket_server::BucketServer, folder_server::FolderServer, object_server::ObjectServer},
     transport::Server,
@@ -41,6 +42,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("GreeterServer listening on {addr}");
 
     Server::builder()
+        .layer(interceptor(add_auth))
         .add_service(BucketServer::new(bucket_greeter))
         .add_service(FolderServer::new(folder_greeter))
         .add_service(ObjectServer::new(object_greeter))

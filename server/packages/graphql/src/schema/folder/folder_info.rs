@@ -1,8 +1,6 @@
-use async_graphql::{ComplexObject, SimpleObject};
-use proto::core::{
-    folder_client::FolderClient, object_client::ObjectClient, CountReply, FolderAccess,
-    GetFolderRequest, SizeReply,
-};
+use async_graphql::{ComplexObject, Context, SimpleObject};
+use proto::core::{CountReply, FolderAccess, GetFolderRequest, SizeReply};
+use proto::middleware::client::{folder_client, object_client};
 
 use crate::errors::{GraphqlError, GraphqlResult};
 
@@ -33,8 +31,9 @@ impl FolderInfo {
             .map(|x| x.to_string())
             .ok_or(GraphqlError::ParseFolderName)
     }
-    async fn folder_count(&self) -> GraphqlResult<i64> {
-        let mut client = FolderClient::connect("http://core:80").await?;
+    async fn folder_count<'ctx>(&self, ctx: &Context<'ctx>) -> GraphqlResult<i64> {
+        let auth = ctx.data::<String>().ok().cloned();
+        let mut client = folder_client(auth).await?;
         let request = GetFolderRequest {
             auth: self.auth.clone(),
             bucket_name: self.bucket_name.clone(),
@@ -43,8 +42,9 @@ impl FolderInfo {
         let CountReply { total } = client.get_total_by_folder(request).await?.into_inner();
         Ok(total)
     }
-    async fn object_count(&self) -> GraphqlResult<i64> {
-        let mut client = ObjectClient::connect("http://core:80").await?;
+    async fn object_count<'ctx>(&self, ctx: &Context<'ctx>) -> GraphqlResult<i64> {
+        let auth = ctx.data::<String>().ok().cloned();
+        let mut client = object_client(auth).await?;
         let request = GetFolderRequest {
             auth: self.auth.clone(),
             bucket_name: self.bucket_name.clone(),
@@ -53,8 +53,9 @@ impl FolderInfo {
         let CountReply { total } = client.get_total_by_folder(request).await?.into_inner();
         Ok(total)
     }
-    async fn object_size(&self) -> GraphqlResult<String> {
-        let mut client = ObjectClient::connect("http://core:80").await?;
+    async fn object_size<'ctx>(&self, ctx: &Context<'ctx>) -> GraphqlResult<String> {
+        let auth = ctx.data::<String>().ok().cloned();
+        let mut client = object_client(auth).await?;
         let request = GetFolderRequest {
             auth: self.auth.clone(),
             bucket_name: self.bucket_name.clone(),

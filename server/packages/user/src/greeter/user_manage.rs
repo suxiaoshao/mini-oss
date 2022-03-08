@@ -3,9 +3,10 @@ use std::sync::Arc;
 use database::{users::UserModal, Pool, Postgres};
 
 use errors::{TonicError, TonicResult};
+use proto::middleware::client::bucket_client;
 use proto::{
     async_trait,
-    core::{bucket_client::BucketClient, DeleteBucketsRequest},
+    core::DeleteBucketsRequest,
     user::Empty,
     user::{
         user_manage_server::UserManage, CreateUserRequest, DeleteUserRequest, GetListRequest,
@@ -125,7 +126,7 @@ impl UserManage for UserManageGreeter {
 }
 
 async fn delete_buckets(auth: String, name: String) -> TonicResult<()> {
-    let mut client = BucketClient::connect("http://core:80").await?;
+    let mut client = bucket_client(Some(auth.clone())).await?;
     let request = Request::new(DeleteBucketsRequest {
         auth,
         username: name.clone(),

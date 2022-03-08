@@ -13,8 +13,8 @@ use futures::future;
 use time::OffsetDateTime;
 use tonic::Request;
 
-use proto::core::object_client::ObjectClient;
 use proto::core::{GetObjectContentReply, GetObjectRequest, Header, ObjectInfo};
+use proto::middleware::client::object_client;
 
 use crate::errors::{OpenError, OpenResult};
 use crate::extract::path_with_name::PathWithName;
@@ -28,7 +28,7 @@ pub(crate) async fn get_object(
 ) -> OpenResult<Response<BoxBody>> {
     let Identity { bucket_name, auth } = identity.deref();
     let PathWithName { path, filename } = path;
-    let mut client = ObjectClient::connect("http://core:80").await?;
+    let mut client = object_client(auth.clone()).await?;
     let request = GetObjectRequest {
         bucket_name: bucket_name.clone(),
         auth: auth.clone(),
