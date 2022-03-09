@@ -146,4 +146,17 @@ impl RequestModal {
             .await?;
         Ok(size.unwrap_or_default())
     }
+    /// 获取某个时间间隔的上传总量
+    pub async fn count_by_time(
+        bucket_name: &str,
+        start_time: &OffsetDateTime,
+        end_time: &OffsetDateTime,
+        pool: &Pool<Postgres>,
+    ) -> TonicResult<i64> {
+        let (total,): (i64,) = sqlx::query_as("select count(object_id) from request where bucket_name = $1 and time >= $2 and time <= $3")
+            .bind(bucket_name).bind(start_time).bind(end_time)
+            .fetch_one(pool)
+            .await?;
+        Ok(total)
+    }
 }

@@ -307,6 +307,8 @@ service Request {
   rpc GetUploadSizeByBucket(GetTimeRequest) returns (SizeReply){}
   // 获取下载数据大小
   rpc GetDownloadSizeByBucket(GetTimeRequest) returns (SizeReply){}
+  // 获取下载数据大小
+  rpc GetCountByBucket(GetTimeRequest) returns (CountReply){}
 }
 
 message GetTimeRequest{

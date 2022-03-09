@@ -103,7 +103,6 @@ dependencies = [
  "async-graphql-value",
  "async-stream",
  "async-trait",
- "blocking",
  "bytes",
  "fast_chemail",
  "fnv",

@@ -961,6 +961,21 @@ pub mod request_client {
                 http::uri::PathAndQuery::from_static("/core.Request/GetDownloadSizeByBucket");
             self.inner.unary(request.into_request(), path, codec).await
         }
+        #[doc = " 获取下载数据大小"]
+        pub async fn get_count_by_bucket(
+            &mut self,
+            request: impl tonic::IntoRequest<super::GetTimeRequest>,
+        ) -> Result<tonic::Response<super::CountReply>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/core.Request/GetCountByBucket");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
     }
 }
 #[doc = r" Generated server implementations."]
@@ -2092,6 +2107,11 @@ pub mod request_server {
             &self,
             request: tonic::Request<super::GetTimeRequest>,
         ) -> Result<tonic::Response<super::SizeReply>, tonic::Status>;
+        #[doc = " 获取下载数据大小"]
+        async fn get_count_by_bucket(
+            &self,
+            request: tonic::Request<super::GetTimeRequest>,
+        ) -> Result<tonic::Response<super::CountReply>, tonic::Status>;
     }
     #[derive(Debug)]
     pub struct RequestServer<T: Request> {
@@ -2190,6 +2210,37 @@ pub mod request_server {
                     let fut = async move {
                         let inner = inner.0;
                         let method = GetDownloadSizeByBucketSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
+                            accept_compression_encodings,
+                            send_compression_encodings,
+                        );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/core.Request/GetCountByBucket" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetCountByBucketSvc<T: Request>(pub Arc<T>);
+                    impl<T: Request> tonic::server::UnaryService<super::GetTimeRequest> for GetCountByBucketSvc<T> {
+                        type Response = super::CountReply;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::GetTimeRequest>,
+                        ) -> Self::Future {
+                            let inner = self.0.clone();
+                            let fut = async move { (*inner).get_count_by_bucket(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = GetCountByBucketSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
                             accept_compression_encodings,

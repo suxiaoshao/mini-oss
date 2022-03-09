@@ -7,6 +7,8 @@ use crate::core::bucket_client::BucketClient;
 use crate::core::folder_client::FolderClient;
 #[cfg(feature = "core_client")]
 use crate::core::object_client::ObjectClient;
+#[cfg(feature = "core_client")]
+use crate::core::request_client::RequestClient;
 use crate::middleware::client::service::{Auth, AuthService};
 #[cfg(feature = "user_client")]
 use crate::user::login_client::LoginClient;
@@ -54,6 +56,20 @@ pub async fn bucket_client(
         .layer(Auth(auth))
         .service(channel);
     let client = BucketClient::new(channel);
+    Ok(client)
+}
+
+#[cfg(feature = "core_client")]
+pub async fn request_client(
+    auth: Option<String>,
+) -> Result<RequestClient<AuthService>, tonic::transport::Error> {
+    let channel = Channel::from_static("http://core:80").connect().await?;
+
+    let channel = ServiceBuilder::new()
+        // Interceptors can be also be applied as middleware
+        .layer(Auth(auth))
+        .service(channel);
+    let client = RequestClient::new(channel);
     Ok(client)
 }
 
