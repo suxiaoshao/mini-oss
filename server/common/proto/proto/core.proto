@@ -19,10 +19,8 @@ service Bucket {
 }
 
 message GetBucketRequest{
-  // 身份验证
-  string auth = 1;
   // bucket 名
-  string bucket_name = 2;
+  string bucket_name = 1;
 }
 
 message GetBucketListReply{
@@ -47,22 +45,16 @@ message UpdateBucketRequest{
   string name = 1;
   // 访问控制
   BucketAccess access = 2;
-  // 用户凭证
-  string auth = 3;
 }
 
 message DeleteBucketRequest{
   // 名字
   string name = 1;
-  // 用户凭证
-  string auth = 2;
 }
 
 message DeleteBucketsRequest{
   // 用户名
   string username = 1;
-  // 用户凭证
-  string auth = 2;
 }
 
 message CreateBucketRequest{
@@ -70,8 +62,6 @@ message CreateBucketRequest{
   string name = 1;
   // 访问控制
   BucketAccess access = 2;
-  // 用户凭证
-  string auth = 3;
 }
 
 message BucketInfo{
@@ -117,12 +107,10 @@ enum FolderAccess {
 }
 
 message GetFolderRequest{
-  // 身份验证
-  optional string auth = 1;
   // bucket 名
-  string bucket_name = 2;
+  string bucket_name = 1;
   // 路径
-  string path = 3;
+  string path = 2;
 }
 
 message CountReply{
@@ -135,12 +123,10 @@ message GetFolderListRequest{
   uint32 limit = 1;
   // 偏移量
   uint32 offset = 2;
-  // 身份验证
-  optional string auth = 3;
   // 路径
-  string path = 4;
+  string path = 3;
   // bucket 名
-  string bucket_name = 5;
+  string bucket_name = 4;
 }
 
 message GetFolderListReply{
@@ -155,10 +141,8 @@ message UpdateFolderRequest{
   string path = 1;
   // bucket 名
   string bucket_name = 2;
-  // 用户凭证
-  optional string auth = 3;
   // 访问控制
-  FolderAccess access = 4;
+  FolderAccess access = 3;
 }
 
 message DeleteFolderRequest{
@@ -166,8 +150,6 @@ message DeleteFolderRequest{
   string path = 1;
   // bucket 名
   string bucket_name = 2;
-  // 用户凭证
-  optional string auth = 3;
 }
 
 
@@ -178,10 +160,8 @@ message CreateFolderRequest{
   string bucket_name = 2;
   // 路径
   string father_path = 3;
-  // 用户凭证
-  optional string auth = 4;
   // 访问控制
-  FolderAccess access = 5;
+  FolderAccess access = 4;
 }
 
 message FolderInfo{
@@ -240,18 +220,16 @@ message SizeReply{
 }
 
 message GetObjectRequest{
-  // 身份验证
-  optional string auth = 1;
   // bucket 名
-  string bucket_name = 2;
+  string bucket_name = 1;
   // 路径
-  string path = 3;
+  string path = 2;
   // 文件名
-  string filename = 4;
+  string filename = 3;
 }
 
 message GetObjectContentReply{
-  bytes content = 6;
+  bytes content = 1;
 }
 
 message GetObjectListReply{
@@ -268,12 +246,10 @@ message CreateObjectRequest{
   string bucket_name = 2;
   // 访问控制
   ObjectAccess access = 3;
-  // 访问控制
-  optional string auth = 4;
   // 文件名
-  string filename = 5;
+  string filename = 4;
   // 内容
-  bytes content = 6;
+  bytes content = 5;
 }
 
 message DeleteObjectRequest{
@@ -283,8 +259,6 @@ message DeleteObjectRequest{
   string filename = 2;
   // bucket 名
   string bucket_name = 3;
-  // 访问控制
-  optional string auth = 4;
 }
 
 message UpdateObjectRequest{
@@ -298,10 +272,8 @@ message UpdateObjectRequest{
   ObjectAccess access = 4;
   // 新文件名
   string new_filename = 6;
-  // 访问控制
-  optional string auth = 7;
   // 自定义 header
-  repeated Header headers = 8;
+  repeated Header headers = 7;
 }
 
 message ObjectInfo {
@@ -340,10 +312,8 @@ service Request {
 message GetTimeRequest{
   // bucket 名
   string bucketName = 1;
-  // 权限
-  string auth = 2;
   // 开始时间
-  int64 startTime = 3;
+  int64 startTime = 2;
   // 结束时间
-  int64 endTime = 4;
+  int64 endTime = 3;
 }

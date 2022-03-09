@@ -6,7 +6,6 @@ use proto::{IntoRequest, Request};
 pub struct UpdateBucketRequest {
     pub name: String,
     pub access: BucketAccess,
-    pub auth: String,
 }
 
 impl IntoRequest<core::UpdateBucketRequest> for UpdateBucketRequest {
@@ -17,12 +16,8 @@ impl IntoRequest<core::UpdateBucketRequest> for UpdateBucketRequest {
 
 impl From<UpdateBucketRequest> for core::UpdateBucketRequest {
     fn from(value: UpdateBucketRequest) -> core::UpdateBucketRequest {
-        let UpdateBucketRequest { name, access, auth } = value;
-        let mut request = core::UpdateBucketRequest {
-            name,
-            access: 0,
-            auth,
-        };
+        let UpdateBucketRequest { name, access } = value;
+        let mut request = core::UpdateBucketRequest { name, access: 0 };
         request.set_access(access);
         request
     }
@@ -31,7 +26,6 @@ impl From<UpdateBucketRequest> for core::UpdateBucketRequest {
 pub struct CreateBucketRequest {
     pub name: String,
     pub access: BucketAccess,
-    pub auth: String,
 }
 
 impl IntoRequest<core::CreateBucketRequest> for CreateBucketRequest {
@@ -42,12 +36,8 @@ impl IntoRequest<core::CreateBucketRequest> for CreateBucketRequest {
 
 impl From<CreateBucketRequest> for core::CreateBucketRequest {
     fn from(value: CreateBucketRequest) -> core::CreateBucketRequest {
-        let CreateBucketRequest { name, access, auth } = value;
-        let mut request = core::CreateBucketRequest {
-            name,
-            access: 0,
-            auth,
-        };
+        let CreateBucketRequest { name, access } = value;
+        let mut request = core::CreateBucketRequest { name, access: 0 };
         request.set_access(access);
         request
     }

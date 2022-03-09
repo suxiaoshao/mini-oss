@@ -24,15 +24,16 @@ impl request_server::Request for RequestGreeter {
         &self,
         request: Request<GetTimeRequest>,
     ) -> Result<Response<SizeReply>, Status> {
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
         let pool = &self.pool;
         let GetTimeRequest {
-            auth,
             bucket_name,
             start_time,
             end_time,
         } = request.into_inner();
         // 判断权限
-        check_bucket(&auth, &bucket_name, pool).await?;
+        check_bucket(auth, &bucket_name, pool).await?;
         let start_time = OffsetDateTime::from_unix_timestamp_nanos(start_time as i128 * 1000000);
         let end_time = OffsetDateTime::from_unix_timestamp_nanos(end_time as i128 * 1000000);
         let size =
@@ -46,15 +47,16 @@ impl request_server::Request for RequestGreeter {
         &self,
         request: Request<GetTimeRequest>,
     ) -> Result<Response<SizeReply>, Status> {
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
         let pool = &self.pool;
         let GetTimeRequest {
-            auth,
             bucket_name,
             start_time,
             end_time,
         } = request.into_inner();
         // 判断权限
-        check_bucket(&auth, &bucket_name, pool).await?;
+        check_bucket(auth, &bucket_name, pool).await?;
         let start_time = OffsetDateTime::from_unix_timestamp_nanos(start_time as i128 * 1000000);
         let end_time = OffsetDateTime::from_unix_timestamp_nanos(end_time as i128 * 1000000);
         let size =

@@ -1,23 +1,31 @@
-use errors::TonicResult;
+use errors::{TonicError, TonicResult};
 use proto::middleware::client::login_client;
-use proto::{user::CheckRequest, Request};
+use proto::user::CheckRequest;
 
 /// 验证管理员身份
-pub async fn check_manager(auth: &str) -> TonicResult<()> {
-    let mut client = login_client(Some(auth.to_string())).await?;
-    let check_request = Request::new(CheckRequest {
-        auth: auth.to_string(),
-    });
-    client.check_manager(check_request).await?;
-    Ok(())
+pub async fn check_manager(auth: Option<String>) -> TonicResult<()> {
+    match auth {
+        Some(auth) => {
+            let mut client = login_client(Some(auth.clone())).await?;
+            client.check_manager(CheckRequest { auth }).await?;
+            Ok(())
+        }
+        None => Err(TonicError::NoneAuth),
+    }
 }
 
 /// 验证用户身份
-pub async fn check_user(auth: &str) -> TonicResult<String> {
-    let mut client = login_client(Some(auth.to_string())).await?;
-    let check_request = Request::new(CheckRequest {
-        auth: auth.to_string(),
-    });
-    let name = client.check_user(check_request).await?;
-    Ok(name.into_inner().name)
+pub async fn check_user(auth: Option<String>) -> TonicResult<String> {
+    match auth {
+        None => Err(TonicError::NoneAuth),
+        Some(auth) => {
+            let mut client = login_client(Some(auth.clone())).await?;
+            let name = client
+                .check_user(CheckRequest {
+                    auth: auth.to_string(),
+                })
+                .await?;
+            Ok(name.into_inner().name)
+        }
+    }
 }

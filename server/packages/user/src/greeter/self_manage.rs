@@ -1,11 +1,13 @@
 use std::sync::Arc;
 
 use database::{users::UserModal, Pool, Postgres};
+use errors::TonicError;
+use proto::user::Empty;
 use proto::{
     async_trait,
     user::{
-        self_manage_server::SelfManage, GetUserInfoRequest, LoginReply, UpdatePasswordRequest,
-        UpdateUserInfoRequest, UserInfo,
+        self_manage_server::SelfManage, LoginReply, UpdatePasswordRequest, UpdateUserInfoRequest,
+        UserInfo,
     },
     Request, Response, Status,
 };
@@ -30,17 +32,18 @@ impl SelfManage for SelfManageGreeter {
         &self,
         request: Request<UpdateUserInfoRequest>,
     ) -> Result<Response<UserInfo>, Status> {
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
         // 验证用户身份
-        let name = check_user(&request.get_ref().auth).await?;
+        let name = check_user(auth).await?;
         let user = UserModal::update(&name, &request.get_ref().description, &self.pool).await?;
         Ok(Response::new(user.into()))
     }
-    async fn get_user_info(
-        &self,
-        request: Request<GetUserInfoRequest>,
-    ) -> Result<Response<UserInfo>, Status> {
+    async fn get_user_info(&self, request: Request<Empty>) -> Result<Response<UserInfo>, Status> {
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
         // 验证用户身份
-        let name = check_user(&request.get_ref().auth).await?;
+        let name = check_user(auth).await?;
         let user = UserModal::find_one(&name, &self.pool).await?;
         Ok(Response::new(user.into()))
     }
@@ -48,12 +51,17 @@ impl SelfManage for SelfManageGreeter {
         &self,
         request: Request<UpdatePasswordRequest>,
     ) -> Result<Response<LoginReply>, Status> {
+        // 获取 auth
+        let auth = request
+            .extensions()
+            .get::<String>()
+            .cloned()
+            .ok_or(TonicError::NoneAuth)?;
         // 验证
         request.get_ref().validate()?;
         let UpdatePasswordRequest {
             old_password,
             new_password,
-            auth,
         } = request.into_inner();
         // 验证用户身份
         let user = Claims::check_user(auth, &self.pool).await?;

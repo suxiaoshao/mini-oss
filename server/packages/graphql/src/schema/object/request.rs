@@ -21,8 +21,6 @@ pub struct UpdateObjectRequest {
     pub access: ObjectAccess,
     /// 新文件名
     pub new_filename: String,
-    /// 访问控制
-    pub auth: Option<String>,
     /// 自定义 header
     pub headers: Vec<HeaderType>,
 }
@@ -41,14 +39,12 @@ impl From<UpdateObjectRequest> for core::UpdateObjectRequest {
             bucket_name,
             access,
             new_filename,
-            auth,
             headers,
         } = value;
         let mut request = core::UpdateObjectRequest {
             path,
             access: 0,
             new_filename,
-            auth,
             bucket_name,
             filename,
             headers: headers
@@ -68,6 +64,4 @@ pub struct CreateObjectRequest {
     pub bucket_name: String,
     /// 访问控制
     pub access: ObjectAccess,
-    /// 访问控制
-    pub auth: Option<String>,
 }

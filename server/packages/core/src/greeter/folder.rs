@@ -35,6 +35,8 @@ impl Folder for FolderGreeter {
         &self,
         request: Request<CreateFolderRequest>,
     ) -> Result<Response<FolderInfo>, Status> {
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
         // 验证
         request.get_ref().validate()?;
         let pool = &self.pool;
@@ -43,11 +45,10 @@ impl Folder for FolderGreeter {
             path,
             bucket_name,
             father_path,
-            auth,
             ..
         } = request.into_inner();
         // 判断父文件夹是否可写
-        check_folder_writeable(&auth, &bucket_name, &father_path, pool).await?;
+        check_folder_writeable(auth, &bucket_name, &father_path, pool).await?;
         let path = format!("{father_path}{path}/");
         // 判断该文件夹是否存在
         if FolderModal::exist(&path, &bucket_name, &self.pool)
@@ -63,16 +64,14 @@ impl Folder for FolderGreeter {
         &self,
         request: Request<DeleteFolderRequest>,
     ) -> Result<Response<Empty>, Status> {
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
         // 验证
         request.get_ref().validate()?;
         let pool = &self.pool;
-        let DeleteFolderRequest {
-            path,
-            bucket_name,
-            auth,
-        } = request.into_inner();
+        let DeleteFolderRequest { path, bucket_name } = request.into_inner();
         // 判断此文件夹是否可写
-        check_folder_writeable(&auth, &bucket_name, &path, pool).await?;
+        check_folder_writeable(auth, &bucket_name, &path, pool).await?;
         // 获取文件夹下的所有 object
         let delete_objects = ObjectModal::find_by_paths(&bucket_name, &path, pool).await?;
         // 删除 sql 中 object
@@ -94,18 +93,17 @@ impl Folder for FolderGreeter {
         &self,
         request: Request<UpdateFolderRequest>,
     ) -> Result<Response<FolderInfo>, Status> {
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
         // 验证
         request.get_ref().validate()?;
         let pool = &self.pool;
         let access = request.get_ref().access();
         let UpdateFolderRequest {
-            path,
-            bucket_name,
-            auth,
-            ..
+            path, bucket_name, ..
         } = request.into_inner();
         // 判断文件夹是否可写
-        check_folder_writeable(&auth, &bucket_name, &path, pool).await?;
+        check_folder_writeable(auth, &bucket_name, &path, pool).await?;
         let updated = FolderModal::update(&path, access, &bucket_name, pool).await?;
         Ok(Response::new(updated.into()))
     }
@@ -114,11 +112,12 @@ impl Folder for FolderGreeter {
         &self,
         request: Request<GetFolderListRequest>,
     ) -> Result<Response<GetFolderListReply>, Status> {
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
         let pool = &self.pool;
         let GetFolderListRequest {
             path,
             bucket_name,
-            auth,
             limit,
             offset,
         } = request.into_inner();
@@ -126,7 +125,7 @@ impl Folder for FolderGreeter {
         let limit = if limit > &50 { &50 } else { limit };
         let offset = &offset;
         // 判断文件夹是否可读
-        check_folder_readable(&auth, &bucket_name, &path, pool).await?;
+        check_folder_readable(auth, &bucket_name, &path, pool).await?;
         let (count, data) = futures::future::try_join(
             FolderModal::count_by_father_path(&bucket_name, &path, pool),
             FolderModal::find_many_by_father_path(*limit, *offset, &path, &bucket_name, pool),
@@ -142,14 +141,12 @@ impl Folder for FolderGreeter {
         &self,
         request: Request<GetFolderRequest>,
     ) -> Result<Response<CountReply>, Status> {
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
         let pool = &self.pool;
-        let GetFolderRequest {
-            path,
-            bucket_name,
-            auth,
-        } = request.into_inner();
+        let GetFolderRequest { path, bucket_name } = request.into_inner();
         // 判断文件夹
-        check_folder_readable(&auth, &bucket_name, &path, pool).await?;
+        check_folder_readable(auth, &bucket_name, &path, pool).await?;
         let count = FolderModal::count_by_father_path(&bucket_name, &path, pool).await?;
         Ok(Response::new(CountReply { total: count }))
     }
@@ -158,13 +155,11 @@ impl Folder for FolderGreeter {
         &self,
         request: Request<GetFolderRequest>,
     ) -> Result<Response<FolderInfo>, Status> {
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
         let pool = &self.pool;
-        let GetFolderRequest {
-            auth,
-            bucket_name,
-            path,
-        } = request.into_inner();
-        check_folder_readable(&auth, &bucket_name, &path, pool).await?;
+        let GetFolderRequest { bucket_name, path } = request.into_inner();
+        check_folder_readable(auth, &bucket_name, &path, pool).await?;
         let folder = FolderModal::find_one(&path, &bucket_name, pool).await?;
         Ok(Response::new(folder.into()))
     }
@@ -173,13 +168,11 @@ impl Folder for FolderGreeter {
         &self,
         request: Request<GetFolderRequest>,
     ) -> Result<Response<CountReply>, Status> {
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
         let pool = &self.pool;
-        let GetFolderRequest {
-            auth,
-            bucket_name,
-            path,
-        } = request.into_inner();
-        check_folder_readable(&auth, &bucket_name, &path, pool).await?;
+        let GetFolderRequest { bucket_name, path } = request.into_inner();
+        check_folder_readable(auth, &bucket_name, &path, pool).await?;
         let total = FolderModal::count_by_path(&bucket_name, &path, pool).await?;
         Ok(Response::new(CountReply { total }))
     }
@@ -195,7 +188,6 @@ mod test {
     async fn test() {
         let mut client = FolderClient::connect("http://localhost:80").await.unwrap();
         let request = Request::new(DeleteFolderRequest {
-            auth: None,
             path: "/ss".to_string(),
             bucket_name: "as-sushao".to_string(),
         });

@@ -2,7 +2,11 @@ use database::{bucket::BucketModal, folder::FolderModal, object::ObjectModal, Po
 use errors::{TonicError, TonicResult};
 use proto::Status;
 use validation::check_auth::check_user;
-pub async fn check_bucket(auth: &str, bucket_name: &str, pool: &Pool<Postgres>) -> TonicResult<()> {
+pub async fn check_bucket(
+    auth: Option<String>,
+    bucket_name: &str,
+    pool: &Pool<Postgres>,
+) -> TonicResult<()> {
     // 判断用户
     let username = check_user(auth).await?;
     // 判断该存储桶是否存在
@@ -22,7 +26,7 @@ pub async fn check_bucket(auth: &str, bucket_name: &str, pool: &Pool<Postgres>) 
 
 /// 判断 bucket 权限
 async fn check_bucket_permission(
-    auth: &str,
+    auth: Option<String>,
     bucket_name: &str,
     pool: &Pool<Postgres>,
 ) -> TonicResult<()> {
@@ -58,7 +62,7 @@ async fn check_folder_exits(
 
 /// 验证该文件夹是否可以读
 pub async fn check_folder_readable(
-    auth: &Option<String>,
+    auth: Option<String>,
     bucket_name: &str,
     path: &str,
     pool: &Pool<Postgres>,
@@ -69,16 +73,13 @@ pub async fn check_folder_readable(
         // 如果文件夹是开放的话不用判断是否是
         Ok(())
     } else {
-        match auth {
-            Some(auth) => check_bucket_permission(auth, bucket_name, pool).await,
-            None => Err(TonicError::NoneAuth),
-        }
+        check_bucket_permission(auth, bucket_name, pool).await
     }
 }
 
 /// 验证该文件夹是否可以操作
 pub async fn check_folder_writeable(
-    auth: &Option<String>,
+    auth: Option<String>,
     bucket_name: &str,
     path: &str,
     pool: &Pool<Postgres>,
@@ -89,10 +90,7 @@ pub async fn check_folder_writeable(
         // 如果文件夹是开放的话不用判断是否是
         Ok(())
     } else {
-        match auth {
-            Some(auth) => check_bucket_permission(auth, bucket_name, pool).await,
-            None => Err(TonicError::NoneAuth),
-        }
+        check_bucket_permission(auth, bucket_name, pool).await
     }
 }
 
@@ -113,7 +111,7 @@ async fn check_object_exits(
 }
 /// 判断对象是否可读
 pub async fn check_object_readable(
-    auth: &Option<String>,
+    auth: Option<String>,
     bucket_name: &str,
     path: &str,
     filename: &str,
@@ -125,16 +123,13 @@ pub async fn check_object_readable(
         // 如果对象是开放的话不用判断是否是
         Ok(())
     } else {
-        match auth {
-            Some(auth) => check_bucket_permission(auth, bucket_name, pool).await,
-            None => Err(TonicError::NoneAuth),
-        }
+        check_bucket_permission(auth, bucket_name, pool).await
     }
 }
 
 /// 判断对象是否可写
 pub async fn check_object_writeable(
-    auth: &Option<String>,
+    auth: Option<String>,
     bucket_name: &str,
     path: &str,
     filename: &str,
@@ -146,9 +141,6 @@ pub async fn check_object_writeable(
         // 如果文件夹是开放的话不用判断是否是
         Ok(())
     } else {
-        match auth {
-            Some(auth) => check_bucket_permission(auth, bucket_name, pool).await,
-            None => Err(TonicError::NoneAuth),
-        }
+        check_bucket_permission(auth, bucket_name, pool).await
     }
 }

@@ -8,11 +8,11 @@ use proto::middleware::client::{
     bucket_client, folder_client, login_client, object_client, self_manage_client,
     user_manage_client,
 };
-use proto::user::{LoginReply, LoginRequest};
+use proto::user::{Empty, LoginReply, LoginRequest};
 use proto::{
     core::{DeleteBucketRequest, DeleteFolderRequest},
     user::{
-        CreateUserRequest, DeleteUserRequest, GetListRequest, GetUserInfoRequest, GetUserRequest,
+        CreateUserRequest, DeleteUserRequest, GetListRequest, GetUserRequest,
         UpdatePasswordRequest, UpdateUserInfoRequest, UpdateUserRequest,
     },
     Request,
@@ -84,14 +84,10 @@ impl QueryRoot {
         Ok(UserInfo::from(reply.into_inner()))
     }
     /// 获取自身用户信息
-    async fn self_user_info<'ctx>(
-        &self,
-        ctx: &Context<'ctx>,
-        data: GetUserInfoRequest,
-    ) -> GraphqlResult<UserInfo> {
+    async fn self_user_info<'ctx>(&self, ctx: &Context<'ctx>) -> GraphqlResult<UserInfo> {
         let auth = ctx.data::<String>().ok().cloned();
         let mut client = self_manage_client(auth).await?;
-        let reply = client.get_user_info(data).await?;
+        let reply = client.get_user_info(Empty {}).await?;
         Ok(UserInfo::from(reply.into_inner()))
     }
     /// 用户存储桶列表
@@ -114,11 +110,9 @@ impl QueryRoot {
         let GetFolderListRequest {
             limit,
             offset,
-            auth,
             path,
             bucket_name,
         } = &data;
-        let op_auth = auth.clone();
         // 需要的总数
         let require_count = limit + offset;
 
@@ -126,7 +120,6 @@ impl QueryRoot {
         let _auth = ctx.data::<String>().ok().cloned();
         let mut folder_client = folder_client(_auth.clone()).await?;
         let request = Request::new(GetFolderRequest {
-            auth: auth.clone(),
             path: path.clone(),
             bucket_name: bucket_name.clone(),
         });
@@ -137,7 +130,6 @@ impl QueryRoot {
         // 获取对象总数
         let mut object_client = object_client(_auth).await?;
         let request = GetFolderRequest {
-            auth: auth.clone(),
             path: path.clone(),
             bucket_name: bucket_name.clone(),
         };
@@ -157,7 +149,7 @@ impl QueryRoot {
                 total,
                 data: data
                     .into_iter()
-                    .map(|x| FolderInfo::from((x, op_auth.clone())).into())
+                    .map(|x| FolderInfo::from(x).into())
                     .collect(),
             })
             // 如果需要两种
@@ -167,14 +159,12 @@ impl QueryRoot {
             let folder_request = Request::new(GetFolderListRequest {
                 limit: folder_limit,
                 offset: *offset,
-                auth: auth.clone(),
                 path: path.to_string(),
                 bucket_name: bucket_name.to_string(),
             });
             let object_request = Request::new(GetFolderListRequest {
                 limit: object_limit,
                 offset: 0,
-                auth: auth.clone(),
                 path: path.to_string(),
                 bucket_name: bucket_name.to_string(),
             });
@@ -188,7 +178,7 @@ impl QueryRoot {
                 .into_inner()
                 .data
                 .into_iter()
-                .for_each(|x| data.push(FolderInfo::from((x, op_auth.clone())).into()));
+                .for_each(|x| data.push(FolderInfo::from(x).into()));
             object_data
                 .into_inner()
                 .data
@@ -199,7 +189,6 @@ impl QueryRoot {
             let object_request = Request::new(GetFolderListRequest {
                 limit: *limit,
                 offset: offset - folder_count as u32,
-                auth: auth.clone(),
                 path: path.to_string(),
                 bucket_name: bucket_name.to_string(),
             });
@@ -233,9 +222,8 @@ impl QueryRoot {
     ) -> GraphqlResult<FolderInfo> {
         let auth = ctx.data::<String>().ok().cloned();
         let mut client = folder_client(auth).await?;
-        let auth = data.auth.clone();
         let res = client.get_folder(data).await?.into_inner();
-        Ok((res, auth).into())
+        Ok(res.into())
     }
     /// 获取对象信息
     async fn object_info<'ctx>(
@@ -349,9 +337,8 @@ impl MutationRoot {
     ) -> GraphqlResult<FolderInfo> {
         let auth = ctx.data::<String>().ok().cloned();
         let mut client = folder_client(auth).await?;
-        let auth = data.auth.clone();
         let res = client.create_folder(data).await?.into_inner();
-        Ok(FolderInfo::from((res, auth)))
+        Ok(FolderInfo::from(res))
     }
     /// 更新目录
     async fn update_folder<'ctx>(
@@ -361,9 +348,8 @@ impl MutationRoot {
     ) -> GraphqlResult<FolderInfo> {
         let auth = ctx.data::<String>().ok().cloned();
         let mut client = folder_client(auth).await?;
-        let auth = data.auth.clone();
         let res = client.update_folder(data).await?.into_inner();
-        Ok(FolderInfo::from((res, auth)))
+        Ok(FolderInfo::from(res))
     }
     /// 删除目录
     async fn delete_folder<'ctx>(

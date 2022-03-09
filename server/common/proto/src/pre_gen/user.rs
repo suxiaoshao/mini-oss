@@ -4,20 +4,14 @@ pub struct UpdateUserRequest {
     #[prost(string, tag = "1")]
     pub name: ::prost::alloc::string::String,
     /// 描述
-    #[prost(string, optional, tag = "3")]
+    #[prost(string, optional, tag = "2")]
     pub description: ::core::option::Option<::prost::alloc::string::String>,
-    /// 身份验证
-    #[prost(string, tag = "2")]
-    pub auth: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct DeleteUserRequest {
     /// 账号
     #[prost(string, tag = "1")]
     pub name: ::prost::alloc::string::String,
-    /// 身份验证
-    #[prost(string, tag = "2")]
-    pub auth: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CreateUserRequest {
@@ -30,9 +24,6 @@ pub struct CreateUserRequest {
     /// 描述
     #[prost(string, optional, tag = "3")]
     pub description: ::core::option::Option<::prost::alloc::string::String>,
-    /// 身份验证
-    #[prost(string, tag = "4")]
-    pub auth: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetListRequest {
@@ -42,9 +33,6 @@ pub struct GetListRequest {
     /// 偏移量
     #[prost(uint32, tag = "2")]
     pub offset: u32,
-    /// 身份验证
-    #[prost(string, tag = "3")]
-    pub auth: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetUserListReply {
@@ -60,9 +48,6 @@ pub struct GetUserRequest {
     /// 用户名
     #[prost(string, tag = "1")]
     pub name: ::prost::alloc::string::String,
-    /// 身份验证
-    #[prost(string, tag = "2")]
-    pub auth: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UserInfo {
@@ -80,19 +65,10 @@ pub struct UserInfo {
     pub update_time: i64,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct GetUserInfoRequest {
-    /// 身份验证
-    #[prost(string, tag = "1")]
-    pub auth: ::prost::alloc::string::String,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UpdateUserInfoRequest {
     /// 描述
     #[prost(string, optional, tag = "1")]
     pub description: ::core::option::Option<::prost::alloc::string::String>,
-    /// 身份验证
-    #[prost(string, tag = "2")]
-    pub auth: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UpdatePasswordRequest {
@@ -102,9 +78,6 @@ pub struct UpdatePasswordRequest {
     /// 新密码
     #[prost(string, tag = "2")]
     pub new_password: ::prost::alloc::string::String,
-    /// 身份验证
-    #[prost(string, tag = "3")]
-    pub auth: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct LoginRequest {
@@ -348,7 +321,7 @@ pub mod self_manage_client {
         #[doc = " 获取自身信息"]
         pub async fn get_user_info(
             &mut self,
-            request: impl tonic::IntoRequest<super::GetUserInfoRequest>,
+            request: impl tonic::IntoRequest<super::Empty>,
         ) -> Result<tonic::Response<super::UserInfo>, tonic::Status> {
             self.inner.ready().await.map_err(|e| {
                 tonic::Status::new(
@@ -776,7 +749,7 @@ pub mod self_manage_server {
         #[doc = " 获取自身信息"]
         async fn get_user_info(
             &self,
-            request: tonic::Request<super::GetUserInfoRequest>,
+            request: tonic::Request<super::Empty>,
         ) -> Result<tonic::Response<super::UserInfo>, tonic::Status>;
         #[doc = " 修改密码"]
         async fn update_password(
@@ -860,13 +833,10 @@ pub mod self_manage_server {
                 "/user.SelfManage/GetUserInfo" => {
                     #[allow(non_camel_case_types)]
                     struct GetUserInfoSvc<T: SelfManage>(pub Arc<T>);
-                    impl<T: SelfManage> tonic::server::UnaryService<super::GetUserInfoRequest> for GetUserInfoSvc<T> {
+                    impl<T: SelfManage> tonic::server::UnaryService<super::Empty> for GetUserInfoSvc<T> {
                         type Response = super::UserInfo;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::GetUserInfoRequest>,
-                        ) -> Self::Future {
+                        fn call(&mut self, request: tonic::Request<super::Empty>) -> Self::Future {
                             let inner = self.0.clone();
                             let fut = async move { (*inner).get_user_info(request).await };
                             Box::pin(fut)

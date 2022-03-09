@@ -53,10 +53,10 @@ pub enum TonicError {
     BucketNotFound(String),
     #[error("{}文件夹不存在",.0)]
     FolderNotFound(String),
-    #[error("私有权限的文件夹/对象需要 auth")]
-    NoneAuth,
     #[error("{}对象不存在",.0)]
     ObjectNotFound(String),
+    #[error("缺少 auth")]
+    NoneAuth,
 }
 
 #[cfg(feature = "grpc")]
@@ -157,7 +157,6 @@ impl From<TonicError> for Status {
             | TonicError::UserNotFound
             | TonicError::BucketNotFound(_)
             | TonicError::FolderNotFound(_)
-            | TonicError::NoneAuth
             | TonicError::ObjectNotFound(_) => Status::invalid_argument(message),
 
             TonicError::PasswordError | TonicError::AuthTimeout | TonicError::TokenError => {
@@ -169,6 +168,7 @@ impl From<TonicError> for Status {
             TonicError::Password => Status::unauthenticated(message),
 
             TonicError::BucketPermission => Status::permission_denied(message),
+            TonicError::NoneAuth => Status::unauthenticated(message),
         }
     }
 }

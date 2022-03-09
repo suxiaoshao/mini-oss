@@ -44,11 +44,13 @@ impl Bucket for BucketGreeter {
         &self,
         request: Request<CreateBucketRequest>,
     ) -> Result<Response<BucketInfo>, Status> {
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
         // 验证
         request.get_ref().validate()?;
         let access = request.get_ref().access();
-        let CreateBucketRequest { name, auth, .. } = request.into_inner();
-        let username = check_user(&auth).await?;
+        let CreateBucketRequest { name, .. } = request.into_inner();
+        let username = check_user(auth).await?;
         let name = format!("{name}-{username}");
         // 判断该存储桶是否存在
         if BucketModal::exist(&name, &self.pool).await.is_ok() {
@@ -64,10 +66,12 @@ impl Bucket for BucketGreeter {
         &self,
         request: Request<DeleteBucketRequest>,
     ) -> Result<Response<Empty>, Status> {
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
         let pool = &self.pool;
-        let DeleteBucketRequest { name, auth } = request.into_inner();
+        let DeleteBucketRequest { name } = request.into_inner();
         // 判断该存储桶是否存在和权限
-        check_bucket(&auth, &name, pool).await?;
+        check_bucket(auth, &name, pool).await?;
         // 数据库删除
         futures::try_join!(
             BucketModal::delete(&name, pool),
@@ -83,9 +87,11 @@ impl Bucket for BucketGreeter {
         &self,
         request: Request<DeleteBucketsRequest>,
     ) -> Result<Response<Empty>, Status> {
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
         let pool = &self.pool;
-        let DeleteBucketsRequest { username, auth } = request.into_inner();
-        check_manager(&auth).await?;
+        let DeleteBucketsRequest { username } = request.into_inner();
+        check_manager(auth).await?;
         // 获取所有 buckets
         let buckets = BucketModal::find_total_by_user(&username, pool).await?;
         // 删除 folder
@@ -111,11 +117,13 @@ impl Bucket for BucketGreeter {
         &self,
         request: Request<UpdateBucketRequest>,
     ) -> Result<Response<BucketInfo>, Status> {
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
         let pool = &self.pool;
         let access = request.get_ref().access();
-        let UpdateBucketRequest { name, auth, .. } = request.into_inner();
+        let UpdateBucketRequest { name, .. } = request.into_inner();
         // 判断该存储桶是否存在和权限
-        check_bucket(&auth, &name, pool).await?;
+        check_bucket(auth, &name, pool).await?;
         let access: bucket::BucketAccess = bucket::BucketAccess::from(access);
         let updated = BucketModal::update(&name, &access, &self.pool).await?;
         Ok(Response::new(updated.into()))
@@ -124,15 +132,13 @@ impl Bucket for BucketGreeter {
         &self,
         request: Request<GetListRequest>,
     ) -> Result<Response<GetBucketListReply>, Status> {
-        let GetListRequest {
-            limit,
-            offset,
-            auth,
-        } = request.into_inner();
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
+        let GetListRequest { limit, offset } = request.into_inner();
         let limit = &limit;
         let limit = if limit > &50 { &50 } else { limit };
         let offset = &offset;
-        let username = check_user(&auth).await?;
+        let username = check_user(auth).await?;
         let pool = &self.pool;
         let (count, data) = tokio::join!(
             BucketModal::count_by_name(&username, pool),
@@ -148,10 +154,12 @@ impl Bucket for BucketGreeter {
         &self,
         request: Request<GetBucketRequest>,
     ) -> Result<Response<BucketInfo>, Status> {
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
         let pool = &self.pool;
-        let GetBucketRequest { auth, bucket_name } = request.into_inner();
+        let GetBucketRequest { bucket_name } = request.into_inner();
         // 判断权限
-        check_bucket(&auth, &bucket_name, pool).await?;
+        check_bucket(auth, &bucket_name, pool).await?;
         let bucket = BucketModal::find_one(&bucket_name, pool).await?;
         Ok(Response::new(bucket.into()))
     }

@@ -11,11 +11,8 @@ pub struct UpdateUserRequest {
     #[prost(string, tag = "1")]
     pub name: ::prost::alloc::string::String,
     /// 描述
-    #[prost(string, optional, tag = "3")]
+    #[prost(string, optional, tag = "2")]
     pub description: ::core::option::Option<::prost::alloc::string::String>,
-    /// 身份验证
-    #[prost(string, tag = "2")]
-    pub auth: ::prost::alloc::string::String,
 }
 #[cfg_attr(feature = "graphql", derive(async_graphql::InputObject))]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -23,9 +20,6 @@ pub struct DeleteUserRequest {
     /// 账号
     #[prost(string, tag = "1")]
     pub name: ::prost::alloc::string::String,
-    /// 身份验证
-    #[prost(string, tag = "2")]
-    pub auth: ::prost::alloc::string::String,
 }
 #[cfg_attr(feature = "validate", derive(Validate))]
 #[cfg_attr(feature = "graphql", derive(async_graphql::InputObject))]
@@ -42,9 +36,6 @@ pub struct CreateUserRequest {
     /// 描述
     #[prost(string, optional, tag = "3")]
     pub description: ::core::option::Option<::prost::alloc::string::String>,
-    /// 身份验证
-    #[prost(string, tag = "4")]
-    pub auth: ::prost::alloc::string::String,
 }
 #[cfg_attr(feature = "graphql", derive(async_graphql::InputObject))]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -55,9 +46,6 @@ pub struct GetListRequest {
     /// 偏移量
     #[prost(uint32, tag = "2")]
     pub offset: u32,
-    /// 身份验证
-    #[prost(string, tag = "3")]
-    pub auth: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetUserListReply {
@@ -74,9 +62,6 @@ pub struct GetUserRequest {
     /// 用户名
     #[prost(string, tag = "1")]
     pub name: ::prost::alloc::string::String,
-    /// 身份验证
-    #[prost(string, tag = "2")]
-    pub auth: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UserInfo {
@@ -95,20 +80,10 @@ pub struct UserInfo {
 }
 #[cfg_attr(feature = "graphql", derive(async_graphql::InputObject))]
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct GetUserInfoRequest {
-    /// 身份验证
-    #[prost(string, tag = "1")]
-    pub auth: ::prost::alloc::string::String,
-}
-#[cfg_attr(feature = "graphql", derive(async_graphql::InputObject))]
-#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UpdateUserInfoRequest {
     /// 描述
     #[prost(string, optional, tag = "1")]
     pub description: ::core::option::Option<::prost::alloc::string::String>,
-    /// 身份验证
-    #[prost(string, tag = "2")]
-    pub auth: ::prost::alloc::string::String,
 }
 #[cfg_attr(feature = "validate", derive(Validate))]
 #[cfg_attr(feature = "graphql", derive(async_graphql::InputObject))]
@@ -122,9 +97,6 @@ pub struct UpdatePasswordRequest {
     #[prost(string, tag = "2")]
     #[cfg_attr(feature = "validate", validate(custom = "validate_password"))]
     pub new_password: ::prost::alloc::string::String,
-    /// 身份验证
-    #[prost(string, tag = "3")]
-    pub auth: ::prost::alloc::string::String,
 }
 #[cfg_attr(feature = "validate", derive(Validate))]
 #[cfg_attr(feature = "graphql", derive(async_graphql::InputObject))]
@@ -307,20 +279,20 @@ pub mod self_manage_client {
     impl SelfManageClient<tonic::transport::Channel> {
         #[doc = r" Attempt to create a new client by connecting to a given endpoint."]
         pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
-        where
-            D: std::convert::TryInto<tonic::transport::Endpoint>,
-            D::Error: Into<StdError>,
+            where
+                D: std::convert::TryInto<tonic::transport::Endpoint>,
+                D::Error: Into<StdError>,
         {
             let conn = tonic::transport::Endpoint::new(dst)?.connect().await?;
             Ok(Self::new(conn))
         }
     }
     impl<T> SelfManageClient<T>
-    where
-        T: tonic::client::GrpcService<tonic::body::BoxBody>,
-        T::ResponseBody: Body + Send + 'static,
-        T::Error: Into<StdError>,
-        <T::ResponseBody as Body>::Error: Into<StdError> + Send,
+        where
+            T: tonic::client::GrpcService<tonic::body::BoxBody>,
+            T::ResponseBody: Body + Send + 'static,
+            T::Error: Into<StdError>,
+            <T::ResponseBody as Body>::Error: Into<StdError> + Send,
     {
         pub fn new(inner: T) -> Self {
             let inner = tonic::client::Grpc::new(inner);
@@ -330,15 +302,15 @@ pub mod self_manage_client {
             inner: T,
             interceptor: F,
         ) -> SelfManageClient<InterceptedService<T, F>>
-        where
-            F: tonic::service::Interceptor,
-            T: tonic::codegen::Service<
-                http::Request<tonic::body::BoxBody>,
-                Response = http::Response<
-                    <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
+            where
+                F: tonic::service::Interceptor,
+                T: tonic::codegen::Service<
+                    http::Request<tonic::body::BoxBody>,
+                    Response = http::Response<
+                        <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
+                    >,
                 >,
-            >,
-            <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
+                <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
                 Into<StdError> + Send + Sync,
         {
             SelfManageClient::new(InterceptedService::new(inner, interceptor))
@@ -374,7 +346,7 @@ pub mod self_manage_client {
         #[doc = " 获取自身信息"]
         pub async fn get_user_info(
             &mut self,
-            request: impl tonic::IntoRequest<super::GetUserInfoRequest>,
+            request: impl tonic::IntoRequest<super::Empty>,
         ) -> Result<tonic::Response<super::UserInfo>, tonic::Status> {
             self.inner.ready().await.map_err(|e| {
                 tonic::Status::new(
@@ -805,7 +777,7 @@ pub mod self_manage_server {
         #[doc = " 获取自身信息"]
         async fn get_user_info(
             &self,
-            request: tonic::Request<super::GetUserInfoRequest>,
+            request: tonic::Request<super::Empty>,
         ) -> Result<tonic::Response<super::UserInfo>, tonic::Status>;
         #[doc = " 修改密码"]
         async fn update_password(
@@ -832,17 +804,17 @@ pub mod self_manage_server {
             }
         }
         pub fn with_interceptor<F>(inner: T, interceptor: F) -> InterceptedService<Self, F>
-        where
-            F: tonic::service::Interceptor,
+            where
+                F: tonic::service::Interceptor,
         {
             InterceptedService::new(Self::new(inner), interceptor)
         }
     }
     impl<T, B> tonic::codegen::Service<http::Request<B>> for SelfManageServer<T>
-    where
-        T: SelfManage,
-        B: Body + Send + 'static,
-        B::Error: Into<StdError> + Send + 'static,
+        where
+            T: SelfManage,
+            B: Body + Send + 'static,
+            B::Error: Into<StdError> + Send + 'static,
     {
         type Response = http::Response<tonic::body::BoxBody>;
         type Error = Never;
@@ -857,7 +829,7 @@ pub mod self_manage_server {
                     #[allow(non_camel_case_types)]
                     struct UpdateUserInfoSvc<T: SelfManage>(pub Arc<T>);
                     impl<T: SelfManage> tonic::server::UnaryService<super::UpdateUserInfoRequest>
-                        for UpdateUserInfoSvc<T>
+                    for UpdateUserInfoSvc<T>
                     {
                         type Response = super::UserInfo;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
@@ -889,13 +861,10 @@ pub mod self_manage_server {
                 "/user.SelfManage/GetUserInfo" => {
                     #[allow(non_camel_case_types)]
                     struct GetUserInfoSvc<T: SelfManage>(pub Arc<T>);
-                    impl<T: SelfManage> tonic::server::UnaryService<super::GetUserInfoRequest> for GetUserInfoSvc<T> {
+                    impl<T: SelfManage> tonic::server::UnaryService<super::Empty> for GetUserInfoSvc<T> {
                         type Response = super::UserInfo;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::GetUserInfoRequest>,
-                        ) -> Self::Future {
+                        fn call(&mut self, request: tonic::Request<super::Empty>) -> Self::Future {
                             let inner = self.0.clone();
                             let fut = async move { (*inner).get_user_info(request).await };
                             Box::pin(fut)
@@ -921,7 +890,7 @@ pub mod self_manage_server {
                     #[allow(non_camel_case_types)]
                     struct UpdatePasswordSvc<T: SelfManage>(pub Arc<T>);
                     impl<T: SelfManage> tonic::server::UnaryService<super::UpdatePasswordRequest>
-                        for UpdatePasswordSvc<T>
+                    for UpdatePasswordSvc<T>
                     {
                         type Response = super::LoginReply;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;

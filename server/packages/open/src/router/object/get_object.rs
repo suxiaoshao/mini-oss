@@ -31,7 +31,6 @@ pub(crate) async fn get_object(
     let mut client = object_client(auth.clone()).await?;
     let request = GetObjectRequest {
         bucket_name: bucket_name.clone(),
-        auth: auth.clone(),
         path,
         filename,
     };

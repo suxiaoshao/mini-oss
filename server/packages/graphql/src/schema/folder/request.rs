@@ -8,8 +8,6 @@ pub struct UpdateFolderRequest {
     pub path: String,
     /// bucket 名
     pub bucket_name: String,
-    /// 用户凭证
-    pub auth: Option<String>,
     /// 访问控制
     pub access: FolderAccess,
 }
@@ -25,13 +23,11 @@ impl From<UpdateFolderRequest> for core::UpdateFolderRequest {
         let UpdateFolderRequest {
             path,
             access,
-            auth,
             bucket_name,
         } = value;
         let mut request = core::UpdateFolderRequest {
             path,
             access: 0,
-            auth,
             bucket_name,
         };
         request.set_access(access);
@@ -46,8 +42,6 @@ pub struct CreateFolderRequest {
     pub bucket_name: String,
     /// 路径
     pub father_path: String,
-    /// 用户凭证
-    pub auth: Option<String>,
     /// 访问控制
     pub access: FolderAccess,
 }
@@ -63,14 +57,12 @@ impl From<CreateFolderRequest> for core::CreateFolderRequest {
         let CreateFolderRequest {
             path,
             access,
-            auth,
             father_path,
             bucket_name,
         } = value;
         let mut request = core::CreateFolderRequest {
             path,
             access: 0,
-            auth,
             father_path,
             bucket_name,
         };

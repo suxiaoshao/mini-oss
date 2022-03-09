@@ -19,8 +19,6 @@ pub struct FolderInfo {
     pub access: FolderAccess,
     /// 路径
     pub father_path: String,
-    #[graphql(skip)]
-    pub auth: Option<String>,
 }
 #[ComplexObject]
 impl FolderInfo {
@@ -35,7 +33,6 @@ impl FolderInfo {
         let auth = ctx.data::<String>().ok().cloned();
         let mut client = folder_client(auth).await?;
         let request = GetFolderRequest {
-            auth: self.auth.clone(),
             bucket_name: self.bucket_name.clone(),
             path: self.path.clone(),
         };
@@ -46,7 +43,6 @@ impl FolderInfo {
         let auth = ctx.data::<String>().ok().cloned();
         let mut client = object_client(auth).await?;
         let request = GetFolderRequest {
-            auth: self.auth.clone(),
             bucket_name: self.bucket_name.clone(),
             path: self.path.clone(),
         };
@@ -57,7 +53,6 @@ impl FolderInfo {
         let auth = ctx.data::<String>().ok().cloned();
         let mut client = object_client(auth).await?;
         let request = GetFolderRequest {
-            auth: self.auth.clone(),
             bucket_name: self.bucket_name.clone(),
             path: self.path.clone(),
         };
@@ -66,8 +61,8 @@ impl FolderInfo {
     }
 }
 
-impl From<(proto::core::FolderInfo, Option<String>)> for FolderInfo {
-    fn from((folder, auth): (proto::core::FolderInfo, Option<String>)) -> Self {
+impl From<proto::core::FolderInfo> for FolderInfo {
+    fn from(folder: proto::core::FolderInfo) -> Self {
         let access = folder.access();
         let proto::core::FolderInfo {
             path,
@@ -84,7 +79,6 @@ impl From<(proto::core::FolderInfo, Option<String>)> for FolderInfo {
             access,
             bucket_name,
             father_path,
-            auth,
         }
     }
 }
