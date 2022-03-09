@@ -56,9 +56,9 @@ export default function UpdateBucketAction({ refetch, menuClose, access, name }:
                       label: '私有读写',
                       value: BucketAccess.Private,
                     },
-                    { label: '共有读私有写', value: BucketAccess.ReadOpen },
+                    { label: '公有读私有写', value: BucketAccess.ReadOpen },
                     {
-                      label: '共有读写',
+                      label: '公有读写',
                       value: BucketAccess.Open,
                     },
                   ]}

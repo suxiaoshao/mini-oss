@@ -1,5 +1,5 @@
+import { client } from '@/utils/graphql';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { client } from 'common';
 import { LoginRequest, UserLoginDocument, UserLoginQuery, UserLoginQueryVariables } from 'graphql';
 
 export const login = createAsyncThunk('login', async (data: LoginRequest) => {

@@ -1,15 +1,15 @@
-import { ApolloClient, createHttpLink, from, InMemoryCache } from '@apollo/client';
+import { createHttpLink } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
 import { enqueueSnackbar } from '..';
 
 /**  */
-const link = createHttpLink({
+export const link = createHttpLink({
   uri: String(import.meta.env.VITE_GRAPHQL_URL ?? 'http://api.mini-oss.sushao.top'),
   credentials: 'include',
 });
 
 /** 错误处理  */
-const errorLink = onError(({ graphQLErrors, networkError }) => {
+export const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
     graphQLErrors.forEach(({ message, locations, path, extensions }) => {
       enqueueSnackbar(message);
@@ -22,8 +22,3 @@ source: ${extensions['source']}`);
     console.log(`[Network error]: ${networkError}`);
   }
 });
-export const client = new ApolloClient({
-  link: from([errorLink, link]),
-  cache: new InMemoryCache(),
-});
-export { ApolloProvider } from '@apollo/client';

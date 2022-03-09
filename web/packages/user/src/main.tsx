@@ -1,10 +1,12 @@
-import { SnackbarProvider, ApolloProvider, client, CustomTheme } from 'common';
+import { ApolloProvider } from '@apollo/client';
+import { SnackbarProvider, CustomTheme } from 'common';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import { store } from './app/store';
+import { client } from './utils/graphql';
 
 ReactDOM.render(
   <React.StrictMode>

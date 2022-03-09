@@ -17,9 +17,7 @@ export default function ListItemRoute({ matchPaths, toPath, text, icon }: ListIt
         if (typeof value === 'string') {
           return value === pathname;
         }
-        if (value instanceof RegExp) {
-          return value.test(pathname);
-        }
+        return value.test(pathname);
       })}
       onClick={() => {
         navigate(toPath);

@@ -123,7 +123,7 @@ export function UpdateObjectDialog({
                     label: '私有读写',
                     value: ObjectAccess.PrivateObject,
                   },
-                  { label: '共有读私有写', value: ObjectAccess.ReadOpenObject },
+                  { label: '公有读私有写', value: ObjectAccess.ReadOpenObject },
                 ]}
               </ControllerRadioGroup>
             )}

@@ -1,5 +1,5 @@
+import { client } from '@/utils/graphql';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { client } from 'common';
 import { SelfUserInfoDocument, SelfUserInfoQuery, SelfUserInfoQueryVariables, UserInfo as GqlUserInfo } from 'graphql';
 
 export type UserInfo = Omit<GqlUserInfo, '__typename'>;

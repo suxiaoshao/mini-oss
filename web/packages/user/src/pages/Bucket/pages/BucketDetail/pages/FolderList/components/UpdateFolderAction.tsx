@@ -67,9 +67,9 @@ export default function UpdateFolderAction({
                       label: '私有读写',
                       value: FolderAccess.PrivateFolder,
                     },
-                    { label: '共有读私有写', value: FolderAccess.ReadOpenFolder },
+                    { label: '公有读私有写', value: FolderAccess.ReadOpenFolder },
                     {
-                      label: '共有读写',
+                      label: '公有读写',
                       value: FolderAccess.OpenFolder,
                     },
                   ]}
