@@ -1,4 +1,3 @@
-import { useAppSelector } from '@/app/hooks';
 import ControllerRadioGroup from '@/components/ControllerRadioGroup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Button, Dialog, Box, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
@@ -71,7 +70,6 @@ export function UpdateObjectDialog({
     resolver: yupResolver(updateObjectSchema),
   });
   const [updateObjectFn] = useUpdateObjectMutation();
-  const auth = useAppSelector((state) => state.auth.value);
 
   const onSubmit: SubmitHandler<UpdateObjectForm> = async (formData) => {
     const { data } = await updateObjectFn({
@@ -81,7 +79,6 @@ export function UpdateObjectDialog({
           path,
           filename,
           ...formData,
-          auth,
         },
       },
     });

@@ -42,10 +42,9 @@ export default function CreateBucketButton({ reFetch }: CreateBucketFabProps): J
     defaultValues: { access: BucketAccess.Private },
     resolver: yupResolver(createBucketSchema),
   });
-  const auth = useAppSelector((state) => state.auth.value) ?? '';
   const username = useAppSelector((state) => state.userInfo.name);
   const onSubmit: SubmitHandler<CreateBucketForm> = async (formData) => {
-    await createBucket({ variables: { data: { auth, ...formData } } });
+    await createBucket({ variables: { data: { ...formData } } });
     reFetch();
     handleClose();
   };

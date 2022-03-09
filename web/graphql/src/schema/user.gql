@@ -1,5 +1,5 @@
-query selfUserInfo($data: GetUserInfoRequest!) {
-  selfUserInfo(data: $data) {
+query selfUserInfo {
+  selfUserInfo {
     name
     createTime
     updateTime

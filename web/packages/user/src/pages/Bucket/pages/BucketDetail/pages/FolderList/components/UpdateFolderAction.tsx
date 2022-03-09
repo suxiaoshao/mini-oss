@@ -1,4 +1,3 @@
-import { useAppSelector } from '@/app/hooks';
 import ControllerRadioGroup from '@/components/ControllerRadioGroup';
 import { MenuItem, Dialog, Box, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import { FolderAccess, useUpdateFolderMutation } from 'graphql';
@@ -38,10 +37,9 @@ export default function UpdateFolderAction({
       access,
     },
   });
-  const auth = useAppSelector((state) => state.auth.value) ?? '';
   const [updateFolder] = useUpdateFolderMutation();
   const onSubmit: SubmitHandler<UpdateFolderForm> = async (formData) => {
-    await updateFolder({ variables: { data: { auth, path, bucketName, ...formData } } });
+    await updateFolder({ variables: { data: { path, bucketName, ...formData } } });
     refetch();
     handleClose();
   };

@@ -1,4 +1,3 @@
-import { useAppSelector } from '@/app/hooks';
 import { Refresh } from '@mui/icons-material';
 import { AppBar, Box, IconButton, Link, Toolbar, Typography } from '@mui/material';
 import { CustomColumnArray, CustomTable, format, useCustomTable, usePage, TableActions } from 'common';
@@ -11,8 +10,7 @@ import UpdateBucketAction from './components/UpdateBucketAction';
 
 export default function BucketList(): JSX.Element {
   const { limit, offset } = usePage({});
-  const auth = useAppSelector((state) => state.auth.value);
-  const { data, refetch } = useBucketListQuery({ variables: { data: { auth: auth ?? '', limit, offset } } });
+  const { data, refetch } = useBucketListQuery({ variables: { data: { limit, offset } } });
   const [deleteBucket] = useDeleteBucketMutation();
   const columns = useMemo<CustomColumnArray<BucketListQuery['bucketList']['data'][0]>>(
     () => [
@@ -49,7 +47,7 @@ export default function BucketList(): JSX.Element {
               {
                 text: '删除',
                 onClick: async () => {
-                  await deleteBucket({ variables: { data: { auth: auth ?? '', name } } });
+                  await deleteBucket({ variables: { data: { name } } });
                   onClose();
                   await refetch();
                 },
@@ -60,7 +58,7 @@ export default function BucketList(): JSX.Element {
         ),
       },
     ],
-    [auth, deleteBucket, refetch],
+    [deleteBucket, refetch],
   );
   const tableInstance = useCustomTable({ columns, data: data?.bucketList.data ?? [] });
   return (

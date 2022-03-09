@@ -1,4 +1,4 @@
-import { useAppSelector, useAppDispatch } from '@/app/hooks';
+import { useAppDispatch } from '@/app/hooks';
 import { resetAuth } from '@/features/auth/authSlice';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Card, CardHeader, CardContent, TextField, CardActions, TextFieldProps, Button } from '@mui/material';
@@ -18,7 +18,6 @@ const updatePasswordSchema = object({
 
 export default function UserPasswordReset(): JSX.Element {
   const { enqueueSnackbar } = useSnackbar();
-  const auth = useAppSelector((state) => state.auth.value) ?? '';
   const dispatch = useAppDispatch();
   const [updateInfo] = useUpdatePasswordMutation();
   const {
@@ -29,7 +28,7 @@ export default function UserPasswordReset(): JSX.Element {
     resolver: yupResolver(updatePasswordSchema),
   });
   const onSubmit: SubmitHandler<UserPasswordForm> = async (formData) => {
-    const { data } = await updateInfo({ variables: { data: { auth, ...formData } } });
+    const { data } = await updateInfo({ variables: { data: { ...formData } } });
     enqueueSnackbar('修改成功', { variant: 'success' });
     dispatch(resetAuth(data?.updatePassword ?? ''));
   };

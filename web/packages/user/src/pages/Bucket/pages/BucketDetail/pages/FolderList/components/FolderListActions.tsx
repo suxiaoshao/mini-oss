@@ -1,4 +1,3 @@
-import { useAppSelector } from '@/app/hooks';
 import { TableActions } from 'common';
 import { useDeleteFolderMutation, useDeleteObjectMutation } from 'graphql';
 import { FolderTableData } from '..';
@@ -11,7 +10,6 @@ export interface FolderListActionsProps {
 }
 
 export default function FolderListAction({ item, refetch }: FolderListActionsProps): JSX.Element {
-  const auth = useAppSelector((state) => state.auth.value) ?? '';
   const [deleteFolder] = useDeleteFolderMutation();
   const [deleteObject] = useDeleteObjectMutation();
   if (item.__typename === 'FolderInfo') {
@@ -21,7 +19,7 @@ export default function FolderListAction({ item, refetch }: FolderListActionsPro
           {
             text: '删除',
             onClick: async () => {
-              await deleteFolder({ variables: { data: { auth, bucketName: item.bucketName, path: item.path } } });
+              await deleteFolder({ variables: { data: { bucketName: item.bucketName, path: item.path } } });
               refetch();
               onClose();
             },
@@ -39,7 +37,7 @@ export default function FolderListAction({ item, refetch }: FolderListActionsPro
           text: '删除',
           onClick: async () => {
             await deleteObject({
-              variables: { data: { auth, bucketName: item.bucketName, path: item.path, filename: item.filename } },
+              variables: { data: { bucketName: item.bucketName, path: item.path, filename: item.filename } },
             });
             refetch();
             onClose();

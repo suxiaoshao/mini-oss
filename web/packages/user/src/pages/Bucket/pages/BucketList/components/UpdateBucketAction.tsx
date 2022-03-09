@@ -1,4 +1,3 @@
-import { useAppSelector } from '@/app/hooks';
 import { MenuItem, Dialog, Box, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import { BucketAccess, useUpdateBucketMutation } from 'graphql';
 import { useState } from 'react';
@@ -31,10 +30,9 @@ export default function UpdateBucketAction({ refetch, menuClose, access, name }:
       access,
     },
   });
-  const auth = useAppSelector((state) => state.auth.value) ?? '';
   const [updateBukcet] = useUpdateBucketMutation();
   const onSubmit: SubmitHandler<UpdateBucketForm> = async (formData) => {
-    await updateBukcet({ variables: { data: { auth, name, ...formData } } });
+    await updateBukcet({ variables: { data: { name, ...formData } } });
     refetch();
     handleClose();
   };

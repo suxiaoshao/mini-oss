@@ -2,7 +2,6 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, MenuIte
 import { useUserUpdateMutation } from 'graphql';
 import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { useAppSelector } from '../../../app/hooks';
 
 export interface UpdateUserActionProps {
   /** 表格重新刷新 */
@@ -34,10 +33,9 @@ export default function UpdateUserAction({
       description,
     },
   });
-  const auth = useAppSelector((state) => state.auth.value) ?? '';
   const [updateUser] = useUserUpdateMutation();
   const onSubmit: SubmitHandler<UpdateUserForm> = async (formData) => {
-    await updateUser({ variables: { data: { auth, name, description: formData.description || null } } });
+    await updateUser({ variables: { data: { name, description: formData.description || null } } });
     refetch();
     handleClose();
   };

@@ -2,7 +2,6 @@ import { Dialog, DialogContent, DialogTitle, MenuItem } from '@mui/material';
 import { useEffect, useState } from 'react';
 import InfoItem from '@/pages/ObjectPage/components/InfoItem';
 import { useFolderStatisticsLazyQuery } from 'graphql';
-import { useAppSelector } from '@/app/hooks';
 import prettyBytes from 'pretty-bytes';
 
 export interface ShowStatisticsProps {
@@ -17,11 +16,9 @@ export interface ShowStatisticsProps {
 }
 
 export default function ShowStatistics({ menuClose, folderName, bucketName, path }: ShowStatisticsProps): JSX.Element {
-  const auth = useAppSelector((state) => state.auth.value);
   const [getStatistics, { data }] = useFolderStatisticsLazyQuery({
     variables: {
       data: {
-        auth,
         bucketName,
         path,
       },

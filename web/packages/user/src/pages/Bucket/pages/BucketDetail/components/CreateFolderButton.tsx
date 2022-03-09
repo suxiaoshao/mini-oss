@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { object, string } from 'common';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useAppSelector } from '@/app/hooks';
 import ControllerRadioGroup from '@/components/ControllerRadioGroup';
 
 export type CreateFolderForm = Pick<CreateFolderMutationVariables['data'], 'access' | 'path'>;
@@ -36,9 +35,8 @@ export default function CreateFolderButton({ fatherPath, bucketName, reFetch }: 
     defaultValues: { access: FolderAccess.InheritanceFolder },
     resolver: yupResolver(createFolderSchema),
   });
-  const auth = useAppSelector((state) => state.auth.value) ?? '';
   const onSubmit: SubmitHandler<CreateFolderForm> = async (formData) => {
-    await createFolder({ variables: { data: { auth, fatherPath, bucketName, ...formData } } });
+    await createFolder({ variables: { data: { fatherPath, bucketName, ...formData } } });
     reFetch();
     handleClose();
   };

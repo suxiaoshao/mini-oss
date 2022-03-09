@@ -24,7 +24,7 @@ export default function BucketList(): JSX.Element {
   // 获取数据
   const auth = useAppSelector((state) => state.auth.value) ?? '';
   const { data: { objectInfo } = {}, refetch } = useGetObjectQuery({
-    variables: { data: { auth, bucketName, path, filename } },
+    variables: { data: { bucketName, path, filename } },
     skip: auth === '',
   });
 

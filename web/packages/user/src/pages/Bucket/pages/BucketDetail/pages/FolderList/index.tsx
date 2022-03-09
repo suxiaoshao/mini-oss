@@ -1,6 +1,5 @@
 import { CustomColumnArray, CustomTable, format, useCustomTable, usePage, usePageWithTotal } from 'common';
 import { FolderListQuery, useFolderListQuery } from 'graphql';
-import { useAppSelector } from '@/app/hooks';
 import { useMemo } from 'react';
 import { Box, Breadcrumbs, IconButton, Link, Typography } from '@mui/material';
 import { createSearchParams, Link as RouterLink, useParams, useSearchParams } from 'react-router-dom';
@@ -15,7 +14,6 @@ import FolderListActions from './components/FolderListActions';
 export type FolderTableData = FolderListQuery['folderList']['data'][0];
 
 export default function FolderList(): JSX.Element {
-  const auth = useAppSelector((state) => state.auth.value) ?? '';
   // 获取路由数据
   const [searchParams] = useSearchParams();
   const { bucketName = '' } = useParams<{ bucketName: string }>();
@@ -25,7 +23,7 @@ export default function FolderList(): JSX.Element {
   // page 数据
   const { limit, offset, ...page } = usePage({});
   const { data: { folderList } = {}, refetch } = useFolderListQuery({
-    variables: { data: { limit, offset, auth, bucketName, path } },
+    variables: { data: { limit, offset, bucketName, path } },
   });
   // page 数据
   const pageWithTotal = usePageWithTotal(page, folderList?.total);

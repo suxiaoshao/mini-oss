@@ -49,15 +49,12 @@ export type BucketList = {
 
 export type CreateBucketRequest = {
   access: BucketAccess;
-  auth: Scalars['String'];
   name: Scalars['String'];
 };
 
 export type CreateFolderRequest = {
   /** 访问控制 */
   access: FolderAccess;
-  /** 用户凭证 */
-  auth?: InputMaybe<Scalars['String']>;
   /** bucket 名 */
   bucketName: Scalars['String'];
   /** 路径 */
@@ -67,8 +64,6 @@ export type CreateFolderRequest = {
 };
 
 export type CreateUserRequest = {
-  /** 身份验证 */
-  auth: Scalars['String'];
   /** 描述 */
   description?: InputMaybe<Scalars['String']>;
   /** 账号 */
@@ -78,15 +73,11 @@ export type CreateUserRequest = {
 };
 
 export type DeleteBucketRequest = {
-  /** 用户凭证 */
-  auth: Scalars['String'];
   /** 名字 */
   name: Scalars['String'];
 };
 
 export type DeleteFolderRequest = {
-  /** 用户凭证 */
-  auth?: InputMaybe<Scalars['String']>;
   /** bucket 名 */
   bucketName: Scalars['String'];
   /** 名字 */
@@ -94,8 +85,6 @@ export type DeleteFolderRequest = {
 };
 
 export type DeleteObjectRequest = {
-  /** 访问控制 */
-  auth?: InputMaybe<Scalars['String']>;
   /** bucket 名 */
   bucketName: Scalars['String'];
   /** 文件名 */
@@ -105,8 +94,6 @@ export type DeleteObjectRequest = {
 };
 
 export type DeleteUserRequest = {
-  /** 身份验证 */
-  auth: Scalars['String'];
   /** 账号 */
   name: Scalars['String'];
 };
@@ -152,15 +139,11 @@ export type FolderList = {
 };
 
 export type GetBucketRequest = {
-  /** 身份验证 */
-  auth: Scalars['String'];
   /** bucket 名 */
   bucketName: Scalars['String'];
 };
 
 export type GetFolderListRequest = {
-  /** 身份验证 */
-  auth?: InputMaybe<Scalars['String']>;
   /** bucket 名 */
   bucketName: Scalars['String'];
   /** 获取多少数据 */
@@ -172,8 +155,6 @@ export type GetFolderListRequest = {
 };
 
 export type GetFolderRequest = {
-  /** 身份验证 */
-  auth?: InputMaybe<Scalars['String']>;
   /** bucket 名 */
   bucketName: Scalars['String'];
   /** 路径 */
@@ -181,8 +162,6 @@ export type GetFolderRequest = {
 };
 
 export type GetListRequest = {
-  /** 身份验证 */
-  auth: Scalars['String'];
   /** 获取多少数据 */
   limit: Scalars['Int'];
   /** 偏移量 */
@@ -190,8 +169,6 @@ export type GetListRequest = {
 };
 
 export type GetObjectRequest = {
-  /** 身份验证 */
-  auth?: InputMaybe<Scalars['String']>;
   /** bucket 名 */
   bucketName: Scalars['String'];
   /** 文件名 */
@@ -200,14 +177,7 @@ export type GetObjectRequest = {
   path: Scalars['String'];
 };
 
-export type GetUserInfoRequest = {
-  /** 身份验证 */
-  auth: Scalars['String'];
-};
-
 export type GetUserRequest = {
-  /** 身份验证 */
-  auth: Scalars['String'];
   /** 用户名 */
   name: Scalars['String'];
 };
@@ -391,10 +361,6 @@ export type QueryRootObjectInfoArgs = {
   data: GetObjectRequest;
 };
 
-export type QueryRootSelfUserInfoArgs = {
-  data: GetUserInfoRequest;
-};
-
 export type QueryRootUserInfoArgs = {
   data: GetUserRequest;
 };
@@ -409,15 +375,12 @@ export type QueryRootUserLoginArgs = {
 
 export type UpdateBucketRequest = {
   access: BucketAccess;
-  auth: Scalars['String'];
   name: Scalars['String'];
 };
 
 export type UpdateFolderRequest = {
   /** 访问控制 */
   access: FolderAccess;
-  /** 用户凭证 */
-  auth?: InputMaybe<Scalars['String']>;
   /** bucket 名 */
   bucketName: Scalars['String'];
   /** 路径 */
@@ -427,8 +390,6 @@ export type UpdateFolderRequest = {
 export type UpdateObjectRequest = {
   /** 访问控制 */
   access: ObjectAccess;
-  /** 访问控制 */
-  auth?: InputMaybe<Scalars['String']>;
   /** bucket 名 */
   bucketName: Scalars['String'];
   /** 旧文件名 */
@@ -442,8 +403,6 @@ export type UpdateObjectRequest = {
 };
 
 export type UpdatePasswordRequest = {
-  /** 身份验证 */
-  auth: Scalars['String'];
   /** 新密码 */
   newPassword: Scalars['String'];
   /** 旧密码 */
@@ -451,15 +410,11 @@ export type UpdatePasswordRequest = {
 };
 
 export type UpdateUserInfoRequest = {
-  /** 身份验证 */
-  auth: Scalars['String'];
   /** 描述 */
   description?: InputMaybe<Scalars['String']>;
 };
 
 export type UpdateUserRequest = {
-  /** 身份验证 */
-  auth: Scalars['String'];
   /** 描述 */
   description?: InputMaybe<Scalars['String']>;
   /** 账号 */
@@ -709,9 +664,7 @@ export type GetObjectQuery = {
   };
 };
 
-export type SelfUserInfoQueryVariables = Exact<{
-  data: GetUserInfoRequest;
-}>;
+export type SelfUserInfoQueryVariables = Exact<{ [key: string]: never }>;
 
 export type SelfUserInfoQuery = {
   __typename?: 'QueryRoot';
@@ -1519,8 +1472,8 @@ export type GetObjectQueryHookResult = ReturnType<typeof useGetObjectQuery>;
 export type GetObjectLazyQueryHookResult = ReturnType<typeof useGetObjectLazyQuery>;
 export type GetObjectQueryResult = Apollo.QueryResult<GetObjectQuery, GetObjectQueryVariables>;
 export const SelfUserInfoDocument = gql`
-  query selfUserInfo($data: GetUserInfoRequest!) {
-    selfUserInfo(data: $data) {
+  query selfUserInfo {
+    selfUserInfo {
       name
       createTime
       updateTime
@@ -1541,12 +1494,11 @@ export const SelfUserInfoDocument = gql`
  * @example
  * const { data, loading, error } = useSelfUserInfoQuery({
  *   variables: {
- *      data: // value for 'data'
  *   },
  * });
  */
 export function useSelfUserInfoQuery(
-  baseOptions: Apollo.QueryHookOptions<SelfUserInfoQuery, SelfUserInfoQueryVariables>,
+  baseOptions?: Apollo.QueryHookOptions<SelfUserInfoQuery, SelfUserInfoQueryVariables>,
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<SelfUserInfoQuery, SelfUserInfoQueryVariables>(SelfUserInfoDocument, options);

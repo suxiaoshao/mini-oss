@@ -4,7 +4,6 @@ import { object, string } from 'common';
 import { UserCreateMutationVariables, useUserCreateMutation } from 'graphql';
 import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { useAppSelector } from '../../../app/hooks';
 
 export type CreateUserForm = Omit<UserCreateMutationVariables['data'], 'auth'>;
 
@@ -31,9 +30,8 @@ export default function CreateUserButton({ refetch }: CreateUserFabProps): JSX.E
   } = useForm<CreateUserForm>({
     resolver: yupResolver(createUserSchema),
   });
-  const auth = useAppSelector((state) => state.auth.value) ?? '';
   const onSubmit: SubmitHandler<CreateUserForm> = async (formData) => {
-    await createUser({ variables: { data: { auth, ...formData, description: formData.description || null } } });
+    await createUser({ variables: { data: { ...formData, description: formData.description || null } } });
     refetch();
     handleClose();
   };

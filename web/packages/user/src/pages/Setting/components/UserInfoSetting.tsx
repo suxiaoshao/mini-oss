@@ -13,22 +13,19 @@ export interface UserInfoForm {
 export default function UserInfoSetting(): JSX.Element {
   const { enqueueSnackbar } = useSnackbar();
   /** 获取全局信息 */
-  const auth = useAppSelector((state) => state.auth.value);
   const { description, name, createTime, updateTime } = useAppSelector((state) => state.userInfo);
   /** 更新用户信息 */
   const dispatch = useAppDispatch();
   const refetch = useCallback(() => {
-    if (auth !== null) {
-      dispatch(updateUserInfo(auth));
-    }
-  }, [auth, dispatch]);
+    dispatch(updateUserInfo());
+  }, [dispatch]);
   const [updateInfo] = useUpdateInfoMutation();
   /** 表单相关 */
   const { register, handleSubmit } = useForm<UserInfoForm>({
     defaultValues: { description },
   });
   const onSubmit: SubmitHandler<UserInfoForm> = async (formData) => {
-    await updateInfo({ variables: { data: { auth: auth ?? '', description: formData.description || null } } });
+    await updateInfo({ variables: { data: { description: formData.description || null } } });
     enqueueSnackbar('修改成功', { variant: 'success' });
     await refetch();
   };

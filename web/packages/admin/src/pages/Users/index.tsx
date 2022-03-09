@@ -11,7 +11,7 @@ export default function Users(): JSX.Element {
   const { limit, offset } = usePage({});
   const auth = useAppSelector((state) => state.auth.value);
   const { data, refetch } = useUserListQuery({
-    variables: { data: { limit, offset, auth: auth ?? '' } },
+    variables: { data: { limit, offset } },
     skip: auth === null,
   });
   const [deleteUser] = useUserDeleteMutation();
@@ -46,7 +46,7 @@ export default function Users(): JSX.Element {
               {
                 text: '删除',
                 onClick: async () => {
-                  await deleteUser({ variables: { data: { auth: auth ?? '', name } } });
+                  await deleteUser({ variables: { data: { name } } });
                   onClose();
                   await refetch();
                 },
@@ -64,7 +64,7 @@ export default function Users(): JSX.Element {
         cellProps: { padding: 'none' },
       },
     ],
-    [auth, deleteUser, refetch],
+    [deleteUser, refetch],
   );
 
   const tableInstance = useCustomTable({ columns, data: data?.userList.data ?? [] });

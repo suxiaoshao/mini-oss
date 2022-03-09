@@ -26,7 +26,7 @@ export default function AppRouter(): JSX.Element {
         navigate({ pathname: '/login', search: createSearchParams({ from: url }).toString() });
       }
     } else {
-      dispatch(updateUserInfo(auth));
+      dispatch(updateUserInfo());
     }
     // 只有 auth 改变时才应该修改路由
     // eslint-disable-next-line react-hooks/exhaustive-deps

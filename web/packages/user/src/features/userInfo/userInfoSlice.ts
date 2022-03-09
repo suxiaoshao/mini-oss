@@ -4,10 +4,9 @@ import { SelfUserInfoDocument, SelfUserInfoQuery, SelfUserInfoQueryVariables, Us
 
 export type UserInfo = Omit<GqlUserInfo, '__typename'>;
 
-export const updateUserInfo = createAsyncThunk('updateUserInfo', async (auth: string) => {
+export const updateUserInfo = createAsyncThunk('updateUserInfo', async () => {
   const { data } = await client.query<SelfUserInfoQuery, SelfUserInfoQueryVariables>({
     query: SelfUserInfoDocument,
-    variables: { data: { auth } },
   });
   return await data.selfUserInfo;
 });
