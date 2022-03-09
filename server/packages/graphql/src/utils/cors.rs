@@ -1,4 +1,7 @@
-use axum::http::{header::CONTENT_TYPE, Method};
+use axum::http::{
+    header::{AUTHORIZATION, CONTENT_TYPE},
+    Method,
+};
 use tower_http::cors::{CorsLayer, Origin};
 
 pub fn get_cors() -> CorsLayer {
@@ -7,6 +10,6 @@ pub fn get_cors() -> CorsLayer {
         .allow_methods(vec![Method::GET, Method::POST])
         // allow requests from any origin
         .allow_origin(Origin::predicate(|_, _| true))
-        .allow_headers(vec![CONTENT_TYPE])
+        .allow_headers(vec![CONTENT_TYPE, AUTHORIZATION])
         .allow_credentials(true)
 }
