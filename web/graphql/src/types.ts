@@ -31,12 +31,37 @@ export type BucketInfo = {
   access: BucketAccess;
   /** 创建时间 */
   createTime: Scalars['Int'];
+  /** 下载大小 */
+  downloadSize: Scalars['String'];
   /** 名字 */
   name: Scalars['String'];
+  /** 对象数量 */
+  objectCount: Scalars['Int'];
+  /** 对象大小 */
+  objectSize: Scalars['String'];
+  /** 请求数量 */
+  requestCount: Scalars['Int'];
   /** 更新时间 */
   updateTime: Scalars['Int'];
+  /** 上传大小 */
+  uploadSize: Scalars['String'];
   /** 用户名 */
   username: Scalars['String'];
+};
+
+export type BucketInfoDownloadSizeArgs = {
+  endTime: Scalars['Int'];
+  startTime: Scalars['Int'];
+};
+
+export type BucketInfoRequestCountArgs = {
+  endTime: Scalars['Int'];
+  startTime: Scalars['Int'];
+};
+
+export type BucketInfoUploadSizeArgs = {
+  endTime: Scalars['Int'];
+  startTime: Scalars['Int'];
 };
 
 export type BucketList = {
@@ -462,11 +487,21 @@ export type BucketListQuery = {
 
 export type BucketInfoQueryVariables = Exact<{
   data: GetBucketRequest;
+  startTime: Scalars['Int'];
+  endTime: Scalars['Int'];
 }>;
 
 export type BucketInfoQuery = {
   __typename?: 'QueryRoot';
-  bucketInfo: { __typename?: 'BucketInfo'; name: string; updateTime: number; createTime: number; access: BucketAccess };
+  bucketInfo: {
+    __typename?: 'BucketInfo';
+    name: string;
+    objectSize: string;
+    objectCount: number;
+    uploadSize: string;
+    downloadSize: string;
+    requestCount: number;
+  };
 };
 
 export type CreateBucketMutationVariables = Exact<{
@@ -733,12 +768,14 @@ export type BucketListQueryHookResult = ReturnType<typeof useBucketListQuery>;
 export type BucketListLazyQueryHookResult = ReturnType<typeof useBucketListLazyQuery>;
 export type BucketListQueryResult = Apollo.QueryResult<BucketListQuery, BucketListQueryVariables>;
 export const BucketInfoDocument = gql`
-  query bucketInfo($data: GetBucketRequest!) {
+  query bucketInfo($data: GetBucketRequest!, $startTime: Int!, $endTime: Int!) {
     bucketInfo(data: $data) {
       name
-      updateTime
-      createTime
-      access
+      objectSize
+      objectCount
+      uploadSize(endTime: $endTime, startTime: $startTime)
+      downloadSize(startTime: $startTime, endTime: $endTime)
+      requestCount(endTime: $endTime, startTime: $startTime)
     }
   }
 `;
@@ -756,6 +793,8 @@ export const BucketInfoDocument = gql`
  * const { data, loading, error } = useBucketInfoQuery({
  *   variables: {
  *      data: // value for 'data'
+ *      startTime: // value for 'startTime'
+ *      endTime: // value for 'endTime'
  *   },
  * });
  */

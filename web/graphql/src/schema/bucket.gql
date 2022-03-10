@@ -9,12 +9,14 @@ query bucketList($data: GetListRequest!) {
     total
   }
 }
-query bucketInfo($data: GetBucketRequest!) {
+query bucketInfo($data: GetBucketRequest!, $startTime: Int!, $endTime: Int!) {
   bucketInfo(data: $data) {
     name
-    updateTime
-    createTime
-    access
+    objectSize
+    objectCount
+    uploadSize(endTime: $endTime, startTime: $startTime)
+    downloadSize(startTime: $startTime, endTime: $endTime)
+    requestCount(endTime: $endTime, startTime: $startTime)
   }
 }
 mutation createBucket($data: CreateBucketRequest!) {
