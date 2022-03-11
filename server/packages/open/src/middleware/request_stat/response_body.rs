@@ -18,7 +18,6 @@ pub struct ResponseBody {
     id: ObjectId,
     pool: Arc<Pool<Postgres>>,
     bucket_name: String,
-    size: Decimal,
 }
 
 impl ResponseBody {
@@ -33,7 +32,6 @@ impl ResponseBody {
             id,
             pool,
             bucket_name,
-            size: Decimal::default(),
         }
     }
 }
@@ -49,18 +47,17 @@ impl http_body::Body for ResponseBody {
         let id = self.id;
         let bucket_name = self.bucket_name.clone();
         let pool = Arc::clone(&self.pool);
-        let size = self.size;
         if let Some(chunk) = ready!(Pin::new(&mut self.inner).poll_data(cx)?) {
             let len = chunk.as_ref().len();
-            self.size += Decimal::from(len);
-            Poll::Ready(Some(Ok(chunk)))
-        } else {
+            let size = Decimal::from(len);
             tokio::spawn(async move {
                 // 失败为内部错误
                 RequestModal::add_download_size(&id.to_string(), &bucket_name, &size, &pool)
                     .await
                     .unwrap();
             });
+            Poll::Ready(Some(Ok(chunk)))
+        } else {
             Poll::Ready(None)
         }
     }
