@@ -1,3 +1,4 @@
+use anyhow::Result;
 use database::PgPoolOptions;
 use proto::middleware::server::{add_auth, interceptor};
 use proto::{
@@ -16,16 +17,15 @@ use crate::greeter::{
 mod greeter;
 mod utils;
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let addr = "0.0.0.0:80".parse().unwrap();
+async fn main() -> Result<()> {
+    let addr = "0.0.0.0:80".parse()?;
 
     // 获取数据库连接池
     let pool = Arc::new(
         PgPoolOptions::new()
             .max_connections(5)
-            .connect(&std::env::var("postgres").unwrap())
-            .await
-            .unwrap(),
+            .connect(&std::env::var("postgres")?)
+            .await?,
     );
 
     let user_manage_greeter = UserManageGreeter::new(Arc::clone(&pool));

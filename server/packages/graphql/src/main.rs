@@ -12,7 +12,7 @@ use schema::RootSchema;
 
 use crate::schema::root::{MutationRoot, QueryRoot};
 use crate::utils::cors::get_cors;
-use crate::utils::get_local_ip::get_local_ip;
+use anyhow::Result;
 
 mod errors;
 mod schema;
@@ -40,7 +40,7 @@ async fn graphql_playground() -> impl IntoResponse {
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<()> {
     // 设置跨域
     let cors = get_cors();
     let schema = Schema::build(QueryRoot, MutationRoot, EmptySubscription).finish();
@@ -51,12 +51,10 @@ async fn main() {
         .layer(Extension(schema))
         .layer(cors);
 
-    // 打印 ip
-    let ip = get_local_ip().unwrap();
-    println!("Playground: http://{ip}:80");
+    println!("Playground: http://graphql:80");
 
-    Server::bind(&"0.0.0.0:80".parse().unwrap())
+    Server::bind(&"0.0.0.0:80".parse()?)
         .serve(app.into_make_service())
-        .await
-        .unwrap();
+        .await?;
+    Ok(())
 }

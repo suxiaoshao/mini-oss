@@ -17,6 +17,7 @@ proto = { path = "../../common/proto", features = ["core_server", "user"] }
 errors = { path = "../../common/errors", features = ["mongo", "grpc"] }
 database = { path = "../../common/database", features = ["core"] }
 validation = { path = "../../common/validation", features = [] }
+anyhow = "1.0.56"
 
 [dev-dependencies]
 proto = { path = "../../common/proto", features = ["core_client"] }

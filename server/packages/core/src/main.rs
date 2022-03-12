@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use anyhow::Result;
 use database::PgPoolOptions;
 use proto::core::request_server::RequestServer;
 use proto::middleware::server::{add_auth, interceptor};
@@ -18,22 +19,17 @@ mod greeter;
 mod utils;
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let addr = "0.0.0.0:80".parse().unwrap();
+async fn main() -> Result<()> {
+    let addr = "0.0.0.0:80".parse()?;
 
     // 获取数据库连接池
     let pool = Arc::new(
         PgPoolOptions::new()
             .max_connections(5)
-            .connect(&std::env::var("postgres").unwrap())
-            .await
-            .unwrap(),
+            .connect(&std::env::var("postgres")?)
+            .await?,
     );
-    let mongo = Arc::new(
-        Mongo::new(&std::env::var("mongodb").unwrap())
-            .await
-            .unwrap(),
-    );
+    let mongo = Arc::new(Mongo::new(&std::env::var("mongodb")?).await?);
 
     let bucket_greeter = BucketGreeter::new(Arc::clone(&pool), Arc::clone(&mongo));
     let folder_greeter = FolderGreeter::new(Arc::clone(&pool), Arc::clone(&mongo));

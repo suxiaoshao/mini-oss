@@ -575,6 +575,7 @@ checksum = "245097e9a4535ee1e3e3931fcfcd55a796a44c643e8596ff6566d68f09b87bbc"
 name = "core"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "blake3",
  "database",
  "errors",
@@ -717,6 +718,7 @@ checksum = "3ee2393c4a91429dffb4bedf19f4d6abf27d8a732c8ce4980305d782e5426d57"
 name = "database"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "async-recursion",
  "errors",
  "futures",
@@ -1067,6 +1069,7 @@ dependencies = [
 name = "graphql"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "async-graphql",
  "async-graphql-axum",
  "axum",
@@ -1700,6 +1703,7 @@ checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 name = "open"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "axum",
  "axum-extra",
  "bson",
@@ -2049,6 +2053,7 @@ dependencies = [
 name = "proto"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "async-graphql",
  "http",
  "lazy_static",
@@ -3040,9 +3045,9 @@ dependencies = [
 
 [[package]]
 name = "tower-http"
-version = "0.2.4"
+version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "90c125fdea84614a4368fd35786b51d0682ab8d42705e061e92f0b955dea40fb"
+checksum = "aba3f3efabf7fb41fae8534fc20a817013dd1c12cb45441efb6c82e6556b4cd8"
 dependencies = [
  "bitflags",
  "bytes",
@@ -3291,6 +3296,7 @@ checksum = "68b90931029ab9b034b300b797048cf23723400aa757e8a2bfb9d748102f9821"
 name = "user"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "database",
  "errors",
  "jsonwebtoken",

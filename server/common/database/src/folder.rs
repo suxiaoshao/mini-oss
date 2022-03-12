@@ -268,20 +268,19 @@ impl From<FolderModal> for FolderInfo {
 }
 #[cfg(test)]
 mod test {
+    use anyhow::Result;
     use sqlx::postgres::PgPoolOptions;
 
     use super::FolderModal;
 
     #[tokio::test]
-    async fn test() {
+    async fn test() -> Result<()> {
         // 获取数据库连接池=]
         let pool = PgPoolOptions::new()
             .max_connections(5)
-            .connect(&std::env::var("postgres").unwrap())
-            .await
-            .unwrap();
-        FolderModal::delete_by_path("as-sushao", "/dsd", &pool)
-            .await
-            .unwrap();
+            .connect(&std::env::var("postgres")?)
+            .await?;
+        FolderModal::delete_by_path("as-sushao", "/dsd", &pool).await?;
+        Ok(())
     }
 }
