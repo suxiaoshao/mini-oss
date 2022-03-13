@@ -35,6 +35,7 @@ futures = "0.3.21"
 # request
 bson = "2.1.0"
 database = { path = "../../common/database", features = ["core"]}
+errors = { path = "../../common/errors" }
 
 # 错误
 anyhow = "1.0.56"

@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use database::bucket::BucketModal;
 use database::object::{ObjectAccess, ObjectCreateInput, ObjectModal};
 use database::{Decimal, Pool, Postgres};
 use proto::core::{
@@ -283,6 +284,7 @@ async fn create_object(
     pool: &Pool<Postgres>,
     mongo: &Mongo,
 ) -> Result<(), Status> {
+    let BucketModal { username, .. } = &BucketModal::find_one(bucket_name, pool).await?;
     // 判断该文件是否存在
     if ObjectModal::exist(path, bucket_name, filename, pool)
         .await
@@ -305,6 +307,7 @@ async fn create_object(
         object_id: &object_id,
         size: &Decimal::from(size),
         headers: &headers_from(filename),
+        username,
     };
     ObjectModal::create(input, pool).await?;
     Ok(())

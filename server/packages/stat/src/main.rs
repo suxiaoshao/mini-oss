@@ -35,7 +35,9 @@ async fn storage_task() -> Result<()> {
 
     let future_task = storage_data
         .iter()
-        .map(|(size, num, bucket)| StorageModal::create(bucket, size, *num, &pool))
+        .map(|(size, num, bucket, username)| {
+            StorageModal::create(bucket, size, *num, username, &pool)
+        })
         .collect::<Vec<_>>();
     futures::future::try_join_all(future_task).await?;
     Ok(())

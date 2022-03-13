@@ -19,12 +19,13 @@ create table if not exists folder
 );
 create table if not exists object
 (
+    username    varchar(25)        not null,
+    bucket_name varchar(255)       not null,
     path        text               not null,
+    filename    text               not null,
     create_time timestamptz        not null,
     update_time timestamptz        not null,
-    bucket_name varchar(255)       not null,
     object_id   varchar(24)        not null,
-    filename    text               not null,
     blake3      varchar(64)        not null,
     size        numeric            not null,
     access      object_access_type not null,

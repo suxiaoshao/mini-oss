@@ -6,6 +6,8 @@ use std::{
 
 use bson::oid::ObjectId;
 use bytes::Bytes;
+use database::bucket::BucketModal;
+use errors::TonicResult;
 use futures::ready;
 use hyper::Body;
 
@@ -52,7 +54,7 @@ impl http_body::Body for RequestBody {
         } else {
             tokio::spawn(async move {
                 // 失败为内部错误
-                RequestModal::add_upload_size(&id.to_string(), &bucket_name, &size, &pool)
+                add_upload_size(&id.to_string(), &bucket_name, &size, &pool)
                     .await
                     .unwrap();
             });
@@ -74,4 +76,15 @@ impl http_body::Body for RequestBody {
     fn size_hint(&self) -> http_body::SizeHint {
         self.inner.size_hint()
     }
+}
+
+async fn add_upload_size(
+    object_id: &str,
+    bucket_name: &str,
+    size: &Decimal,
+    pool: &Pool<Postgres>,
+) -> TonicResult<()> {
+    let BucketModal { username, .. } = BucketModal::find_one(bucket_name, pool).await?;
+    RequestModal::add_upload_size(object_id, bucket_name, size, &username, pool).await?;
+    Ok(())
 }

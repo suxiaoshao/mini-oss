@@ -19,6 +19,8 @@ pub struct RequestModal {
     pub download_size: Decimal,
     /// id
     pub object_id: String,
+    /// 用户名
+    pub username: String,
 }
 
 impl RequestModal {
@@ -28,20 +30,22 @@ impl RequestModal {
         bucket_name: &str,
         upload_size: &Decimal,
         download_size: &Decimal,
+        username: &str,
         pool: &Pool<Postgres>,
     ) -> TonicResult<Self> {
         // 获取现在时间
         let time = OffsetDateTime::from(SystemTime::now());
         sqlx::query(
             r#"insert into request
-                            (object_id,bucket_name,upload_size,download_size,time)
-                            values ($1,$2,$3,$4,$5)"#,
+                            (object_id,bucket_name,upload_size,download_size,time,username)
+                            values ($1,$2,$3,$4,$5,$6)"#,
         )
         .bind(object_id)
         .bind(bucket_name)
         .bind(upload_size)
         .bind(download_size)
         .bind(&time)
+        .bind(username)
         .execute(pool)
         .await?;
         Self::find_one(object_id, pool).await
@@ -70,6 +74,7 @@ impl RequestModal {
         object_id: &str,
         bucket_name: &str,
         size: &Decimal,
+        username: &str,
         pool: &Pool<Postgres>,
     ) -> TonicResult<Self> {
         match Self::exist(object_id, pool).await {
@@ -81,7 +86,17 @@ impl RequestModal {
                     .await?;
                 Self::find_one(object_id, pool).await
             }
-            Err(_) => Self::create(object_id, bucket_name, size, &Decimal::default(), pool).await,
+            Err(_) => {
+                Self::create(
+                    object_id,
+                    bucket_name,
+                    size,
+                    &Decimal::default(),
+                    username,
+                    pool,
+                )
+                .await
+            }
         }
     }
     /// 添加下载大小
@@ -89,6 +104,7 @@ impl RequestModal {
         object_id: &str,
         bucket_name: &str,
         size: &Decimal,
+        username: &str,
         pool: &Pool<Postgres>,
     ) -> TonicResult<Self> {
         match Self::exist(object_id, pool).await {
@@ -102,7 +118,17 @@ impl RequestModal {
                 .await?;
                 Self::find_one(object_id, pool).await
             }
-            Err(_) => Self::create(object_id, bucket_name, &Decimal::default(), size, pool).await,
+            Err(_) => {
+                Self::create(
+                    object_id,
+                    bucket_name,
+                    &Decimal::default(),
+                    size,
+                    username,
+                    pool,
+                )
+                .await
+            }
         }
     }
 }

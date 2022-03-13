@@ -48,6 +48,8 @@ pub struct ObjectModal {
     pub size: Decimal,
     /// 自定义头部
     pub headers: Vec<serde_json::Value>,
+    /// 用户名
+    pub username: String,
 }
 
 pub struct ObjectCreateInput<'a> {
@@ -59,6 +61,7 @@ pub struct ObjectCreateInput<'a> {
     pub object_id: &'a str,
     pub size: &'a Decimal,
     pub headers: &'a [Header],
+    pub username: &'a str,
 }
 
 impl ObjectModal {
@@ -73,6 +76,7 @@ impl ObjectModal {
             object_id,
             size,
             headers,
+            username,
         }: ObjectCreateInput<'a>,
         pool: &Pool<Postgres>,
     ) -> TonicResult<Self> {
@@ -83,8 +87,8 @@ impl ObjectModal {
             bind_headers.push(serde_json::to_value(header)?);
         }
         sqlx::query(r#"insert into object
-                            (path, create_time, update_time, access,bucket_name,filename,object_id,blake3,size,headers)
-                            values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)"#)
+                            (path, create_time, update_time, access,bucket_name,filename,object_id,blake3,size,headers,username)
+                            values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)"#)
             .bind(path)
             .bind(&time)
             .bind(&time)
@@ -95,6 +99,7 @@ impl ObjectModal {
             .bind(blake3)
             .bind(size)
             .bind(bind_headers)
+            .bind(username)
             .execute(pool)
             .await?;
         Self::find_one(path, bucket_name, filename, pool).await
@@ -107,13 +112,14 @@ impl ObjectModal {
         pool: &Pool<Postgres>,
     ) -> TonicResult<Self> {
         let object = sqlx::query_as(
-            r##"select path,access,create_time,update_time,bucket_name,filename,object_id,blake3,size,headers
+            r##"select *
                         from object where path = $1 and bucket_name=$2 and filename = $3"##,
         )
-        .bind(path).bind(bucket_name).bind(filename)
+        .bind(path)
+        .bind(bucket_name)
+        .bind(filename)
         .fetch_one(pool)
-        .await
-        ?;
+        .await?;
         Ok(object)
     }
     /// 判断是否存在
@@ -244,7 +250,7 @@ impl ObjectModal {
         pool: &Pool<Postgres>,
     ) -> TonicResult<i64> {
         let (count,): (i64,) = sqlx::query_as(
-            "select count(path) from object where bucket_name = $1 and path like $2",
+            "select count(object_id) from object where bucket_name = $1 and path like $2",
         )
         .bind(bucket_name)
         .bind(format!("{}%", father_path))
@@ -274,12 +280,13 @@ impl ObjectModal {
         father_path: &str,
         pool: &Pool<Postgres>,
     ) -> TonicResult<i64> {
-        let (count,): (i64,) =
-            sqlx::query_as("select count(path) from object where bucket_name = $1 and path=$2")
-                .bind(bucket_name)
-                .bind(father_path)
-                .fetch_one(pool)
-                .await?;
+        let (count,): (i64,) = sqlx::query_as(
+            "select count(object_id) from object where bucket_name = $1 and path=$2",
+        )
+        .bind(bucket_name)
+        .bind(father_path)
+        .fetch_one(pool)
+        .await?;
         Ok(count)
     }
     /// 获取列表
@@ -316,15 +323,17 @@ impl ObjectModal {
     /// 获取某个 bucket 下对象大小和数量
     pub async fn size_count_by_bucket(
         pool: &Pool<Postgres>,
-    ) -> TonicResult<Vec<(Decimal, i64, String)>> {
-        let result: Vec<(Option<Decimal>, i64, String)> = sqlx::query_as(
-            "select sum(size),count(object_id),bucket_name from object group by bucket_name",
+    ) -> TonicResult<Vec<(Decimal, i64, String, String)>> {
+        let result: Vec<(Option<Decimal>, i64, String,String)> = sqlx::query_as(
+            "select sum(size),count(object_id),bucket_name,username from object group by bucket_name",
         )
         .fetch_all(pool)
         .await?;
         Ok(result
             .into_iter()
-            .map(|(size, num, bucket_name)| (size.unwrap_or_default(), num, bucket_name))
+            .map(|(size, num, bucket_name, username)| {
+                (size.unwrap_or_default(), num, bucket_name, username)
+            })
             .collect())
     }
     /// 获取某个 bucket 下对象数量

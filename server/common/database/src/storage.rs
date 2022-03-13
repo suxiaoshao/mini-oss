@@ -15,6 +15,8 @@ pub struct StorageModal {
     pub size: Decimal,
     /// 对象数量
     pub num: i64,
+    /// 用户名
+    pub username: String,
 }
 impl StorageModal {
     /// 创建
@@ -22,19 +24,21 @@ impl StorageModal {
         bucket_name: &str,
         size: &Decimal,
         num: i64,
+        username: &str,
         pool: &Pool<Postgres>,
     ) -> TonicResult<Self> {
         // 获取现在时间
         let time = OffsetDateTime::from(SystemTime::now());
         sqlx::query(
             r#"insert into storage
-                            ( bucket_name,size,num,time)
-                            values ($1,$2,$3,$4)"#,
+                            ( bucket_name,size,num,time,username)
+                            values ($1,$2,$3,$4,$5)"#,
         )
         .bind(bucket_name)
         .bind(size)
         .bind(num)
         .bind(&time)
+        .bind(username)
         .execute(pool)
         .await?;
         Self::find_one(bucket_name, &time, pool).await
