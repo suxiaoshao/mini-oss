@@ -1,11 +1,13 @@
 use async_graphql::{EmptySubscription, Schema};
+use mutation::MutationRoot;
 
-use self::root::{MutationRoot, QueryRoot};
+use self::query::QueryRoot;
 
 mod bucket;
 mod folder;
+pub mod mutation;
 mod object;
-pub mod root;
+pub mod query;
 mod user_info;
 
 pub type RootSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;

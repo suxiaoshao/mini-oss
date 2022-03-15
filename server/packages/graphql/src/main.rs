@@ -10,9 +10,10 @@ use axum::{Router, Server};
 
 use schema::RootSchema;
 
-use crate::schema::root::{MutationRoot, QueryRoot};
+use crate::schema::query::QueryRoot;
 use crate::utils::cors::get_cors;
 use anyhow::Result;
+use schema::mutation::MutationRoot;
 
 mod errors;
 mod schema;
