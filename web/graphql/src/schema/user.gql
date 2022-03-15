@@ -6,6 +6,17 @@ query selfUserInfo {
     description
   }
 }
+
+query userStat($startTime: Int!, $endTime: Int!) {
+  selfUserInfo {
+    objectSize
+    objectCount
+    uploadSize(endTime: $endTime, startTime: $startTime)
+    downloadSize(startTime: $startTime, endTime: $endTime)
+    requestCount(endTime: $endTime, startTime: $startTime)
+  }
+}
+
 mutation updateInfo($data: UpdateUserInfoRequest!) {
   updateInfo(data: $data) {
     name

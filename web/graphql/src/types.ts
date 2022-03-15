@@ -452,10 +452,35 @@ export type UserInfo = {
   createTime: Scalars['Int'];
   /** 描述 */
   description?: Maybe<Scalars['String']>;
+  /** 下载大小 */
+  downloadSize: Scalars['String'];
   /** 名字 */
   name: Scalars['String'];
+  /** 对象数量 */
+  objectCount: Scalars['Int'];
+  /** 对象大小 */
+  objectSize: Scalars['String'];
+  /** 请求数量 */
+  requestCount: Scalars['Int'];
   /** 更新时间 */
   updateTime: Scalars['Int'];
+  /** 上传大小 */
+  uploadSize: Scalars['String'];
+};
+
+export type UserInfoDownloadSizeArgs = {
+  endTime: Scalars['Int'];
+  startTime: Scalars['Int'];
+};
+
+export type UserInfoRequestCountArgs = {
+  endTime: Scalars['Int'];
+  startTime: Scalars['Int'];
+};
+
+export type UserInfoUploadSizeArgs = {
+  endTime: Scalars['Int'];
+  startTime: Scalars['Int'];
 };
 
 export type UserList = {
@@ -709,6 +734,23 @@ export type SelfUserInfoQuery = {
     createTime: number;
     updateTime: number;
     description?: string | null;
+  };
+};
+
+export type UserStatQueryVariables = Exact<{
+  startTime: Scalars['Int'];
+  endTime: Scalars['Int'];
+}>;
+
+export type UserStatQuery = {
+  __typename?: 'QueryRoot';
+  selfUserInfo: {
+    __typename?: 'UserInfo';
+    objectSize: string;
+    objectCount: number;
+    uploadSize: string;
+    downloadSize: string;
+    requestCount: number;
   };
 };
 
@@ -1551,6 +1593,46 @@ export function useSelfUserInfoLazyQuery(
 export type SelfUserInfoQueryHookResult = ReturnType<typeof useSelfUserInfoQuery>;
 export type SelfUserInfoLazyQueryHookResult = ReturnType<typeof useSelfUserInfoLazyQuery>;
 export type SelfUserInfoQueryResult = Apollo.QueryResult<SelfUserInfoQuery, SelfUserInfoQueryVariables>;
+export const UserStatDocument = gql`
+  query userStat($startTime: Int!, $endTime: Int!) {
+    selfUserInfo {
+      objectSize
+      objectCount
+      uploadSize(endTime: $endTime, startTime: $startTime)
+      downloadSize(startTime: $startTime, endTime: $endTime)
+      requestCount(endTime: $endTime, startTime: $startTime)
+    }
+  }
+`;
+
+/**
+ * __useUserStatQuery__
+ *
+ * To run a query within a React component, call `useUserStatQuery` and pass it any options that fit your needs.
+ * When your component renders, `useUserStatQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useUserStatQuery({
+ *   variables: {
+ *      startTime: // value for 'startTime'
+ *      endTime: // value for 'endTime'
+ *   },
+ * });
+ */
+export function useUserStatQuery(baseOptions: Apollo.QueryHookOptions<UserStatQuery, UserStatQueryVariables>) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<UserStatQuery, UserStatQueryVariables>(UserStatDocument, options);
+}
+export function useUserStatLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UserStatQuery, UserStatQueryVariables>) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<UserStatQuery, UserStatQueryVariables>(UserStatDocument, options);
+}
+export type UserStatQueryHookResult = ReturnType<typeof useUserStatQuery>;
+export type UserStatLazyQueryHookResult = ReturnType<typeof useUserStatLazyQuery>;
+export type UserStatQueryResult = Apollo.QueryResult<UserStatQuery, UserStatQueryVariables>;
 export const UpdateInfoDocument = gql`
   mutation updateInfo($data: UpdateUserInfoRequest!) {
     updateInfo(data: $data) {

@@ -10,9 +10,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dayjs": "^1.10.8",
-    "react-table": "^7.7.0",
+    "dayjs": "^1.11.0",
     "notistack": "^2.0.3",
+    "react-table": "^7.7.0",
     "yup": "^0.32.11"
   },
   "devDependencies": {
