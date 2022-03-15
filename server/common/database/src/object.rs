@@ -356,6 +356,28 @@ impl ObjectModal {
     }
 }
 
+/// user
+impl ObjectModal {
+    /// 获取某个 bucket 下对象数量
+    pub async fn count_by_user(username: &str, pool: &Pool<Postgres>) -> TonicResult<i64> {
+        let (count,): (i64,) =
+            sqlx::query_as("select count(object_id) from object where username=$1")
+                .bind(username)
+                .fetch_one(pool)
+                .await?;
+        Ok(count)
+    }
+    /// 获取某个 bucket 下对象大小
+    pub async fn size_by_user(username: &str, pool: &Pool<Postgres>) -> TonicResult<Decimal> {
+        let (size,): (Option<Decimal>,) =
+            sqlx::query_as("select sum(size) from object where username=$1")
+                .bind(username)
+                .fetch_one(pool)
+                .await?;
+        Ok(size.unwrap_or_default())
+    }
+}
+
 impl TryFrom<ObjectModal> for ObjectInfo {
     type Error = TonicError;
 

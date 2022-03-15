@@ -4,11 +4,11 @@ use std::{
     task::{Context, Poll},
 };
 
+use anyhow::Result;
 use axum::body::BoxBody;
 use bson::oid::ObjectId;
 use bytes::Bytes;
 use database::bucket::BucketModal;
-use errors::TonicResult;
 use futures::ready;
 
 use database::request::RequestModal;
@@ -85,7 +85,7 @@ async fn add_download_size(
     bucket_name: &str,
     size: &Decimal,
     pool: &Pool<Postgres>,
-) -> TonicResult<()> {
+) -> Result<()> {
     let BucketModal { username, .. } = BucketModal::find_one(bucket_name, pool).await?;
     RequestModal::add_download_size(object_id, bucket_name, size, &username, pool).await?;
     Ok(())

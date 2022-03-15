@@ -212,6 +212,10 @@ service Object {
   rpc GetTotalByBucket(GetBucketRequest) returns (CountReply){}
   // 获取 bucket 下所有 object 大小
   rpc GetSizeByBucket(GetBucketRequest) returns (SizeReply){}
+  // 获取当前用户所有 object 总数
+  rpc GetTotalByUser(user.Empty) returns (CountReply){}
+  // 获取当前用户所有 object 大小
+  rpc GetSizeByUser(user.Empty) returns (SizeReply){}
 }
 
 message SizeReply{
@@ -304,18 +308,31 @@ message Header{
 
 service Request {
   // 获取上传数据大小
-  rpc GetUploadSizeByBucket(GetTimeRequest) returns (SizeReply){}
+  rpc GetUploadSizeByBucket(GetBucketWithTimeRequest) returns (SizeReply){}
   // 获取下载数据大小
-  rpc GetDownloadSizeByBucket(GetTimeRequest) returns (SizeReply){}
+  rpc GetDownloadSizeByBucket(GetBucketWithTimeRequest) returns (SizeReply){}
+  // 获取请求数量
+  rpc GetCountByBucket(GetBucketWithTimeRequest) returns (CountReply){}
+  // 获取上传数据大小
+  rpc GetUploadSizeByUser(GetTimeRequest) returns (SizeReply){}
   // 获取下载数据大小
-  rpc GetCountByBucket(GetTimeRequest) returns (CountReply){}
+  rpc GetDownloadSizeByUser(GetTimeRequest) returns (SizeReply){}
+  // 获取请求数量
+  rpc GetCountByUser(GetTimeRequest) returns (CountReply){}
 }
 
-message GetTimeRequest{
+message GetBucketWithTimeRequest{
   // bucket 名
   string bucketName = 1;
   // 开始时间
   int64 startTime = 2;
   // 结束时间
   int64 endTime = 3;
+}
+
+message GetTimeRequest{
+  // 开始时间
+  int64 startTime = 1;
+  // 结束时间
+  int64 endTime = 2;
 }

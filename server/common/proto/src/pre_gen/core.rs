@@ -278,7 +278,7 @@ pub struct Header {
     pub value: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct GetTimeRequest {
+pub struct GetBucketWithTimeRequest {
     /// bucket 名
     #[prost(string, tag = "1")]
     pub bucket_name: ::prost::alloc::string::String,
@@ -287,6 +287,15 @@ pub struct GetTimeRequest {
     pub start_time: i64,
     /// 结束时间
     #[prost(int64, tag = "3")]
+    pub end_time: i64,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetTimeRequest {
+    /// 开始时间
+    #[prost(int64, tag = "1")]
+    pub start_time: i64,
+    /// 结束时间
+    #[prost(int64, tag = "2")]
     pub end_time: i64,
 }
 /// 访问权限类型
@@ -868,6 +877,36 @@ pub mod object_client {
             let path = http::uri::PathAndQuery::from_static("/core.Object/GetSizeByBucket");
             self.inner.unary(request.into_request(), path, codec).await
         }
+        #[doc = " 获取当前用户所有 object 总数"]
+        pub async fn get_total_by_user(
+            &mut self,
+            request: impl tonic::IntoRequest<super::super::user::Empty>,
+        ) -> Result<tonic::Response<super::CountReply>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/core.Object/GetTotalByUser");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        #[doc = " 获取当前用户所有 object 大小"]
+        pub async fn get_size_by_user(
+            &mut self,
+            request: impl tonic::IntoRequest<super::super::user::Empty>,
+        ) -> Result<tonic::Response<super::SizeReply>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/core.Object/GetSizeByUser");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
     }
 }
 #[doc = r" Generated client implementations."]
@@ -933,7 +972,7 @@ pub mod request_client {
         #[doc = " 获取上传数据大小"]
         pub async fn get_upload_size_by_bucket(
             &mut self,
-            request: impl tonic::IntoRequest<super::GetTimeRequest>,
+            request: impl tonic::IntoRequest<super::GetBucketWithTimeRequest>,
         ) -> Result<tonic::Response<super::SizeReply>, tonic::Status> {
             self.inner.ready().await.map_err(|e| {
                 tonic::Status::new(
@@ -948,7 +987,7 @@ pub mod request_client {
         #[doc = " 获取下载数据大小"]
         pub async fn get_download_size_by_bucket(
             &mut self,
-            request: impl tonic::IntoRequest<super::GetTimeRequest>,
+            request: impl tonic::IntoRequest<super::GetBucketWithTimeRequest>,
         ) -> Result<tonic::Response<super::SizeReply>, tonic::Status> {
             self.inner.ready().await.map_err(|e| {
                 tonic::Status::new(
@@ -961,8 +1000,53 @@ pub mod request_client {
                 http::uri::PathAndQuery::from_static("/core.Request/GetDownloadSizeByBucket");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取下载数据大小"]
+        #[doc = " 获取请求数量"]
         pub async fn get_count_by_bucket(
+            &mut self,
+            request: impl tonic::IntoRequest<super::GetBucketWithTimeRequest>,
+        ) -> Result<tonic::Response<super::CountReply>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/core.Request/GetCountByBucket");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        #[doc = " 获取上传数据大小"]
+        pub async fn get_upload_size_by_user(
+            &mut self,
+            request: impl tonic::IntoRequest<super::GetTimeRequest>,
+        ) -> Result<tonic::Response<super::SizeReply>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/core.Request/GetUploadSizeByUser");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        #[doc = " 获取下载数据大小"]
+        pub async fn get_download_size_by_user(
+            &mut self,
+            request: impl tonic::IntoRequest<super::GetTimeRequest>,
+        ) -> Result<tonic::Response<super::SizeReply>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/core.Request/GetDownloadSizeByUser");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        #[doc = " 获取请求数量"]
+        pub async fn get_count_by_user(
             &mut self,
             request: impl tonic::IntoRequest<super::GetTimeRequest>,
         ) -> Result<tonic::Response<super::CountReply>, tonic::Status> {
@@ -973,7 +1057,7 @@ pub mod request_client {
                 )
             })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/core.Request/GetCountByBucket");
+            let path = http::uri::PathAndQuery::from_static("/core.Request/GetCountByUser");
             self.inner.unary(request.into_request(), path, codec).await
         }
     }
@@ -1674,6 +1758,16 @@ pub mod object_server {
             &self,
             request: tonic::Request<super::GetBucketRequest>,
         ) -> Result<tonic::Response<super::SizeReply>, tonic::Status>;
+        #[doc = " 获取当前用户所有 object 总数"]
+        async fn get_total_by_user(
+            &self,
+            request: tonic::Request<super::super::user::Empty>,
+        ) -> Result<tonic::Response<super::CountReply>, tonic::Status>;
+        #[doc = " 获取当前用户所有 object 大小"]
+        async fn get_size_by_user(
+            &self,
+            request: tonic::Request<super::super::user::Empty>,
+        ) -> Result<tonic::Response<super::SizeReply>, tonic::Status>;
     }
     #[derive(Debug)]
     pub struct ObjectServer<T: Object> {
@@ -2055,6 +2149,68 @@ pub mod object_server {
                     };
                     Box::pin(fut)
                 }
+                "/core.Object/GetTotalByUser" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetTotalByUserSvc<T: Object>(pub Arc<T>);
+                    impl<T: Object> tonic::server::UnaryService<super::super::user::Empty> for GetTotalByUserSvc<T> {
+                        type Response = super::CountReply;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::super::user::Empty>,
+                        ) -> Self::Future {
+                            let inner = self.0.clone();
+                            let fut = async move { (*inner).get_total_by_user(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = GetTotalByUserSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
+                            accept_compression_encodings,
+                            send_compression_encodings,
+                        );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/core.Object/GetSizeByUser" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetSizeByUserSvc<T: Object>(pub Arc<T>);
+                    impl<T: Object> tonic::server::UnaryService<super::super::user::Empty> for GetSizeByUserSvc<T> {
+                        type Response = super::SizeReply;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::super::user::Empty>,
+                        ) -> Self::Future {
+                            let inner = self.0.clone();
+                            let fut = async move { (*inner).get_size_by_user(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = GetSizeByUserSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
+                            accept_compression_encodings,
+                            send_compression_encodings,
+                        );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
                 _ => Box::pin(async move {
                     Ok(http::Response::builder()
                         .status(200)
@@ -2100,15 +2256,30 @@ pub mod request_server {
         #[doc = " 获取上传数据大小"]
         async fn get_upload_size_by_bucket(
             &self,
-            request: tonic::Request<super::GetTimeRequest>,
+            request: tonic::Request<super::GetBucketWithTimeRequest>,
         ) -> Result<tonic::Response<super::SizeReply>, tonic::Status>;
         #[doc = " 获取下载数据大小"]
         async fn get_download_size_by_bucket(
             &self,
+            request: tonic::Request<super::GetBucketWithTimeRequest>,
+        ) -> Result<tonic::Response<super::SizeReply>, tonic::Status>;
+        #[doc = " 获取请求数量"]
+        async fn get_count_by_bucket(
+            &self,
+            request: tonic::Request<super::GetBucketWithTimeRequest>,
+        ) -> Result<tonic::Response<super::CountReply>, tonic::Status>;
+        #[doc = " 获取上传数据大小"]
+        async fn get_upload_size_by_user(
+            &self,
             request: tonic::Request<super::GetTimeRequest>,
         ) -> Result<tonic::Response<super::SizeReply>, tonic::Status>;
         #[doc = " 获取下载数据大小"]
-        async fn get_count_by_bucket(
+        async fn get_download_size_by_user(
+            &self,
+            request: tonic::Request<super::GetTimeRequest>,
+        ) -> Result<tonic::Response<super::SizeReply>, tonic::Status>;
+        #[doc = " 获取请求数量"]
+        async fn get_count_by_user(
             &self,
             request: tonic::Request<super::GetTimeRequest>,
         ) -> Result<tonic::Response<super::CountReply>, tonic::Status>;
@@ -2155,14 +2326,14 @@ pub mod request_server {
                 "/core.Request/GetUploadSizeByBucket" => {
                     #[allow(non_camel_case_types)]
                     struct GetUploadSizeByBucketSvc<T: Request>(pub Arc<T>);
-                    impl<T: Request> tonic::server::UnaryService<super::GetTimeRequest>
+                    impl<T: Request> tonic::server::UnaryService<super::GetBucketWithTimeRequest>
                         for GetUploadSizeByBucketSvc<T>
                     {
                         type Response = super::SizeReply;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::GetTimeRequest>,
+                            request: tonic::Request<super::GetBucketWithTimeRequest>,
                         ) -> Self::Future {
                             let inner = self.0.clone();
                             let fut =
@@ -2189,14 +2360,14 @@ pub mod request_server {
                 "/core.Request/GetDownloadSizeByBucket" => {
                     #[allow(non_camel_case_types)]
                     struct GetDownloadSizeByBucketSvc<T: Request>(pub Arc<T>);
-                    impl<T: Request> tonic::server::UnaryService<super::GetTimeRequest>
+                    impl<T: Request> tonic::server::UnaryService<super::GetBucketWithTimeRequest>
                         for GetDownloadSizeByBucketSvc<T>
                     {
                         type Response = super::SizeReply;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::GetTimeRequest>,
+                            request: tonic::Request<super::GetBucketWithTimeRequest>,
                         ) -> Self::Future {
                             let inner = self.0.clone();
                             let fut =
@@ -2223,12 +2394,14 @@ pub mod request_server {
                 "/core.Request/GetCountByBucket" => {
                     #[allow(non_camel_case_types)]
                     struct GetCountByBucketSvc<T: Request>(pub Arc<T>);
-                    impl<T: Request> tonic::server::UnaryService<super::GetTimeRequest> for GetCountByBucketSvc<T> {
+                    impl<T: Request> tonic::server::UnaryService<super::GetBucketWithTimeRequest>
+                        for GetCountByBucketSvc<T>
+                    {
                         type Response = super::CountReply;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::GetTimeRequest>,
+                            request: tonic::Request<super::GetBucketWithTimeRequest>,
                         ) -> Self::Future {
                             let inner = self.0.clone();
                             let fut = async move { (*inner).get_count_by_bucket(request).await };
@@ -2241,6 +2414,103 @@ pub mod request_server {
                     let fut = async move {
                         let inner = inner.0;
                         let method = GetCountByBucketSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
+                            accept_compression_encodings,
+                            send_compression_encodings,
+                        );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/core.Request/GetUploadSizeByUser" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetUploadSizeByUserSvc<T: Request>(pub Arc<T>);
+                    impl<T: Request> tonic::server::UnaryService<super::GetTimeRequest> for GetUploadSizeByUserSvc<T> {
+                        type Response = super::SizeReply;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::GetTimeRequest>,
+                        ) -> Self::Future {
+                            let inner = self.0.clone();
+                            let fut =
+                                async move { (*inner).get_upload_size_by_user(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = GetUploadSizeByUserSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
+                            accept_compression_encodings,
+                            send_compression_encodings,
+                        );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/core.Request/GetDownloadSizeByUser" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetDownloadSizeByUserSvc<T: Request>(pub Arc<T>);
+                    impl<T: Request> tonic::server::UnaryService<super::GetTimeRequest>
+                        for GetDownloadSizeByUserSvc<T>
+                    {
+                        type Response = super::SizeReply;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::GetTimeRequest>,
+                        ) -> Self::Future {
+                            let inner = self.0.clone();
+                            let fut =
+                                async move { (*inner).get_download_size_by_user(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = GetDownloadSizeByUserSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
+                            accept_compression_encodings,
+                            send_compression_encodings,
+                        );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/core.Request/GetCountByUser" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetCountByUserSvc<T: Request>(pub Arc<T>);
+                    impl<T: Request> tonic::server::UnaryService<super::GetTimeRequest> for GetCountByUserSvc<T> {
+                        type Response = super::CountReply;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::GetTimeRequest>,
+                        ) -> Self::Future {
+                            let inner = self.0.clone();
+                            let fut = async move { (*inner).get_count_by_user(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = GetCountByUserSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
                             accept_compression_encodings,

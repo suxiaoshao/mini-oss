@@ -4,10 +4,10 @@ use std::{
     task::{Context, Poll},
 };
 
+use anyhow::Result;
 use bson::oid::ObjectId;
 use bytes::Bytes;
 use database::bucket::BucketModal;
-use errors::TonicResult;
 use futures::ready;
 use hyper::Body;
 
@@ -83,7 +83,7 @@ async fn add_upload_size(
     bucket_name: &str,
     size: &Decimal,
     pool: &Pool<Postgres>,
-) -> TonicResult<()> {
+) -> Result<()> {
     let BucketModal { username, .. } = BucketModal::find_one(bucket_name, pool).await?;
     RequestModal::add_upload_size(object_id, bucket_name, size, &username, pool).await?;
     Ok(())

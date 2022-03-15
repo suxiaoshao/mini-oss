@@ -144,10 +144,10 @@ impl RequestModal {
         Ok(())
     }
 }
-/// time
+/// time and bucket
 impl RequestModal {
     /// 获取某个时间间隔的上传总量
-    pub async fn total_upload_size_by_time(
+    pub async fn upload_by_time_bucket(
         bucket_name: &str,
         start_time: &OffsetDateTime,
         end_time: &OffsetDateTime,
@@ -160,7 +160,7 @@ impl RequestModal {
         Ok(size.unwrap_or_default())
     }
     /// 获取某个时间间隔的上传总量
-    pub async fn total_download_size_by_time(
+    pub async fn download_by_time_bucket(
         bucket_name: &str,
         start_time: &OffsetDateTime,
         end_time: &OffsetDateTime,
@@ -173,7 +173,7 @@ impl RequestModal {
         Ok(size.unwrap_or_default())
     }
     /// 获取某个时间间隔的上传总量
-    pub async fn count_by_time(
+    pub async fn count_by_time_bucket(
         bucket_name: &str,
         start_time: &OffsetDateTime,
         end_time: &OffsetDateTime,
@@ -181,6 +181,49 @@ impl RequestModal {
     ) -> TonicResult<i64> {
         let (total,): (i64,) = sqlx::query_as("select count(object_id) from request where bucket_name = $1 and time >= $2 and time <= $3")
             .bind(bucket_name).bind(start_time).bind(end_time)
+            .fetch_one(pool)
+            .await?;
+        Ok(total)
+    }
+}
+
+/// time and user
+impl RequestModal {
+    /// 获取某个时间间隔的上传总量
+    pub async fn upload_by_time_user(
+        username: &str,
+        start_time: &OffsetDateTime,
+        end_time: &OffsetDateTime,
+        pool: &Pool<Postgres>,
+    ) -> TonicResult<Decimal> {
+        let (size,): (Option<Decimal>,) = sqlx::query_as("select sum(upload_size) from request where username = $1 and time >= $2 and time <= $3")
+            .bind(username).bind(start_time).bind(end_time)
+            .fetch_one(pool)
+            .await?;
+        Ok(size.unwrap_or_default())
+    }
+    /// 获取某个时间间隔的上传总量
+    pub async fn download_by_time_user(
+        username: &str,
+        start_time: &OffsetDateTime,
+        end_time: &OffsetDateTime,
+        pool: &Pool<Postgres>,
+    ) -> TonicResult<Decimal> {
+        let (size,): (Option<Decimal>,) = sqlx::query_as("select sum(download_size) from request where username = $1 and time >= $2 and time <= $3")
+            .bind(username).bind(start_time).bind(end_time)
+            .fetch_one(pool)
+            .await?;
+        Ok(size.unwrap_or_default())
+    }
+    /// 获取某个时间间隔的上传总量
+    pub async fn count_by_time_user(
+        username: &str,
+        start_time: &OffsetDateTime,
+        end_time: &OffsetDateTime,
+        pool: &Pool<Postgres>,
+    ) -> TonicResult<i64> {
+        let (total,): (i64,) = sqlx::query_as("select count(object_id) from request where username = $1 and time >= $2 and time <= $3")
+            .bind(username).bind(start_time).bind(end_time)
             .fetch_one(pool)
             .await?;
         Ok(total)

@@ -16,6 +16,7 @@ use proto::{
     user::Empty,
     Request, Response, Status,
 };
+use validation::check_auth::check_user;
 use validation::TonicValidate;
 
 use crate::utils::check::{check_bucket, check_folder_writeable, check_object_writeable};
@@ -268,6 +269,34 @@ impl Object for ObjectGreeter {
         // 判断权限
         check_bucket(auth, &bucket_name, pool).await?;
         let size = ObjectModal::size_by_bucket(&bucket_name, pool)
+            .await?
+            .to_string();
+        Ok(Response::new(SizeReply { size }))
+    }
+
+    async fn get_total_by_user(
+        &self,
+        request: Request<Empty>,
+    ) -> Result<Response<CountReply>, Status> {
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
+        let pool = &self.pool;
+        // 判断权限
+        let username = check_user(auth).await?;
+        let total = ObjectModal::count_by_user(&username, pool).await?;
+        Ok(Response::new(CountReply { total }))
+    }
+
+    async fn get_size_by_user(
+        &self,
+        request: Request<Empty>,
+    ) -> Result<Response<SizeReply>, Status> {
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
+        let pool = &self.pool;
+        // 判断权限
+        let username = check_user(auth).await?;
+        let size = ObjectModal::size_by_user(&username, pool)
             .await?
             .to_string();
         Ok(Response::new(SizeReply { size }))

@@ -1,6 +1,6 @@
 use async_graphql::{ComplexObject, Context, SimpleObject};
 
-use proto::core::{CountReply, GetBucketRequest, GetTimeRequest, SizeReply};
+use proto::core::{CountReply, GetBucketRequest, GetBucketWithTimeRequest, SizeReply};
 use proto::middleware::client::request_client;
 use proto::{
     core::{BucketAccess, GetBucketListReply},
@@ -59,7 +59,7 @@ impl BucketInfo {
         let auth = ctx.data::<String>().ok().cloned();
         let mut client = request_client(auth).await?;
         let SizeReply { size } = client
-            .get_upload_size_by_bucket(GetTimeRequest {
+            .get_upload_size_by_bucket(GetBucketWithTimeRequest {
                 bucket_name: self.name.clone(),
                 start_time,
                 end_time,
@@ -78,7 +78,7 @@ impl BucketInfo {
         let auth = ctx.data::<String>().ok().cloned();
         let mut client = request_client(auth).await?;
         let SizeReply { size } = client
-            .get_download_size_by_bucket(GetTimeRequest {
+            .get_download_size_by_bucket(GetBucketWithTimeRequest {
                 bucket_name: self.name.clone(),
                 start_time,
                 end_time,
@@ -97,7 +97,7 @@ impl BucketInfo {
         let auth = ctx.data::<String>().ok().cloned();
         let mut client = request_client(auth).await?;
         let CountReply { total } = client
-            .get_count_by_bucket(GetTimeRequest {
+            .get_count_by_bucket(GetBucketWithTimeRequest {
                 bucket_name: self.name.clone(),
                 start_time,
                 end_time,
