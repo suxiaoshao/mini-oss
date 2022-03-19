@@ -25,7 +25,16 @@ fn build_storage_task() -> Result<Task, TaskError> {
         .spawn_async_routine(storage_task)
 }
 
-async fn storage_task() -> Result<()> {
+async fn storage_task() {
+    match _storage_task().await {
+        Ok(_) => {}
+        Err(err) => {
+            println!("{:?}",err);
+        }
+    }
+}
+
+async fn _storage_task() -> Result<()> {
     // 获取数据库连接池
     let pool = PgPoolOptions::new()
         .max_connections(5)

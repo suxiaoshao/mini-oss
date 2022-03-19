@@ -83,7 +83,7 @@ impl StorageModal{
         pool: &Pool<Postgres>,
     ) -> TonicResult<Vec<Self>> {
         let result = sqlx::query_as(
-            "select * from storage where bucket_name = $1 and time >= $2 and time <= $3",
+            "select * from storage where bucket_name = $1 and time >= $2 and time <= $3 order by time",
         )
             .bind(bucket_name)
             .bind(start_time)

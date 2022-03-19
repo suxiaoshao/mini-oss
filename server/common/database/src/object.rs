@@ -325,7 +325,7 @@ impl ObjectModal {
         pool: &Pool<Postgres>,
     ) -> TonicResult<Vec<(Decimal, i64, String, String)>> {
         let result: Vec<(Option<Decimal>, i64, String,String)> = sqlx::query_as(
-            "select sum(size),count(object_id),bucket_name,username from object group by bucket_name",
+            "select sum(size),count(object_id),bucket_name,username from object group by bucket_name,username",
         )
         .fetch_all(pool)
         .await?;
