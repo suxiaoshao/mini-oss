@@ -319,6 +319,7 @@ pub struct SizeDurationReply {
     #[prost(message, repeated, tag = "1")]
     pub data: ::prost::alloc::vec::Vec<SizeDurationItem>,
 }
+#[cfg_attr(feature = "graphql", derive(SimpleObject))]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SizeDurationItem {
     /// 开始时间
@@ -336,6 +337,7 @@ pub struct CountDurationReply {
     #[prost(message, repeated, tag = "1")]
     pub data: ::prost::alloc::vec::Vec<CountDurationItem>,
 }
+#[cfg_attr(feature = "graphql", derive(SimpleObject))]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CountDurationItem {
     /// 开始时间
@@ -374,6 +376,7 @@ pub struct SizeChartReply {
     #[prost(message, repeated, tag = "1")]
     pub data: ::prost::alloc::vec::Vec<SizeChartItem>,
 }
+#[cfg_attr(feature = "graphql", derive(SimpleObject))]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SizeChartItem {
     /// 时间
@@ -388,6 +391,7 @@ pub struct CountChartReply {
     #[prost(message, repeated, tag = "1")]
     pub data: ::prost::alloc::vec::Vec<CountChartItem>,
 }
+#[cfg_attr(feature = "graphql", derive(SimpleObject))]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CountChartItem {
     /// 时间

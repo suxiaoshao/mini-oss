@@ -89,14 +89,35 @@ async fn get_chart_storage(
     let storages = if storages.len() <= SPLIT_FLAG {
         storages
     } else {
-        let proportion = (SPLIT_FLAG as f64) / (storages.len() as f64);
-        let mut s = vec![];
-        for (index, storage) in storages.into_iter().enumerate() {
-            if ((s.len() as f64) / (index as f64)) < proportion {
-                s.push(storage);
-            }
-        }
-        s
+        vec_filter_by_proportion(SPLIT_FLAG,storages)
     };
     Ok(storages)
+}
+
+/// 按比例筛选
+fn vec_filter_by_proportion<T>(num: usize, data: Vec<T>) -> Vec<T> {
+    let proportion = (num as f64) / ((data.len() + 1) as f64);
+    let mut s = vec![];
+    let len = data.len();
+    for (index, storage) in data.into_iter().enumerate() {
+        if ((s.len() as f64) / ((index + 1) as f64)) < proportion || index == len - 1 {
+            s.push(storage);
+        }
+    }
+    s
+}
+
+#[cfg(test)]
+mod test {
+    use crate::greeter::storage::vec_filter_by_proportion;
+
+    #[test]
+    fn test_vec_filter() {
+        let mut s = vec![];
+        for i in 0..100 {
+            s.push(i)
+        }
+        let s = vec_filter_by_proportion(30, s);
+        println!("{:?}", s);
+    }
 }
