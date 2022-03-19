@@ -320,18 +320,18 @@ service Request {
   // 获取请求数量
   rpc GetCountByUser(GetTimeRequest) returns (CountReply){}
   // 获取数量图表信息
-  rpc GetCountChartByBucket(GetBucketWithTimeRequest) returns (CountChartReply){}
+  rpc GetCountDurationByBucket(GetBucketWithTimeRequest) returns (CountDurationReply){}
   // 获取上传图表信息
-  rpc GetUploadChartByBucket(GetBucketWithTimeRequest) returns (SizeChartReply){}
+  rpc GetUploadDurationByBucket(GetBucketWithTimeRequest) returns (SizeDurationReply){}
   // 获取下载图表信息
-  rpc GetDownloadChartByBucket(GetBucketWithTimeRequest) returns (SizeChartReply){}
+  rpc GetDownloadDurationByBucket(GetBucketWithTimeRequest) returns (SizeDurationReply){}
 }
 
-message SizeChartReply{
-  repeated SizeChartItem data = 1;
+message SizeDurationReply{
+  repeated SizeDurationItem data = 1;
 }
 
-message SizeChartItem{
+message SizeDurationItem{
   // 开始时间
   int64 startTime = 1;
   // 结束时间
@@ -340,11 +340,11 @@ message SizeChartItem{
   string value = 3;
 }
 
-message CountChartReply{
-  repeated CountChartItem data = 1;
+message CountDurationReply{
+  repeated CountDurationItem data = 1;
 }
 
-message CountChartItem{
+message CountDurationItem{
   // 开始时间
   int64 startTime = 1;
   // 结束时间
@@ -367,4 +367,33 @@ message GetTimeRequest{
   int64 startTime = 1;
   // 结束时间
   int64 endTime = 2;
+}
+
+service Storage {
+  // 获取数量图表信息
+  rpc GetCountChartByBucket(GetBucketWithTimeRequest) returns (CountChartReply){}
+  // 获取大小图表信息
+  rpc GetSizeChartByBucket(GetBucketWithTimeRequest) returns (SizeChartReply){}
+}
+
+message SizeChartReply{
+  repeated SizeChartItem data = 1;
+}
+
+message SizeChartItem{
+  // 时间
+  int64 time = 1;
+  // 数据
+  string value = 2;
+}
+
+message CountChartReply{
+  repeated CountChartItem data = 1;
+}
+
+message CountChartItem{
+  // 时间
+  int64 time = 1;
+  // 数据
+  int64 value = 2;
 }

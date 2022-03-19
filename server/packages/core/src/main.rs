@@ -8,12 +8,14 @@ use proto::{
     core::{bucket_server::BucketServer, folder_server::FolderServer, object_server::ObjectServer},
     transport::Server,
 };
+use proto::core::storage_server::StorageServer;
 
 use crate::greeter::request::RequestGreeter;
 use crate::{
     greeter::{bucket::BucketGreeter, folder::FolderGreeter, object::ObjectGreeter},
     utils::mongo::Mongo,
 };
+use crate::greeter::storage::StorageGreeter;
 
 mod greeter;
 mod utils;
@@ -35,6 +37,7 @@ async fn main() -> Result<()> {
     let folder_greeter = FolderGreeter::new(Arc::clone(&pool), Arc::clone(&mongo));
     let object_greeter = ObjectGreeter::new(Arc::clone(&pool), Arc::clone(&mongo));
     let request_greeter = RequestGreeter::new(Arc::clone(&pool));
+    let storage_greeter = StorageGreeter::new(Arc::clone(&pool));
     println!("GreeterServer listening on {addr}");
 
     Server::builder()
@@ -43,6 +46,7 @@ async fn main() -> Result<()> {
         .add_service(FolderServer::new(folder_greeter))
         .add_service(ObjectServer::new(object_greeter))
         .add_service(RequestServer::new(request_greeter))
+        .add_service(StorageServer::new(storage_greeter))
         .serve(addr)
         .await?;
 

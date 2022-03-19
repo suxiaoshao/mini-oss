@@ -278,12 +278,12 @@ pub struct Header {
     pub value: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct SizeChartReply {
+pub struct SizeDurationReply {
     #[prost(message, repeated, tag = "1")]
-    pub data: ::prost::alloc::vec::Vec<SizeChartItem>,
+    pub data: ::prost::alloc::vec::Vec<SizeDurationItem>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct SizeChartItem {
+pub struct SizeDurationItem {
     /// 开始时间
     #[prost(int64, tag = "1")]
     pub start_time: i64,
@@ -295,12 +295,12 @@ pub struct SizeChartItem {
     pub value: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct CountChartReply {
+pub struct CountDurationReply {
     #[prost(message, repeated, tag = "1")]
-    pub data: ::prost::alloc::vec::Vec<CountChartItem>,
+    pub data: ::prost::alloc::vec::Vec<CountDurationItem>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct CountChartItem {
+pub struct CountDurationItem {
     /// 开始时间
     #[prost(int64, tag = "1")]
     pub start_time: i64,
@@ -331,6 +331,34 @@ pub struct GetTimeRequest {
     /// 结束时间
     #[prost(int64, tag = "2")]
     pub end_time: i64,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct SizeChartReply {
+    #[prost(message, repeated, tag = "1")]
+    pub data: ::prost::alloc::vec::Vec<SizeChartItem>,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct SizeChartItem {
+    /// 时间
+    #[prost(int64, tag = "1")]
+    pub time: i64,
+    /// 数据
+    #[prost(string, tag = "2")]
+    pub value: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CountChartReply {
+    #[prost(message, repeated, tag = "1")]
+    pub data: ::prost::alloc::vec::Vec<CountChartItem>,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CountChartItem {
+    /// 时间
+    #[prost(int64, tag = "1")]
+    pub time: i64,
+    /// 数据
+    #[prost(int64, tag = "2")]
+    pub value: i64,
 }
 /// 访问权限类型
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
@@ -1095,6 +1123,116 @@ pub mod request_client {
             self.inner.unary(request.into_request(), path, codec).await
         }
         #[doc = " 获取数量图表信息"]
+        pub async fn get_count_duration_by_bucket(
+            &mut self,
+            request: impl tonic::IntoRequest<super::GetBucketWithTimeRequest>,
+        ) -> Result<tonic::Response<super::CountDurationReply>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path =
+                http::uri::PathAndQuery::from_static("/core.Request/GetCountDurationByBucket");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        #[doc = " 获取上传图表信息"]
+        pub async fn get_upload_duration_by_bucket(
+            &mut self,
+            request: impl tonic::IntoRequest<super::GetBucketWithTimeRequest>,
+        ) -> Result<tonic::Response<super::SizeDurationReply>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path =
+                http::uri::PathAndQuery::from_static("/core.Request/GetUploadDurationByBucket");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        #[doc = " 获取下载图表信息"]
+        pub async fn get_download_duration_by_bucket(
+            &mut self,
+            request: impl tonic::IntoRequest<super::GetBucketWithTimeRequest>,
+        ) -> Result<tonic::Response<super::SizeDurationReply>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path =
+                http::uri::PathAndQuery::from_static("/core.Request/GetDownloadDurationByBucket");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+    }
+}
+#[doc = r" Generated client implementations."]
+pub mod storage_client {
+    #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+    use tonic::codegen::*;
+    #[derive(Debug, Clone)]
+    pub struct StorageClient<T> {
+        inner: tonic::client::Grpc<T>,
+    }
+    impl StorageClient<tonic::transport::Channel> {
+        #[doc = r" Attempt to create a new client by connecting to a given endpoint."]
+        pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
+        where
+            D: std::convert::TryInto<tonic::transport::Endpoint>,
+            D::Error: Into<StdError>,
+        {
+            let conn = tonic::transport::Endpoint::new(dst)?.connect().await?;
+            Ok(Self::new(conn))
+        }
+    }
+    impl<T> StorageClient<T>
+    where
+        T: tonic::client::GrpcService<tonic::body::BoxBody>,
+        T::ResponseBody: Body + Send + 'static,
+        T::Error: Into<StdError>,
+        <T::ResponseBody as Body>::Error: Into<StdError> + Send,
+    {
+        pub fn new(inner: T) -> Self {
+            let inner = tonic::client::Grpc::new(inner);
+            Self { inner }
+        }
+        pub fn with_interceptor<F>(
+            inner: T,
+            interceptor: F,
+        ) -> StorageClient<InterceptedService<T, F>>
+        where
+            F: tonic::service::Interceptor,
+            T: tonic::codegen::Service<
+                http::Request<tonic::body::BoxBody>,
+                Response = http::Response<
+                    <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
+                >,
+            >,
+            <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
+                Into<StdError> + Send + Sync,
+        {
+            StorageClient::new(InterceptedService::new(inner, interceptor))
+        }
+        #[doc = r" Compress requests with `gzip`."]
+        #[doc = r""]
+        #[doc = r" This requires the server to support it otherwise it might respond with an"]
+        #[doc = r" error."]
+        pub fn send_gzip(mut self) -> Self {
+            self.inner = self.inner.send_gzip();
+            self
+        }
+        #[doc = r" Enable decompressing responses with `gzip`."]
+        pub fn accept_gzip(mut self) -> Self {
+            self.inner = self.inner.accept_gzip();
+            self
+        }
+        #[doc = " 获取数量图表信息"]
         pub async fn get_count_chart_by_bucket(
             &mut self,
             request: impl tonic::IntoRequest<super::GetBucketWithTimeRequest>,
@@ -1106,11 +1244,11 @@ pub mod request_client {
                 )
             })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/core.Request/GetCountChartByBucket");
+            let path = http::uri::PathAndQuery::from_static("/core.Storage/GetCountChartByBucket");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取上传图表信息"]
-        pub async fn get_upload_chart_by_bucket(
+        #[doc = " 获取大小图表信息"]
+        pub async fn get_size_chart_by_bucket(
             &mut self,
             request: impl tonic::IntoRequest<super::GetBucketWithTimeRequest>,
         ) -> Result<tonic::Response<super::SizeChartReply>, tonic::Status> {
@@ -1121,23 +1259,7 @@ pub mod request_client {
                 )
             })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/core.Request/GetUploadChartByBucket");
-            self.inner.unary(request.into_request(), path, codec).await
-        }
-        #[doc = " 获取下载图表信息"]
-        pub async fn get_download_chart_by_bucket(
-            &mut self,
-            request: impl tonic::IntoRequest<super::GetBucketWithTimeRequest>,
-        ) -> Result<tonic::Response<super::SizeChartReply>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::new(
-                    tonic::Code::Unknown,
-                    format!("Service was not ready: {}", e.into()),
-                )
-            })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/core.Request/GetDownloadChartByBucket");
+            let path = http::uri::PathAndQuery::from_static("/core.Storage/GetSizeChartByBucket");
             self.inner.unary(request.into_request(), path, codec).await
         }
     }
@@ -2364,20 +2486,20 @@ pub mod request_server {
             request: tonic::Request<super::GetTimeRequest>,
         ) -> Result<tonic::Response<super::CountReply>, tonic::Status>;
         #[doc = " 获取数量图表信息"]
-        async fn get_count_chart_by_bucket(
+        async fn get_count_duration_by_bucket(
             &self,
             request: tonic::Request<super::GetBucketWithTimeRequest>,
-        ) -> Result<tonic::Response<super::CountChartReply>, tonic::Status>;
+        ) -> Result<tonic::Response<super::CountDurationReply>, tonic::Status>;
         #[doc = " 获取上传图表信息"]
-        async fn get_upload_chart_by_bucket(
+        async fn get_upload_duration_by_bucket(
             &self,
             request: tonic::Request<super::GetBucketWithTimeRequest>,
-        ) -> Result<tonic::Response<super::SizeChartReply>, tonic::Status>;
+        ) -> Result<tonic::Response<super::SizeDurationReply>, tonic::Status>;
         #[doc = " 获取下载图表信息"]
-        async fn get_download_chart_by_bucket(
+        async fn get_download_duration_by_bucket(
             &self,
             request: tonic::Request<super::GetBucketWithTimeRequest>,
-        ) -> Result<tonic::Response<super::SizeChartReply>, tonic::Status>;
+        ) -> Result<tonic::Response<super::SizeDurationReply>, tonic::Status>;
     }
     #[derive(Debug)]
     pub struct RequestServer<T: Request> {
@@ -2616,13 +2738,13 @@ pub mod request_server {
                     };
                     Box::pin(fut)
                 }
-                "/core.Request/GetCountChartByBucket" => {
+                "/core.Request/GetCountDurationByBucket" => {
                     #[allow(non_camel_case_types)]
-                    struct GetCountChartByBucketSvc<T: Request>(pub Arc<T>);
+                    struct GetCountDurationByBucketSvc<T: Request>(pub Arc<T>);
                     impl<T: Request> tonic::server::UnaryService<super::GetBucketWithTimeRequest>
-                        for GetCountChartByBucketSvc<T>
+                        for GetCountDurationByBucketSvc<T>
                     {
-                        type Response = super::CountChartReply;
+                        type Response = super::CountDurationReply;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
@@ -2630,7 +2752,7 @@ pub mod request_server {
                         ) -> Self::Future {
                             let inner = self.0.clone();
                             let fut =
-                                async move { (*inner).get_count_chart_by_bucket(request).await };
+                                async move { (*inner).get_count_duration_by_bucket(request).await };
                             Box::pin(fut)
                         }
                     }
@@ -2639,7 +2761,7 @@ pub mod request_server {
                     let inner = self.inner.clone();
                     let fut = async move {
                         let inner = inner.0;
-                        let method = GetCountChartByBucketSvc(inner);
+                        let method = GetCountDurationByBucketSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
                             accept_compression_encodings,
@@ -2650,21 +2772,22 @@ pub mod request_server {
                     };
                     Box::pin(fut)
                 }
-                "/core.Request/GetUploadChartByBucket" => {
+                "/core.Request/GetUploadDurationByBucket" => {
                     #[allow(non_camel_case_types)]
-                    struct GetUploadChartByBucketSvc<T: Request>(pub Arc<T>);
+                    struct GetUploadDurationByBucketSvc<T: Request>(pub Arc<T>);
                     impl<T: Request> tonic::server::UnaryService<super::GetBucketWithTimeRequest>
-                        for GetUploadChartByBucketSvc<T>
+                        for GetUploadDurationByBucketSvc<T>
                     {
-                        type Response = super::SizeChartReply;
+                        type Response = super::SizeDurationReply;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::GetBucketWithTimeRequest>,
                         ) -> Self::Future {
                             let inner = self.0.clone();
-                            let fut =
-                                async move { (*inner).get_upload_chart_by_bucket(request).await };
+                            let fut = async move {
+                                (*inner).get_upload_duration_by_bucket(request).await
+                            };
                             Box::pin(fut)
                         }
                     }
@@ -2673,7 +2796,7 @@ pub mod request_server {
                     let inner = self.inner.clone();
                     let fut = async move {
                         let inner = inner.0;
-                        let method = GetUploadChartByBucketSvc(inner);
+                        let method = GetUploadDurationByBucketSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
                             accept_compression_encodings,
@@ -2684,21 +2807,22 @@ pub mod request_server {
                     };
                     Box::pin(fut)
                 }
-                "/core.Request/GetDownloadChartByBucket" => {
+                "/core.Request/GetDownloadDurationByBucket" => {
                     #[allow(non_camel_case_types)]
-                    struct GetDownloadChartByBucketSvc<T: Request>(pub Arc<T>);
+                    struct GetDownloadDurationByBucketSvc<T: Request>(pub Arc<T>);
                     impl<T: Request> tonic::server::UnaryService<super::GetBucketWithTimeRequest>
-                        for GetDownloadChartByBucketSvc<T>
+                        for GetDownloadDurationByBucketSvc<T>
                     {
-                        type Response = super::SizeChartReply;
+                        type Response = super::SizeDurationReply;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::GetBucketWithTimeRequest>,
                         ) -> Self::Future {
                             let inner = self.0.clone();
-                            let fut =
-                                async move { (*inner).get_download_chart_by_bucket(request).await };
+                            let fut = async move {
+                                (*inner).get_download_duration_by_bucket(request).await
+                            };
                             Box::pin(fut)
                         }
                     }
@@ -2707,7 +2831,7 @@ pub mod request_server {
                     let inner = self.inner.clone();
                     let fut = async move {
                         let inner = inner.0;
-                        let method = GetDownloadChartByBucketSvc(inner);
+                        let method = GetDownloadDurationByBucketSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
                             accept_compression_encodings,
@@ -2751,5 +2875,165 @@ pub mod request_server {
     }
     impl<T: Request> tonic::transport::NamedService for RequestServer<T> {
         const NAME: &'static str = "core.Request";
+    }
+}
+#[doc = r" Generated server implementations."]
+pub mod storage_server {
+    #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
+    use tonic::codegen::*;
+    #[doc = "Generated trait containing gRPC methods that should be implemented for use with StorageServer."]
+    #[async_trait]
+    pub trait Storage: Send + Sync + 'static {
+        #[doc = " 获取数量图表信息"]
+        async fn get_count_chart_by_bucket(
+            &self,
+            request: tonic::Request<super::GetBucketWithTimeRequest>,
+        ) -> Result<tonic::Response<super::CountChartReply>, tonic::Status>;
+        #[doc = " 获取大小图表信息"]
+        async fn get_size_chart_by_bucket(
+            &self,
+            request: tonic::Request<super::GetBucketWithTimeRequest>,
+        ) -> Result<tonic::Response<super::SizeChartReply>, tonic::Status>;
+    }
+    #[derive(Debug)]
+    pub struct StorageServer<T: Storage> {
+        inner: _Inner<T>,
+        accept_compression_encodings: (),
+        send_compression_encodings: (),
+    }
+    struct _Inner<T>(Arc<T>);
+    impl<T: Storage> StorageServer<T> {
+        pub fn new(inner: T) -> Self {
+            let inner = Arc::new(inner);
+            let inner = _Inner(inner);
+            Self {
+                inner,
+                accept_compression_encodings: Default::default(),
+                send_compression_encodings: Default::default(),
+            }
+        }
+        pub fn with_interceptor<F>(inner: T, interceptor: F) -> InterceptedService<Self, F>
+        where
+            F: tonic::service::Interceptor,
+        {
+            InterceptedService::new(Self::new(inner), interceptor)
+        }
+    }
+    impl<T, B> tonic::codegen::Service<http::Request<B>> for StorageServer<T>
+    where
+        T: Storage,
+        B: Body + Send + 'static,
+        B::Error: Into<StdError> + Send + 'static,
+    {
+        type Response = http::Response<tonic::body::BoxBody>;
+        type Error = Never;
+        type Future = BoxFuture<Self::Response, Self::Error>;
+        fn poll_ready(&mut self, _cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
+            Poll::Ready(Ok(()))
+        }
+        fn call(&mut self, req: http::Request<B>) -> Self::Future {
+            let inner = self.inner.clone();
+            match req.uri().path() {
+                "/core.Storage/GetCountChartByBucket" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetCountChartByBucketSvc<T: Storage>(pub Arc<T>);
+                    impl<T: Storage> tonic::server::UnaryService<super::GetBucketWithTimeRequest>
+                        for GetCountChartByBucketSvc<T>
+                    {
+                        type Response = super::CountChartReply;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::GetBucketWithTimeRequest>,
+                        ) -> Self::Future {
+                            let inner = self.0.clone();
+                            let fut =
+                                async move { (*inner).get_count_chart_by_bucket(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = GetCountChartByBucketSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
+                            accept_compression_encodings,
+                            send_compression_encodings,
+                        );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/core.Storage/GetSizeChartByBucket" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetSizeChartByBucketSvc<T: Storage>(pub Arc<T>);
+                    impl<T: Storage> tonic::server::UnaryService<super::GetBucketWithTimeRequest>
+                        for GetSizeChartByBucketSvc<T>
+                    {
+                        type Response = super::SizeChartReply;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::GetBucketWithTimeRequest>,
+                        ) -> Self::Future {
+                            let inner = self.0.clone();
+                            let fut =
+                                async move { (*inner).get_size_chart_by_bucket(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = GetSizeChartByBucketSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
+                            accept_compression_encodings,
+                            send_compression_encodings,
+                        );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                _ => Box::pin(async move {
+                    Ok(http::Response::builder()
+                        .status(200)
+                        .header("grpc-status", "12")
+                        .header("content-type", "application/grpc")
+                        .body(empty_body())
+                        .unwrap())
+                }),
+            }
+        }
+    }
+    impl<T: Storage> Clone for StorageServer<T> {
+        fn clone(&self) -> Self {
+            let inner = self.inner.clone();
+            Self {
+                inner,
+                accept_compression_encodings: self.accept_compression_encodings,
+                send_compression_encodings: self.send_compression_encodings,
+            }
+        }
+    }
+    impl<T: Storage> Clone for _Inner<T> {
+        fn clone(&self) -> Self {
+            Self(self.0.clone())
+        }
+    }
+    impl<T: std::fmt::Debug> std::fmt::Debug for _Inner<T> {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            write!(f, "{:?}", self.0)
+        }
+    }
+    impl<T: Storage> tonic::transport::NamedService for StorageServer<T> {
+        const NAME: &'static str = "core.Storage";
     }
 }

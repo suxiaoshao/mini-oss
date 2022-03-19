@@ -4,10 +4,7 @@ use database::request::RequestModal;
 use database::time::OffsetDateTime;
 use database::{Decimal, Pool, Postgres};
 use errors::TonicResult;
-use proto::core::{
-    CountChartItem, CountChartReply, CountReply, GetBucketWithTimeRequest, GetTimeRequest,
-    SizeChartItem, SizeChartReply, SizeReply,
-};
+use proto::core::{CountDurationItem, CountDurationReply, CountReply, GetBucketWithTimeRequest, GetTimeRequest, SizeDurationItem, SizeDurationReply, SizeReply};
 use proto::{async_trait, core::request_server, Request, Response, Status};
 use validation::check_auth::check_user;
 
@@ -150,10 +147,10 @@ impl request_server::Request for RequestGreeter {
         Ok(Response::new(CountReply { total }))
     }
 
-    async fn get_count_chart_by_bucket(
+    async fn get_count_duration_by_bucket(
         &self,
         request: Request<GetBucketWithTimeRequest>,
-    ) -> Result<Response<CountChartReply>, Status> {
+    ) -> Result<Response<CountDurationReply>, Status> {
         // 获取 auth
         let auth = request.extensions().get::<String>().cloned();
         let pool = &self.pool;
@@ -167,19 +164,19 @@ impl request_server::Request for RequestGreeter {
         let requests = get_chart_request(&bucket_name, start_time, end_time, pool).await?;
         let requests = requests
             .into_iter()
-            .map(|(s, e, data)| CountChartItem {
+            .map(|(s, e, data)| CountDurationItem {
                 start_time: (s.unix_timestamp_nanos() / 1000000) as i64,
                 end_time: (e.unix_timestamp_nanos() / 1000000) as i64,
                 value: data.len() as i64,
             })
             .collect::<Vec<_>>();
-        Ok(Response::new(CountChartReply { data: requests }))
+        Ok(Response::new(CountDurationReply { data: requests }))
     }
 
-    async fn get_upload_chart_by_bucket(
+    async fn get_upload_duration_by_bucket(
         &self,
         request: Request<GetBucketWithTimeRequest>,
-    ) -> Result<Response<SizeChartReply>, Status> {
+    ) -> Result<Response<SizeDurationReply>, Status> {
         // 获取 auth
         let auth = request.extensions().get::<String>().cloned();
         let pool = &self.pool;
@@ -193,7 +190,7 @@ impl request_server::Request for RequestGreeter {
         let requests = get_chart_request(&bucket_name, start_time, end_time, pool).await?;
         let requests = requests
             .into_iter()
-            .map(|(s, e, data)| SizeChartItem {
+            .map(|(s, e, data)| SizeDurationItem {
                 start_time: (s.unix_timestamp_nanos() / 1000000) as i64,
                 end_time: (e.unix_timestamp_nanos() / 1000000) as i64,
                 value: data
@@ -205,13 +202,13 @@ impl request_server::Request for RequestGreeter {
                     .to_string(),
             })
             .collect::<Vec<_>>();
-        Ok(Response::new(SizeChartReply { data: requests }))
+        Ok(Response::new(SizeDurationReply { data: requests }))
     }
 
-    async fn get_download_chart_by_bucket(
+    async fn get_download_duration_by_bucket(
         &self,
         request: Request<GetBucketWithTimeRequest>,
-    ) -> Result<Response<SizeChartReply>, Status> {
+    ) -> Result<Response<SizeDurationReply>, Status> {
         // 获取 auth
         let auth = request.extensions().get::<String>().cloned();
         let pool = &self.pool;
@@ -225,7 +222,7 @@ impl request_server::Request for RequestGreeter {
         let requests = get_chart_request(&bucket_name, start_time, end_time, pool).await?;
         let requests = requests
             .into_iter()
-            .map(|(s, e, data)| SizeChartItem {
+            .map(|(s, e, data)| SizeDurationItem {
                 start_time: (s.unix_timestamp_nanos() / 1000000) as i64,
                 end_time: (e.unix_timestamp_nanos() / 1000000) as i64,
                 value: data
@@ -237,12 +234,14 @@ impl request_server::Request for RequestGreeter {
                     .to_string(),
             })
             .collect::<Vec<_>>();
-        Ok(Response::new(SizeChartReply { data: requests }))
+        Ok(Response::new(SizeDurationReply { data: requests }))
     }
 }
 
 type ChartTime<T> = (OffsetDateTime, OffsetDateTime, T);
 type ChartTimeRequest = ChartTime<Vec<RequestModal>>;
+
+const SPLIT_FLAG: u16 =2;
 
 async fn get_chart_request(
     bucket_name: &str,
@@ -254,8 +253,8 @@ async fn get_chart_request(
     let start_time = OffsetDateTime::from_unix_timestamp_nanos(start_time as i128 * 1000000);
     let end_time = OffsetDateTime::from_unix_timestamp_nanos(end_time as i128 * 1000000);
     // 时间间隔
-    let dur = (start_time - end_time) / 12u16;
-    for i in 0..=12u16 {
+    let dur = (start_time - end_time) / SPLIT_FLAG;
+    for i in 0..=SPLIT_FLAG {
         result.push((start_time + (i * dur), end_time + (i + 1) * dur, vec![]));
     }
     let requests =

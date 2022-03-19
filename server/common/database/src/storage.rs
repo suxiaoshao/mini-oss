@@ -72,3 +72,24 @@ impl StorageModal {
         Ok(())
     }
 }
+
+/// bucket time
+impl StorageModal{
+    /// 获取某个时间间隔的所有数据
+    pub async fn find_all_by_time_bucket(
+        bucket_name: &str,
+        start_time: &OffsetDateTime,
+        end_time: &OffsetDateTime,
+        pool: &Pool<Postgres>,
+    ) -> TonicResult<Vec<Self>> {
+        let result = sqlx::query_as(
+            "select * from storage where bucket_name = $1 and time >= $2 and time <= $3",
+        )
+            .bind(bucket_name)
+            .bind(start_time)
+            .bind(end_time)
+            .fetch_all(pool)
+            .await?;
+        Ok(result)
+    }
+}
