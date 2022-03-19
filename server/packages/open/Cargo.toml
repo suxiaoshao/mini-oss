@@ -19,7 +19,7 @@ pin-project-lite = "0.2.8"
 
 # axum route
 axum-extra = "0.1.5"
-nom = "7.1.0"
+nom = "7.1.1"
 urlencoding = "2.1.0"
 
 # 缓存

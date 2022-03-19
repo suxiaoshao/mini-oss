@@ -584,6 +584,7 @@ dependencies = [
  "mongodb",
  "mongodb-gridfs",
  "proto",
+ "time 0.3.7",
  "tokio",
  "validation",
 ]
@@ -860,7 +861,7 @@ dependencies = [
  "jsonwebtoken",
  "mongodb",
  "mongodb-gridfs",
- "pbkdf2 0.10.1",
+ "pbkdf2 0.11.0",
  "serde_json",
  "sqlx",
  "thiserror",
@@ -1603,13 +1604,12 @@ checksum = "e5ce46fe64a9d73be07dcbe690a38ce1b293be448fd8ce1e6c1b8062c9f72c6a"
 
 [[package]]
 name = "nom"
-version = "7.1.0"
+version = "7.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1b1d11e1ef389c76fe5b81bcaf2ea32cf88b62bc494e19f493d0b30e7a930109"
+checksum = "a8903e5a29a317527874d0402f867152a3d21c908bb0b933e416c65e301d4c36"
 dependencies = [
  "memchr",
  "minimal-lexical",
- "version_check",
 ]
 
 [[package]]
@@ -1793,9 +1793,9 @@ dependencies = [
 
 [[package]]
 name = "password-hash"
-version = "0.3.2"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1d791538a6dcc1e7cb7fe6f6b58aca40e7f79403c45b2bc274008b5e647af1d8"
+checksum = "aa26fd5c3cd6e6bb83dd9c0cef40fbeb77d7596339ca46c18a6f66919bb07769"
 dependencies = [
  "base64ct",
  "rand_core",
@@ -1819,9 +1819,9 @@ dependencies = [
 
 [[package]]
 name = "pbkdf2"
-version = "0.10.1"
+version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "271779f35b581956db91a3e55737327a03aa051e90b1c47aeb189508533adfd7"
+checksum = "83a0692ec44e4cf1ef28ca317f14f8f07da2d95ec3fa01f86e4467b725e60917"
 dependencies = [
  "digest 0.10.3",
  "hmac 0.12.0",
@@ -3301,7 +3301,7 @@ dependencies = [
  "database",
  "errors",
  "jsonwebtoken",
- "pbkdf2 0.10.1",
+ "pbkdf2 0.11.0",
  "proto",
  "serde",
  "tokio",
