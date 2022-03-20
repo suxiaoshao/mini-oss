@@ -19,6 +19,7 @@ importers:
       '@typescript-eslint/parser': ^5.15.0
       '@vitejs/plugin-react': ^1.2.0
       echarts: ^5.3.1
+      echarts-for-react: ^3.0.2
       eslint: ^8.11.0
       eslint-config-prettier: ^8.5.0
       eslint-plugin-prettier: ^4.0.0
@@ -30,7 +31,7 @@ importers:
       pretty-bytes: ^6.0.0
       react: ^17.0.2
       react-dom: ^17.0.2
-      react-hook-form: ^7.28.0
+      react-hook-form: ^7.28.1
       react-redux: ^7.2.6
       react-router-dom: ^6.2.2
       rxjs: ^7.5.5
@@ -41,16 +42,17 @@ importers:
       '@emotion/react': registry.npmmirror.com/@emotion/react/11.8.2_6acae0b0a4a23c4372144902affe8735
       '@emotion/styled': registry.npmmirror.com/@emotion/styled/11.8.1_537045bdcc746405d2b406789b97b6c7
       '@fontsource/roboto': registry.npmmirror.com/@fontsource/roboto/4.5.3
-      '@hookform/resolvers': registry.npmmirror.com/@hookform/resolvers/2.8.8_react-hook-form@7.28.0
+      '@hookform/resolvers': registry.npmmirror.com/@hookform/resolvers/2.8.8_react-hook-form@7.28.1
       '@mui/icons-material': registry.npmmirror.com/@mui/icons-material/5.5.1_3898148d0d9b82b9af7ddb4a8e17178b
       '@mui/material': registry.npmmirror.com/@mui/material/5.5.1_7e1331b1b228efabfef6463d5fbc30b1
       '@reduxjs/toolkit': registry.npmmirror.com/@reduxjs/toolkit/1.8.0_react-redux@7.2.6+react@17.0.2
       echarts: registry.npmmirror.com/echarts/5.3.1
+      echarts-for-react: registry.npmmirror.com/echarts-for-react/3.0.2_echarts@5.3.1+react@17.0.2
       graphql: registry.npmmirror.com/graphql/16.3.0
       pretty-bytes: registry.npmmirror.com/pretty-bytes/6.0.0
       react: registry.npmmirror.com/react/17.0.2
       react-dom: registry.npmmirror.com/react-dom/17.0.2_react@17.0.2
-      react-hook-form: registry.npmmirror.com/react-hook-form/7.28.0_react@17.0.2
+      react-hook-form: registry.npmmirror.com/react-hook-form/7.28.1_react@17.0.2
       react-redux: registry.npmmirror.com/react-redux/7.2.6_react-dom@17.0.2+react@17.0.2
       react-router-dom: registry.npmmirror.com/react-router-dom/6.2.2_react-dom@17.0.2+react@17.0.2
       rxjs: registry.npmmirror.com/rxjs/7.5.5
@@ -1674,7 +1676,7 @@ packages:
       graphql: registry.npmmirror.com/graphql/16.3.0
     dev: false
 
-  registry.npmmirror.com/@hookform/resolvers/2.8.8_react-hook-form@7.28.0:
+  registry.npmmirror.com/@hookform/resolvers/2.8.8_react-hook-form@7.28.1:
     resolution: {integrity: sha512-meAEDur1IJBfKyTo9yPYAuzjIfrxA7m9Ov+1nxaW/YupsqMeseWifoUjWK03+hz/RJizsVQAaUjVxFEkyu0GWg==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@hookform/resolvers/-/resolvers-2.8.8.tgz}
     id: registry.npmmirror.com/@hookform/resolvers/2.8.8
     name: '@hookform/resolvers'
@@ -1682,7 +1684,7 @@ packages:
     peerDependencies:
       react-hook-form: ^7.0.0
     dependencies:
-      react-hook-form: registry.npmmirror.com/react-hook-form/7.28.0_react@17.0.2
+      react-hook-form: registry.npmmirror.com/react-hook-form/7.28.1_react@17.0.2
     dev: false
 
   registry.npmmirror.com/@humanwhocodes/config-array/0.9.5:
@@ -3309,6 +3311,21 @@ packages:
       safe-buffer: registry.npmmirror.com/safe-buffer/5.2.1
     dev: true
 
+  registry.npmmirror.com/echarts-for-react/3.0.2_echarts@5.3.1+react@17.0.2:
+    resolution: {integrity: sha512-DRwIiTzx8JfwPOVgGttDytBqdp5VzCSyMRIxubgU/g2n9y3VLUmF2FK7Icmg/sNVkv4+rktmrLN9w22U2yy3fA==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/echarts-for-react/-/echarts-for-react-3.0.2.tgz}
+    id: registry.npmmirror.com/echarts-for-react/3.0.2
+    name: echarts-for-react
+    version: 3.0.2
+    peerDependencies:
+      echarts: ^3.0.0 || ^4.0.0 || ^5.0.0
+      react: ^15.0.0 || >=16.0.0
+    dependencies:
+      echarts: registry.npmmirror.com/echarts/5.3.1
+      fast-deep-equal: registry.npmmirror.com/fast-deep-equal/3.1.3
+      react: registry.npmmirror.com/react/17.0.2
+      size-sensor: registry.npmmirror.com/size-sensor/1.0.1
+    dev: false
+
   registry.npmmirror.com/echarts/5.3.1:
     resolution: {integrity: sha512-nWdlbgX3OVY0hpqncSvp0gDt1FRSKWn7lsWEH+PHmfCuvE0QmSw17pczQvm8AvawnLEkmf1Cts7YwQJZNC0AEQ==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/echarts/-/echarts-5.3.1.tgz}
     name: echarts
@@ -3921,7 +3938,6 @@ packages:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz}
     name: fast-deep-equal
     version: 3.1.3
-    dev: true
 
   registry.npmmirror.com/fast-diff/1.2.0:
     resolution: {integrity: sha512-xJuoT5+L99XlZ8twedaRf6Ax2TgQVxvgZOYoPKqZufmJib0tL2tegPBOZb1pVNgIhlqDlA0eO0c3wBvQcmzx4w==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/fast-diff/-/fast-diff-1.2.0.tgz}
@@ -5946,11 +5962,11 @@ packages:
       scheduler: registry.npmmirror.com/scheduler/0.20.2
     dev: false
 
-  registry.npmmirror.com/react-hook-form/7.28.0_react@17.0.2:
-    resolution: {integrity: sha512-mmLpT86BkMGPr0r6ca8zxV0WH4Y1FW5MKs7Rq1+uHLVeeg5pSWbF5Z/qLCnM5vPVblHNM6lRBRRotnfEAf0ALA==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/react-hook-form/-/react-hook-form-7.28.0.tgz}
-    id: registry.npmmirror.com/react-hook-form/7.28.0
+  registry.npmmirror.com/react-hook-form/7.28.1_react@17.0.2:
+    resolution: {integrity: sha512-mgwxvXuvt3FMY/mdnWbPc++Zf1U5xYzkhOaL05mtFMLvXc9MvUhMUlKtUVuO12sOrgT3nPXBgVFawtiJ4ONrgg==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/react-hook-form/-/react-hook-form-7.28.1.tgz}
+    id: registry.npmmirror.com/react-hook-form/7.28.1
     name: react-hook-form
-    version: 7.28.0
+    version: 7.28.1
     engines: {node: '>=12.22.0'}
     peerDependencies:
       react: ^16.8.0 || ^17
@@ -6465,6 +6481,12 @@ packages:
     name: signedsource
     version: 1.0.0
     dev: true
+
+  registry.npmmirror.com/size-sensor/1.0.1:
+    resolution: {integrity: sha512-QTy7MnuugCFXIedXRpUSk9gUnyNiaxIdxGfUjr8xxXOqIB3QvBUYP9+b51oCg2C4dnhaeNk/h57TxjbvoJrJUA==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/size-sensor/-/size-sensor-1.0.1.tgz}
+    name: size-sensor
+    version: 1.0.1
+    dev: false
 
   registry.npmmirror.com/slash/3.0.0:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/slash/-/slash-3.0.0.tgz}

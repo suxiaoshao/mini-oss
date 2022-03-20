@@ -14,7 +14,7 @@ export interface ControllerFilesProps {
   control: Control<CreateObjectForm, object>;
 }
 
-function ControllerFiles({ label, name, value, control }: ControllerFilesProps, ref?: React.Ref<never>): JSX.Element {
+function ControllerFiles({ label, name, value, control }: ControllerFilesProps, ref?: React.Ref<unknown>): JSX.Element {
   const { append, remove } = useFieldArray({
     control,
     name: 'file',

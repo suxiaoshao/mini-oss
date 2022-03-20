@@ -13,7 +13,7 @@ export interface ControllerRadioGroupProps<T extends string | number> {
 
 function ControllerRadioGroup<T extends string | number>(
   { label, name, onBlur, value, onChange, children }: ControllerRadioGroupProps<T>,
-  ref?: React.Ref<never>,
+  ref?: React.Ref<unknown>,
 ): JSX.Element {
   return (
     <FormControl required sx={{ marginTop: (theme) => theme.spacing(1), display: 'block' }}>
