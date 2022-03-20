@@ -27,3 +27,6 @@ json = ["serde_json"]
 jwt = ["jsonwebtoken"]
 password = ["pbkdf2"]
 grpc = ["tonic", "validator"]
+
+[dev-dependencies]
+sqlx = { version = "0.5.11", features = ["runtime-tokio-rustls"] }

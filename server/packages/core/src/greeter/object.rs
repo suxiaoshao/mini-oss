@@ -349,19 +349,21 @@ pub fn file_hash(source: &[u8]) -> String {
 #[cfg(test)]
 mod test {
     use anyhow::Result;
+
     use proto::core::object_client::ObjectClient;
-    use proto::core::{GetFolderRequest, SizeReply};
-    use proto::Request;
+    use proto::core::CreateObjectRequest;
 
     #[tokio::test]
     async fn test() -> Result<()> {
-        let mut client = ObjectClient::connect("http://localhost:80").await?;
-        let request = Request::new(GetFolderRequest {
-            path: "/dd".to_string(),
+        let mut client = ObjectClient::connect("http://localhost:3000").await?;
+        let request = CreateObjectRequest {
+            path: "/%E6%AF%95%E8%AE%BE/".to_string(),
             bucket_name: "as-sushao".to_string(),
-        });
-        let SizeReply { size } = client.get_size_by_folder(request).await?.into_inner();
-        println!("{}", size);
+            content: vec![],
+            filename: "sushao.txt".to_string(),
+            access: 0,
+        };
+        client.create_object(request).await?.into_inner();
         Ok(())
     }
 }

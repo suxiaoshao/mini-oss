@@ -280,7 +280,7 @@ mod test {
             .max_connections(5)
             .connect(&std::env::var("postgres")?)
             .await?;
-        FolderModal::delete_by_path("as-sushao", "/dsd", &pool).await?;
+        FolderModal::exist("/毕设/", "as-sushao", &pool).await?;
         Ok(())
     }
 }

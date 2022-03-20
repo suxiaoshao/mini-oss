@@ -43,6 +43,9 @@ impl FromStr for PathWithName {
                 let filename = urlencoding::decode(filename)
                     .map(|x| x.to_string())
                     .unwrap_or_else(|_| filename.to_string());
+                let path = urlencoding::decode(&path)
+                    .map(|x| x.to_string())
+                    .unwrap_or_else(|_| path.to_string());
                 Ok(Self { filename, path })
             }
             None => Err(Self::Err::NotObjectPath(source_path.to_string())),
@@ -60,6 +63,8 @@ mod test {
         assert_eq!(path, Err(OpenError::NotObjectPath("/".to_string())));
         let path = "/test/".parse::<PathWithName>();
         assert_eq!(path, Err(OpenError::NotObjectPath("/test/".to_string())));
+
+        // 单层
         let path = "/test/sushao.txt".parse::<PathWithName>();
         assert_eq!(
             path,
@@ -68,6 +73,7 @@ mod test {
                 path: "/test/".to_string(),
             })
         );
+        // 多层
         let path = "/test/www/sushao.txt".parse::<PathWithName>();
         assert_eq!(
             path,
@@ -92,21 +98,14 @@ mod test {
                 path: "/".to_string(),
             })
         );
-        let path = "/221500###_###__基于JavaEE的众筹网(系统开发类样例).pdf".parse::<PathWithName>();
+
+        //中文
+        let path = "/%E6%AF%95%E8%AE%BE/%E7%B4%A2%E5%BC%95%208369a.md".parse::<PathWithName>();
         assert_eq!(
             path,
             Ok(PathWithName {
-                filename: "221500###_###__基于JavaEE的众筹网(系统开发类样例).pdf".to_string(),
-                path: "/".to_string(),
-            })
-        );
-        let path =
-            "/test/221500###_###__基于JavaEE的众筹网(系统开发类样例).pdf".parse::<PathWithName>();
-        assert_eq!(
-            path,
-            Ok(PathWithName {
-                filename: "221500###_###__基于JavaEE的众筹网(系统开发类样例).pdf".to_string(),
-                path: "/test/".to_string(),
+                filename: "索引 8369a.md".to_string(),
+                path: "/毕设/".to_string(),
             })
         );
     }
