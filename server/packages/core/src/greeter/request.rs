@@ -4,7 +4,10 @@ use database::request::RequestModal;
 use database::time::OffsetDateTime;
 use database::{Decimal, Pool, Postgres};
 use errors::TonicResult;
-use proto::core::{CountDurationItem, CountDurationReply, CountReply, GetBucketWithTimeRequest, GetTimeRequest, SizeDurationItem, SizeDurationReply, SizeReply};
+use proto::core::{
+    CountDurationItem, CountDurationReply, CountReply, GetBucketWithTimeRequest, GetTimeRequest,
+    SizeDurationItem, SizeDurationReply, SizeReply,
+};
 use proto::{async_trait, core::request_server, Request, Response, Status};
 use validation::check_auth::check_user;
 
@@ -241,7 +244,7 @@ impl request_server::Request for RequestGreeter {
 type ChartTime<T> = (OffsetDateTime, OffsetDateTime, T);
 type ChartTimeRequest = ChartTime<Vec<RequestModal>>;
 
-const SPLIT_FLAG: u16 =2;
+const SPLIT_FLAG: u16 = 300;
 
 async fn get_chart_request(
     bucket_name: &str,
