@@ -16,6 +16,7 @@ export default function BucketDetail(): JSX.Element {
     <Box sx={{ display: 'flex', width: '100%', height: '100%', flexDirection: 'column' }}>
       <AppBar
         position="static"
+        color="default"
         sx={{
           display: 'flex',
           flexDirection: 'column',

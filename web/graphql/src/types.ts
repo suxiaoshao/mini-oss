@@ -33,18 +33,34 @@ export type BucketInfo = {
   createTime: Scalars['Int'];
   /** 下载大小 */
   downloadSize: Scalars['String'];
+  /** 下载大小 */
+  downloadSizeChart: Array<SizeDurationItem>;
   /** 名字 */
   name: Scalars['String'];
   /** 对象数量 */
   objectCount: Scalars['Int'];
-  /** 对象大小 */
+  /** 对象数量 */
+  objectCountChart: Array<CountChartItem>;
+  /**
+   * 统计信息
+   * 对象大小
+   */
   objectSize: Scalars['String'];
+  /**
+   * 图表信息
+   * 对象大小
+   */
+  objectSizeChart: Array<SizeChartItem>;
   /** 请求数量 */
   requestCount: Scalars['Int'];
+  /** 请求数量 */
+  requestCountChart: Array<CountDurationItem>;
   /** 更新时间 */
   updateTime: Scalars['Int'];
   /** 上传大小 */
   uploadSize: Scalars['String'];
+  /** 上传大小 */
+  uploadSizeChart: Array<SizeDurationItem>;
   /** 用户名 */
   username: Scalars['String'];
 };
@@ -54,12 +70,37 @@ export type BucketInfoDownloadSizeArgs = {
   startTime: Scalars['Int'];
 };
 
+export type BucketInfoDownloadSizeChartArgs = {
+  endTime: Scalars['Int'];
+  startTime: Scalars['Int'];
+};
+
+export type BucketInfoObjectCountChartArgs = {
+  endTime: Scalars['Int'];
+  startTime: Scalars['Int'];
+};
+
+export type BucketInfoObjectSizeChartArgs = {
+  endTime: Scalars['Int'];
+  startTime: Scalars['Int'];
+};
+
 export type BucketInfoRequestCountArgs = {
   endTime: Scalars['Int'];
   startTime: Scalars['Int'];
 };
 
+export type BucketInfoRequestCountChartArgs = {
+  endTime: Scalars['Int'];
+  startTime: Scalars['Int'];
+};
+
 export type BucketInfoUploadSizeArgs = {
+  endTime: Scalars['Int'];
+  startTime: Scalars['Int'];
+};
+
+export type BucketInfoUploadSizeChartArgs = {
   endTime: Scalars['Int'];
   startTime: Scalars['Int'];
 };
@@ -70,6 +111,24 @@ export type BucketList = {
   data: Array<BucketInfo>;
   /** 总数 */
   total: Scalars['Int'];
+};
+
+export type CountChartItem = {
+  __typename?: 'CountChartItem';
+  /** 时间 */
+  time: Scalars['Int'];
+  /** 数据 */
+  value: Scalars['Int'];
+};
+
+export type CountDurationItem = {
+  __typename?: 'CountDurationItem';
+  /** 结束时间 */
+  endTime: Scalars['Int'];
+  /** 开始时间 */
+  startTime: Scalars['Int'];
+  /** 数据 */
+  value: Scalars['Int'];
 };
 
 export type CreateBucketRequest = {
@@ -307,6 +366,7 @@ export type MutationRootUpdatePasswordArgs = {
   data: UpdatePasswordRequest;
 };
 
+/** 访问权限类型 */
 export enum ObjectAccess {
   /** 继承 */
   InheritanceObject = 'INHERITANCE_OBJECT',
@@ -396,6 +456,24 @@ export type QueryRootUserListArgs = {
 
 export type QueryRootUserLoginArgs = {
   data: LoginRequest;
+};
+
+export type SizeChartItem = {
+  __typename?: 'SizeChartItem';
+  /** 时间 */
+  time: Scalars['Int'];
+  /** 数据 */
+  value: Scalars['String'];
+};
+
+export type SizeDurationItem = {
+  __typename?: 'SizeDurationItem';
+  /** 结束时间 */
+  endTime: Scalars['Int'];
+  /** 开始时间 */
+  startTime: Scalars['Int'];
+  /** 数据 */
+  value: Scalars['String'];
 };
 
 export type UpdateBucketRequest = {
@@ -526,6 +604,11 @@ export type BucketInfoQuery = {
     uploadSize: string;
     downloadSize: string;
     requestCount: number;
+    uploadSizeChart: Array<{ __typename?: 'SizeDurationItem'; startTime: number; endTime: number; value: string }>;
+    downloadSizeChart: Array<{ __typename?: 'SizeDurationItem'; startTime: number; endTime: number; value: string }>;
+    requestCountChart: Array<{ __typename?: 'CountDurationItem'; startTime: number; endTime: number; value: number }>;
+    objectCountChart: Array<{ __typename?: 'CountChartItem'; time: number; value: number }>;
+    objectSizeChart: Array<{ __typename?: 'SizeChartItem'; time: number; value: string }>;
   };
 };
 
@@ -818,6 +901,29 @@ export const BucketInfoDocument = gql`
       uploadSize(endTime: $endTime, startTime: $startTime)
       downloadSize(startTime: $startTime, endTime: $endTime)
       requestCount(endTime: $endTime, startTime: $startTime)
+      uploadSizeChart(endTime: $endTime, startTime: $startTime) {
+        startTime
+        endTime
+        value
+      }
+      downloadSizeChart(endTime: $endTime, startTime: $startTime) {
+        startTime
+        endTime
+        value
+      }
+      requestCountChart(endTime: $endTime, startTime: $startTime) {
+        startTime
+        endTime
+        value
+      }
+      objectCountChart(endTime: $endTime, startTime: $startTime) {
+        time
+        value
+      }
+      objectSizeChart(endTime: $endTime, startTime: $startTime) {
+        time
+        value
+      }
     }
   }
 `;

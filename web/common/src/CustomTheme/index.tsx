@@ -33,7 +33,11 @@ export function CustomTheme({ children }: CustomThemeProps): JSX.Element {
               paper: '#212121',
             },
           }
-        : undefined,
+        : {
+            background: {
+              default: '#fafafa',
+            },
+          },
     });
     return newTheme;
   }, [isDark]);

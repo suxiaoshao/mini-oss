@@ -54,7 +54,7 @@ export function CustomTable<D extends object>({
                       const headerCulumn = column as CustomColumn<D>;
                       const headerProps = headerCulumn.headerCellProps ?? headerCulumn.cellProps ?? {};
                       headerProps.sx = {
-                        backgroundColor: '#2c2c2c',
+                        backgroundColor: (theme) => (theme.palette.mode === 'dark' ? '#2c2c2c' : '#ffffff'),
                         ...headerProps?.sx,
                       };
                       return (

@@ -78,7 +78,7 @@ export default function Users(): JSX.Element {
         flexDirection: 'column',
       }}
     >
-      <AppBar position="static">
+      <AppBar position="static" color="default">
         <Toolbar>
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}>
             用户列表

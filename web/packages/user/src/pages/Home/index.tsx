@@ -17,7 +17,7 @@ export default function Home(): JSX.Element {
   const { data: { selfUserInfo } = {} } = useUserStatQuery({ variables: { startTime, endTime } });
   return (
     <Box sx={{ display: 'flex', width: '100%', height: '100%', flexDirection: 'column' }}>
-      <AppBar position="static">
+      <AppBar position="static" color="default">
         <Toolbar>
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}>
             概览

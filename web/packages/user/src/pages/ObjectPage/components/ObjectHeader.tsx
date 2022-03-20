@@ -14,6 +14,7 @@ export default function ObjectHeader({ bucketName, path, filename }: ObjectHeade
   return (
     <AppBar
       position="static"
+      color="default"
       sx={{
         display: 'flex',
         flexDirection: 'column',
