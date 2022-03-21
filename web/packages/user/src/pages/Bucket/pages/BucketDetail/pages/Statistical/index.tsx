@@ -2,21 +2,16 @@ import Dosage from '@/components/Dosage';
 import { Box } from '@mui/material';
 import { dayjs } from 'common';
 import { useBucketInfoQuery } from 'graphql';
-import { useMemo } from 'react';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import BucketBaseInfo from './components/BucketBaseInfo';
 import BucketChart from './components/BucketChart';
+import DurationSelect from './components/DurationSelect';
 
 export default function Statistical(): JSX.Element {
   const { bucketName = '' } = useParams<{ bucketName: string }>();
-  const startTime = useMemo(() => {
-    const time = dayjs().date(1).hour(0).minute(0).second(0).millisecond(0).valueOf();
-    return time;
-  }, []);
-  const endTime = useMemo(() => {
-    const time = dayjs().valueOf();
-    return time;
-  }, []);
+  const [startTime, setStartTime] = useState(dayjs().startOf('day').valueOf());
+  const [endTime, setEndTime] = useState(dayjs().valueOf());
 
   const { data: { bucketInfo } = {} } = useBucketInfoQuery({ variables: { data: { bucketName }, startTime, endTime } });
   return (
@@ -27,7 +22,8 @@ export default function Statistical(): JSX.Element {
         overflow: 'auto',
       }}
     >
-      {bucketInfo && <Dosage {...bucketInfo} />}
+      <DurationSelect setStartTime={setStartTime} setEndTime={setEndTime} />
+      {bucketInfo && <Dosage sx={{ marginTop: (theme) => theme.spacing(2) }} {...bucketInfo} />}
       {bucketInfo && <BucketBaseInfo {...bucketInfo} />}
       {bucketInfo && <BucketChart {...bucketInfo} />}
     </Box>

@@ -7,6 +7,8 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import { store } from './app/store';
 import { client } from './utils/graphql';
+import DateAdapter from '@mui/lab/AdapterDayjs';
+import { LocalizationProvider } from '@mui/lab';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -15,7 +17,9 @@ ReactDOM.render(
         <SnackbarProvider>
           <ApolloProvider client={client}>
             <BrowserRouter>
-              <App />
+              <LocalizationProvider dateAdapter={DateAdapter}>
+                <App />
+              </LocalizationProvider>
             </BrowserRouter>
           </ApolloProvider>
         </SnackbarProvider>
