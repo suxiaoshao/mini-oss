@@ -599,6 +599,9 @@ export type BucketInfoQuery = {
   bucketInfo: {
     __typename?: 'BucketInfo';
     name: string;
+    createTime: number;
+    updateTime: number;
+    access: BucketAccess;
     objectSize: string;
     objectCount: number;
     uploadSize: string;
@@ -896,6 +899,9 @@ export const BucketInfoDocument = gql`
   query bucketInfo($data: GetBucketRequest!, $startTime: Int!, $endTime: Int!) {
     bucketInfo(data: $data) {
       name
+      createTime
+      updateTime
+      access
       objectSize
       objectCount
       uploadSize(endTime: $endTime, startTime: $startTime)

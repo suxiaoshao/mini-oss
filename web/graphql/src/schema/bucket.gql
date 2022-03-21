@@ -12,6 +12,9 @@ query bucketList($data: GetListRequest!) {
 query bucketInfo($data: GetBucketRequest!, $startTime: Int!, $endTime: Int!) {
   bucketInfo(data: $data) {
     name
+    createTime
+    updateTime
+    access
     objectSize
     objectCount
     uploadSize(endTime: $endTime, startTime: $startTime)

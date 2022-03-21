@@ -4,6 +4,7 @@ import { dayjs } from 'common';
 import { useBucketInfoQuery } from 'graphql';
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
+import BucketBaseInfo from './components/BucketBaseInfo';
 import BucketChart from './components/BucketChart';
 
 export default function Statistical(): JSX.Element {
@@ -27,6 +28,7 @@ export default function Statistical(): JSX.Element {
       }}
     >
       {bucketInfo && <Dosage {...bucketInfo} />}
+      {bucketInfo && <BucketBaseInfo {...bucketInfo} />}
       {bucketInfo && <BucketChart {...bucketInfo} />}
     </Box>
   );
