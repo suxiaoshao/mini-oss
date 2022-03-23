@@ -11,9 +11,34 @@ query userStat($startTime: Int!, $endTime: Int!) {
   selfUserInfo {
     objectSize
     objectCount
+    bucketCount
     uploadSize(endTime: $endTime, startTime: $startTime)
     downloadSize(startTime: $startTime, endTime: $endTime)
     requestCount(endTime: $endTime, startTime: $startTime)
+
+    uploadSizeChart(endTime: $endTime, startTime: $startTime) {
+      startTime
+      endTime
+      value
+    }
+    downloadSizeChart(endTime: $endTime, startTime: $startTime) {
+      startTime
+      endTime
+      value
+    }
+    requestCountChart(endTime: $endTime, startTime: $startTime) {
+      startTime
+      endTime
+      value
+    }
+    objectCountChart(endTime: $endTime, startTime: $startTime) {
+      time
+      value
+    }
+    objectSizeChart(endTime: $endTime, startTime: $startTime) {
+      time
+      value
+    }
   }
 }
 

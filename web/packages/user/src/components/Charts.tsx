@@ -4,13 +4,18 @@ import { EChartsOption } from 'echarts';
 import { BucketInfoQuery } from 'graphql';
 import prettyBytes from 'pretty-bytes';
 
-export default function BucketChart({
+export type ChartsProps = Pick<
+  BucketInfoQuery['bucketInfo'],
+  'objectCountChart' | 'objectSizeChart' | 'requestCountChart' | 'uploadSizeChart' | 'downloadSizeChart'
+>;
+
+export default function Charts({
   objectCountChart,
   objectSizeChart,
   requestCountChart,
   uploadSizeChart,
   downloadSizeChart,
-}: BucketInfoQuery['bucketInfo']): JSX.Element {
+}: ChartsProps): JSX.Element {
   const option: EChartsOption = {
     tooltip: {
       trigger: 'axis',

@@ -1,17 +1,19 @@
+import InfoWithNumber from '@/components/Dosage/InfoWithNumber';
 import { Card, CardHeader, CardContent, Box, Divider, CardProps } from '@mui/material';
 import prettyBytes from 'pretty-bytes';
-import InfoWithNumber from './InfoWithNumber';
 
 export interface DosageProps extends CardProps {
   objectSize: string;
-  objectCount: number;
+  bucketCount: number;
   uploadSize: string;
   downloadSize: string;
   requestCount: number;
+  objectCount: number;
 }
 
-export default function Dosage({
+export default function UserDosage({
   objectSize,
+  bucketCount,
   objectCount,
   uploadSize,
   downloadSize,
@@ -23,6 +25,10 @@ export default function Dosage({
       <CardHeader title="用量概览" />
       <CardContent sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <Box sx={{ display: 'flex', flex: '1 1 0' }}>
+          <InfoWithNumber name="存储桶数量" value={bucketCount} />
+          <Divider orientation="vertical" flexItem sx={{ marginRight: (theme) => theme.spacing(2) }} />
+        </Box>
+        <Box sx={{ display: 'flex', flex: '1 1 0' }}>
           <InfoWithNumber name="对象数量" value={objectCount} />
           <Divider orientation="vertical" flexItem sx={{ marginRight: (theme) => theme.spacing(2) }} />
         </Box>
@@ -31,15 +37,15 @@ export default function Dosage({
           <Divider orientation="vertical" flexItem sx={{ marginRight: (theme) => theme.spacing(2) }} />
         </Box>
         <Box sx={{ display: 'flex', flex: '1 1 0' }}>
-          <InfoWithNumber name="本月上传流量" value={prettyBytes(Number(uploadSize))} />
+          <InfoWithNumber name="上传流量" value={prettyBytes(Number(uploadSize))} />
           <Divider orientation="vertical" flexItem sx={{ marginRight: (theme) => theme.spacing(2) }} />
         </Box>
         <Box sx={{ display: 'flex', flex: '1 1 0' }}>
-          <InfoWithNumber name="本月下载流量" value={prettyBytes(Number(downloadSize))} />
+          <InfoWithNumber name="下载流量" value={prettyBytes(Number(downloadSize))} />
           <Divider orientation="vertical" flexItem sx={{ marginRight: (theme) => theme.spacing(2) }} />
         </Box>
         <Box sx={{ display: 'flex', flex: '1 1 0' }}>
-          <InfoWithNumber name="本月请求量" value={requestCount} />
+          <InfoWithNumber name="请求量" value={requestCount} />
         </Box>
       </CardContent>
     </Card>

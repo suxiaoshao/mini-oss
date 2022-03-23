@@ -1,18 +1,14 @@
-import Dosage from '@/components/Dosage';
+import DurationSelect from '@/components/DurationSelect';
 import { AppBar, Box, Toolbar, Typography } from '@mui/material';
 import { dayjs } from 'common';
 import { useUserStatQuery } from 'graphql';
-import { useMemo } from 'react';
+import { useState } from 'react';
+import BucketChart from '@/components/Charts';
+import UserDosage from './components/UserDosage';
 
 export default function Home(): JSX.Element {
-  const startTime = useMemo(() => {
-    const time = dayjs().date(1).hour(0).minute(0).second(0).millisecond(0).valueOf();
-    return time;
-  }, []);
-  const endTime = useMemo(() => {
-    const time = dayjs().valueOf();
-    return time;
-  }, []);
+  const [startTime, setStartTime] = useState(dayjs().startOf('day').valueOf());
+  const [endTime, setEndTime] = useState(dayjs().valueOf());
 
   const { data: { selfUserInfo } = {} } = useUserStatQuery({ variables: { startTime, endTime } });
   return (
@@ -24,8 +20,14 @@ export default function Home(): JSX.Element {
           </Typography>
         </Toolbar>
       </AppBar>
-      <Box sx={{ flex: '1 1 0', padding: (theme) => theme.spacing(2) }}>
-        {selfUserInfo && <Dosage {...selfUserInfo} />}
+      <Box sx={{ flex: '1 1 0', padding: (theme) => theme.spacing(2), overflow: 'auto' }}>
+        <DurationSelect setStartTime={setStartTime} setEndTime={setEndTime} />
+        {selfUserInfo && (
+          <>
+            <UserDosage sx={{ marginTop: (theme) => theme.spacing(2) }} {...selfUserInfo} />
+            <BucketChart {...selfUserInfo} />
+          </>
+        )}
       </Box>
     </Box>
   );
