@@ -114,3 +114,21 @@ impl StorageModal {
         Ok(result)
     }
 }
+
+/// time
+impl StorageModal {
+    /// 获取某个时间间隔的所有数据
+    pub async fn find_all(
+        start_time: &OffsetDateTime,
+        end_time: &OffsetDateTime,
+        pool: &Pool<Postgres>,
+    ) -> TonicResult<Vec<Self>> {
+        let result =
+            sqlx::query_as("select * from storage where time >= $1 and time <= $2 order by time")
+                .bind(start_time)
+                .bind(end_time)
+                .fetch_all(pool)
+                .await?;
+        Ok(result)
+    }
+}

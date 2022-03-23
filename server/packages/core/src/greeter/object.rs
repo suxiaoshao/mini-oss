@@ -4,9 +4,9 @@ use database::bucket::BucketModal;
 use database::object::{ObjectAccess, ObjectCreateInput, ObjectModal};
 use database::{Decimal, Pool, Postgres};
 use proto::core::{
-    CountReply, GetBucketRequest, GetFolderRequest, GetObjectContentReply, GetObjectRequest,
-    SizeReply,
+    GetBucketRequest, GetFolderRequest, GetObjectContentReply, GetObjectRequest, SizeReply,
 };
+use proto::user::CountReply;
 use proto::{
     async_trait,
     core::{
@@ -16,7 +16,7 @@ use proto::{
     user::Empty,
     Request, Response, Status,
 };
-use validation::check_auth::check_user;
+use validation::check_auth::{check_manager, check_user};
 use validation::TonicValidate;
 
 use crate::utils::check::{check_bucket, check_folder_writeable, check_object_writeable};
@@ -299,6 +299,15 @@ impl Object for ObjectGreeter {
         let size = ObjectModal::size_by_user(&username, pool)
             .await?
             .to_string();
+        Ok(Response::new(SizeReply { size }))
+    }
+
+    async fn get_size(&self, request: Request<Empty>) -> Result<Response<SizeReply>, Status> {
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
+        let pool = &self.pool;
+        check_manager(auth).await?;
+        let size = ObjectModal::size(pool).await?.to_string();
         Ok(Response::new(SizeReply { size }))
     }
 }

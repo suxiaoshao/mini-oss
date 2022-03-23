@@ -263,3 +263,64 @@ impl RequestModal {
         Ok(result)
     }
 }
+
+/// time
+impl RequestModal {
+    /// 获取某个时间间隔的上传总量
+    pub async fn upload_size(
+        start_time: &OffsetDateTime,
+        end_time: &OffsetDateTime,
+        pool: &Pool<Postgres>,
+    ) -> TonicResult<Decimal> {
+        let (size,): (Option<Decimal>,) =
+            sqlx::query_as("select sum(upload_size) from request where time >= $1 and time <= $2")
+                .bind(start_time)
+                .bind(end_time)
+                .fetch_one(pool)
+                .await?;
+        Ok(size.unwrap_or_default())
+    }
+    /// 获取某个时间间隔的上传总量
+    pub async fn download_size(
+        start_time: &OffsetDateTime,
+        end_time: &OffsetDateTime,
+        pool: &Pool<Postgres>,
+    ) -> TonicResult<Decimal> {
+        let (size,): (Option<Decimal>,) = sqlx::query_as(
+            "select sum(download_size) from request where time >= $1 and time <= $2",
+        )
+        .bind(start_time)
+        .bind(end_time)
+        .fetch_one(pool)
+        .await?;
+        Ok(size.unwrap_or_default())
+    }
+    /// 获取某个时间间隔的上传总量
+    pub async fn count(
+        start_time: &OffsetDateTime,
+        end_time: &OffsetDateTime,
+        pool: &Pool<Postgres>,
+    ) -> TonicResult<i64> {
+        let (total,): (i64,) =
+            sqlx::query_as("select count(object_id) from request where time >= $1 and time <= $2")
+                .bind(start_time)
+                .bind(end_time)
+                .fetch_one(pool)
+                .await?;
+        Ok(total)
+    }
+    /// 获取某个时间间隔的所有数据
+    pub async fn find_all(
+        start_time: &OffsetDateTime,
+        end_time: &OffsetDateTime,
+        pool: &Pool<Postgres>,
+    ) -> TonicResult<Vec<Self>> {
+        let result =
+            sqlx::query_as("select * from request where time >= $1 and time <= $2 order by time")
+                .bind(start_time)
+                .bind(end_time)
+                .fetch_all(pool)
+                .await?;
+        Ok(result)
+    }
+}

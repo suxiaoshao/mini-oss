@@ -1,9 +1,9 @@
 use std::sync::Arc;
 
 use database::{users::UserModal, Pool, Postgres};
-
 use errors::{TonicError, TonicResult};
 use proto::middleware::client::bucket_client;
+use proto::user::CountReply;
 use proto::{
     async_trait,
     core::DeleteBucketsRequest,
@@ -124,6 +124,16 @@ impl UserManage for UserManageGreeter {
         check_manager(auth).await?;
         let user = UserModal::find_one(&name, &self.pool).await?;
         Ok(Response::new(user.into()))
+    }
+
+    async fn get_count(&self, request: Request<Empty>) -> Result<Response<CountReply>, Status> {
+        let pool = &self.pool;
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
+        // 验证管理员身份
+        check_manager(auth).await?;
+        let total = UserModal::count(pool).await?;
+        Ok(Response::new(CountReply { total }))
     }
 }
 

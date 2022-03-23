@@ -8,8 +8,8 @@ use database::{
     storage::StorageModal,
 };
 use database::{Pool, Postgres};
-use proto::core::{CountReply, GetBucketRequest};
-use proto::user::Empty;
+use proto::core::GetBucketRequest;
+use proto::user::{CountReply, Empty};
 use proto::{
     async_trait,
     core::{

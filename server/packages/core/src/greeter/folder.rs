@@ -3,8 +3,8 @@ use std::sync::Arc;
 use database::folder::FolderModal;
 use database::object::ObjectModal;
 use database::{Pool, Postgres};
-use proto::core::{CountReply, GetFolderRequest};
-use proto::user::Empty;
+use proto::core::GetFolderRequest;
+use proto::user::{CountReply, Empty};
 use proto::{
     async_trait,
     core::{

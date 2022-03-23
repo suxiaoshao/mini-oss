@@ -1,11 +1,12 @@
 use async_graphql::{ComplexObject, Context, SimpleObject};
 
 use proto::core::{
-    CountChartItem, CountChartReply, CountDurationItem, CountDurationReply, CountReply,
-    GetBucketRequest, GetBucketWithTimeRequest, SizeChartItem, SizeChartReply, SizeDurationItem,
-    SizeDurationReply, SizeReply,
+    CountChartItem, CountChartReply, CountDurationItem, CountDurationReply, GetBucketRequest,
+    GetBucketWithTimeRequest, SizeChartItem, SizeChartReply, SizeDurationItem, SizeDurationReply,
+    SizeReply,
 };
 use proto::middleware::client::{request_client, storage_client};
+use proto::user::CountReply;
 use proto::{
     core::{BucketAccess, GetBucketListReply},
     middleware::client::object_client,

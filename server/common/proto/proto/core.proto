@@ -17,7 +17,7 @@ service Bucket {
   // 获取某个 bucket 信息
   rpc GetBucket(GetBucketRequest) returns(BucketInfo){}
   // 获取桶数量
-  rpc GetBucketCount(user.Empty) returns (CountReply){}
+  rpc GetBucketCount(user.Empty) returns (user.CountReply){}
 }
 
 message GetBucketRequest{
@@ -89,11 +89,11 @@ service Folder {
   // 获取 path 列表
   rpc GetFolderList(GetFolderListRequest) returns (GetFolderListReply){}
   // 获取 path 总数
-  rpc GetFolderCount(GetFolderRequest) returns (CountReply){}
+  rpc GetFolderCount(GetFolderRequest) returns (user.CountReply){}
   // 获取 path 信息
   rpc GetFolder(GetFolderRequest) returns (FolderInfo){}
   // 获取 path 下所有 path 总数
-  rpc GetTotalByFolder(GetFolderRequest) returns (CountReply){}
+  rpc GetTotalByFolder(GetFolderRequest) returns (user.CountReply){}
 }
 
 // 访问权限类型
@@ -113,11 +113,6 @@ message GetFolderRequest{
   string bucket_name = 1;
   // 路径
   string path = 2;
-}
-
-message CountReply{
-  // 总数
-  int64 total = 1;
 }
 
 message GetFolderListRequest{
@@ -201,23 +196,25 @@ service Object {
   // 获取path列表
   rpc GetObjectList(GetFolderListRequest) returns (GetObjectListReply){}
   // 获取 object 总数
-  rpc GetObjectCount(GetFolderRequest) returns (CountReply){}
+  rpc GetObjectCount(GetFolderRequest) returns (user.CountReply){}
   // 获取 object 信息
   rpc GetObject(GetObjectRequest) returns (ObjectInfo){}
   // 获取文件内容
   rpc GetObjectContent(GetObjectRequest) returns (GetObjectContentReply){}
   // 获取 path 下所有 object 总数
-  rpc GetTotalByFolder(GetFolderRequest) returns (CountReply){}
+  rpc GetTotalByFolder(GetFolderRequest) returns (user.CountReply){}
   // 获取 path 下所有 object 大小
   rpc GetSizeByFolder(GetFolderRequest) returns (SizeReply){}
   // 获取 bucket 下所有 object 总数
-  rpc GetTotalByBucket(GetBucketRequest) returns (CountReply){}
+  rpc GetTotalByBucket(GetBucketRequest) returns (user.CountReply){}
   // 获取 bucket 下所有 object 大小
   rpc GetSizeByBucket(GetBucketRequest) returns (SizeReply){}
   // 获取当前用户所有 object 总数
-  rpc GetTotalByUser(user.Empty) returns (CountReply){}
+  rpc GetTotalByUser(user.Empty) returns (user.CountReply){}
   // 获取当前用户所有 object 大小
   rpc GetSizeByUser(user.Empty) returns (SizeReply){}
+  // 获取所有 object 大小
+  rpc GetSize(user.Empty) returns (SizeReply){}
 }
 
 message SizeReply{
@@ -314,13 +311,19 @@ service Request {
   // 获取下载数据大小
   rpc GetDownloadSizeByBucket(GetBucketWithTimeRequest) returns (SizeReply){}
   // 获取请求数量
-  rpc GetCountByBucket(GetBucketWithTimeRequest) returns (CountReply){}
+  rpc GetCountByBucket(GetBucketWithTimeRequest) returns (user.CountReply){}
   // 获取上传数据大小
   rpc GetUploadSizeByUser(GetTimeRequest) returns (SizeReply){}
   // 获取下载数据大小
   rpc GetDownloadSizeByUser(GetTimeRequest) returns (SizeReply){}
   // 获取请求数量
-  rpc GetCountByUser(GetTimeRequest) returns (CountReply){}
+  rpc GetCountByUser(GetTimeRequest) returns (user.CountReply){}
+  // 获取上传数据大小
+  rpc GetUploadSize(GetTimeRequest) returns (SizeReply){}
+  // 获取下载数据大小
+  rpc GetDownloadSize(GetTimeRequest) returns (SizeReply){}
+  // 获取请求数量
+  rpc GetCount(GetTimeRequest) returns (user.CountReply){}
   // 获取 bucket 数量图表信息
   rpc GetCountDurationByBucket(GetBucketWithTimeRequest) returns (CountDurationReply){}
   // 获取 bucket 上传图表信息
@@ -333,6 +336,12 @@ service Request {
   rpc GetUploadDurationByUser(GetTimeRequest) returns (SizeDurationReply){}
   // 获取用户下载图表信息
   rpc GetDownloadDurationByUser(GetTimeRequest) returns (SizeDurationReply){}
+  // 获取数量图表信息
+  rpc GetCountDuration(GetTimeRequest) returns (CountDurationReply){}
+  // 获取上传图表信息
+  rpc GetUploadDuration(GetTimeRequest) returns (SizeDurationReply){}
+  // 获取下载图表信息
+  rpc GetDownloadDuration(GetTimeRequest) returns (SizeDurationReply){}
 }
 
 message SizeDurationReply{
@@ -386,6 +395,10 @@ service Storage {
   rpc GetCountChartByUser(GetTimeRequest) returns (CountChartReply){}
   // 获取用户大小图表信息
   rpc GetSizeChartByUser(GetTimeRequest) returns (SizeChartReply){}
+  // 获取数量图表信息
+  rpc GetCountChart(GetTimeRequest) returns (CountChartReply){}
+  // 获取大小图表信息
+  rpc GetSizeChart(GetTimeRequest) returns (SizeChartReply){}
 }
 
 message SizeChartReply{

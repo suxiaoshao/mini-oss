@@ -1,14 +1,13 @@
 use async_graphql::{Context, Object};
 
 use proto::core::{
-    CountReply, GetBucketRequest, GetFolderListReply, GetFolderListRequest, GetFolderRequest,
-    GetObjectRequest,
+    GetBucketRequest, GetFolderListReply, GetFolderListRequest, GetFolderRequest, GetObjectRequest,
 };
 use proto::middleware::client::{
     bucket_client, folder_client, login_client, object_client, self_manage_client,
     user_manage_client,
 };
-use proto::user::{Empty, LoginRequest};
+use proto::user::{CountReply, Empty, LoginRequest};
 use proto::{
     user::{GetListRequest, GetUserRequest},
     Request,
@@ -16,6 +15,7 @@ use proto::{
 
 use crate::errors::GraphqlResult;
 use crate::schema::folder::folder_list::FolderList;
+use crate::schema::manage_detail::ManageDetail;
 use crate::schema::object::object_info::ObjectInfo;
 
 use super::{
@@ -224,5 +224,9 @@ impl QueryRoot {
         let mut client = object_client(auth).await?;
         let res = client.get_object(data).await?.into_inner();
         Ok(res.into())
+    }
+    /// 管理员信息
+    async fn manage_detail(&self) -> ManageDetail {
+        ManageDetail
     }
 }

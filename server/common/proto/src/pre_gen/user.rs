@@ -1,4 +1,10 @@
 #[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CountReply {
+    /// 总数
+    #[prost(int64, tag = "1")]
+    pub total: i64,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UpdateUserRequest {
     /// 账号
     #[prost(string, tag = "1")]
@@ -238,6 +244,21 @@ pub mod user_manage_client {
             })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static("/user.UserManage/GetUser");
+            self.inner.unary(request.into_request(), path, codec).await
+        }
+        #[doc = " 用户数量"]
+        pub async fn get_count(
+            &mut self,
+            request: impl tonic::IntoRequest<super::Empty>,
+        ) -> Result<tonic::Response<super::CountReply>, tonic::Status> {
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static("/user.UserManage/GetCount");
             self.inner.unary(request.into_request(), path, codec).await
         }
     }
@@ -504,6 +525,11 @@ pub mod user_manage_server {
             &self,
             request: tonic::Request<super::GetUserRequest>,
         ) -> Result<tonic::Response<super::UserInfo>, tonic::Status>;
+        #[doc = " 用户数量"]
+        async fn get_count(
+            &self,
+            request: tonic::Request<super::Empty>,
+        ) -> Result<tonic::Response<super::CountReply>, tonic::Status>;
     }
     #[derive(Debug)]
     pub struct UserManageServer<T: UserManage> {
@@ -689,6 +715,34 @@ pub mod user_manage_server {
                     let fut = async move {
                         let inner = inner.0;
                         let method = GetUserSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
+                            accept_compression_encodings,
+                            send_compression_encodings,
+                        );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/user.UserManage/GetCount" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetCountSvc<T: UserManage>(pub Arc<T>);
+                    impl<T: UserManage> tonic::server::UnaryService<super::Empty> for GetCountSvc<T> {
+                        type Response = super::CountReply;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        fn call(&mut self, request: tonic::Request<super::Empty>) -> Self::Future {
+                            let inner = self.0.clone();
+                            let fut = async move { (*inner).get_count(request).await };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let inner = inner.0;
+                        let method = GetCountSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec).apply_compression_config(
                             accept_compression_encodings,

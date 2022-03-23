@@ -5,11 +5,12 @@ use database::time::OffsetDateTime;
 use database::{Decimal, Pool, Postgres};
 use errors::TonicResult;
 use proto::core::{
-    CountDurationItem, CountDurationReply, CountReply, GetBucketWithTimeRequest, GetTimeRequest,
+    CountDurationItem, CountDurationReply, GetBucketWithTimeRequest, GetTimeRequest,
     SizeDurationItem, SizeDurationReply, SizeReply,
 };
+use proto::user::CountReply;
 use proto::{async_trait, core::request_server, Request, Response, Status};
-use validation::check_auth::check_user;
+use validation::check_auth::{check_manager, check_user};
 
 use crate::utils::check::check_bucket;
 
@@ -150,6 +151,64 @@ impl request_server::Request for RequestGreeter {
         Ok(Response::new(CountReply { total }))
     }
 
+    async fn get_upload_size(
+        &self,
+        request: Request<GetTimeRequest>,
+    ) -> Result<Response<SizeReply>, Status> {
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
+        let pool = &self.pool;
+        let GetTimeRequest {
+            start_time,
+            end_time,
+        } = request.into_inner();
+        check_manager(auth).await?;
+        let start_time = OffsetDateTime::from_unix_timestamp_nanos(start_time as i128 * 1000000);
+        let end_time = OffsetDateTime::from_unix_timestamp_nanos(end_time as i128 * 1000000);
+        let size = RequestModal::upload_size(&start_time, &end_time, pool)
+            .await?
+            .to_string();
+        Ok(Response::new(SizeReply { size }))
+    }
+
+    async fn get_download_size(
+        &self,
+        request: Request<GetTimeRequest>,
+    ) -> Result<Response<SizeReply>, Status> {
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
+        let pool = &self.pool;
+        let GetTimeRequest {
+            start_time,
+            end_time,
+        } = request.into_inner();
+        check_manager(auth).await?;
+        let start_time = OffsetDateTime::from_unix_timestamp_nanos(start_time as i128 * 1000000);
+        let end_time = OffsetDateTime::from_unix_timestamp_nanos(end_time as i128 * 1000000);
+        let size = RequestModal::download_size(&start_time, &end_time, pool)
+            .await?
+            .to_string();
+        Ok(Response::new(SizeReply { size }))
+    }
+
+    async fn get_count(
+        &self,
+        request: Request<GetTimeRequest>,
+    ) -> Result<Response<CountReply>, Status> {
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
+        let pool = &self.pool;
+        let GetTimeRequest {
+            start_time,
+            end_time,
+        } = request.into_inner();
+        check_manager(auth).await?;
+        let start_time = OffsetDateTime::from_unix_timestamp_nanos(start_time as i128 * 1000000);
+        let end_time = OffsetDateTime::from_unix_timestamp_nanos(end_time as i128 * 1000000);
+        let total = RequestModal::count(&start_time, &end_time, pool).await?;
+        Ok(Response::new(CountReply { total }))
+    }
+
     async fn get_count_duration_by_bucket(
         &self,
         request: Request<GetBucketWithTimeRequest>,
@@ -260,12 +319,76 @@ impl request_server::Request for RequestGreeter {
         let requests = chart_to_download(requests);
         Ok(Response::new(SizeDurationReply { data: requests }))
     }
+
+    async fn get_count_duration(
+        &self,
+        request: Request<GetTimeRequest>,
+    ) -> Result<Response<CountDurationReply>, Status> {
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
+        let pool = &self.pool;
+        let GetTimeRequest {
+            start_time,
+            end_time,
+        } = request.into_inner();
+        check_manager(auth).await?;
+        let requests = get_chart_request(start_time, end_time, pool).await?;
+        let requests = chart_to_count(requests);
+        Ok(Response::new(CountDurationReply { data: requests }))
+    }
+
+    async fn get_upload_duration(
+        &self,
+        request: Request<GetTimeRequest>,
+    ) -> Result<Response<SizeDurationReply>, Status> {
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
+        let pool = &self.pool;
+        let GetTimeRequest {
+            start_time,
+            end_time,
+        } = request.into_inner();
+        check_manager(auth).await?;
+        let requests = get_chart_request(start_time, end_time, pool).await?;
+        let requests = chart_to_upload(requests);
+        Ok(Response::new(SizeDurationReply { data: requests }))
+    }
+
+    async fn get_download_duration(
+        &self,
+        request: Request<GetTimeRequest>,
+    ) -> Result<Response<SizeDurationReply>, Status> {
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
+        let pool = &self.pool;
+        let GetTimeRequest {
+            start_time,
+            end_time,
+        } = request.into_inner();
+        check_manager(auth).await?;
+        let requests = get_chart_request(start_time, end_time, pool).await?;
+        let requests = chart_to_download(requests);
+        Ok(Response::new(SizeDurationReply { data: requests }))
+    }
 }
 
 type ChartTime<T> = (OffsetDateTime, OffsetDateTime, T);
 type ChartTimeRequest = ChartTime<Vec<RequestModal>>;
 
 const SPLIT_FLAG: u16 = 300;
+
+/// 获取 bucket 下 request chart
+async fn get_chart_request(
+    start_time: i64,
+    end_time: i64,
+    pool: &Pool<Postgres>,
+) -> TonicResult<Vec<ChartTimeRequest>> {
+    let start_time = OffsetDateTime::from_unix_timestamp_nanos(start_time as i128 * 1000000);
+    let end_time = OffsetDateTime::from_unix_timestamp_nanos(end_time as i128 * 1000000);
+    let requests = RequestModal::find_all(&start_time, &end_time, pool).await?;
+    let requests = request_to_chart(start_time, end_time, requests).await?;
+    Ok(requests)
+}
 
 /// 获取 bucket 下 request chart
 async fn get_chart_request_by_bucket(

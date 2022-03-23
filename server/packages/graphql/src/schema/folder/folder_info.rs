@@ -1,6 +1,7 @@
 use async_graphql::{ComplexObject, Context, SimpleObject};
-use proto::core::{CountReply, FolderAccess, GetFolderRequest, SizeReply};
+use proto::core::{FolderAccess, GetFolderRequest, SizeReply};
 use proto::middleware::client::{folder_client, object_client};
+use proto::user::CountReply;
 
 use crate::errors::{GraphqlError, GraphqlResult};
 

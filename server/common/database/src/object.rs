@@ -210,6 +210,13 @@ impl ObjectModal {
             _ => false,
         })
     }
+    /// 获取某个用户对象大小
+    pub async fn size(pool: &Pool<Postgres>) -> TonicResult<Decimal> {
+        let (size,): (Option<Decimal>,) = sqlx::query_as("select sum(size) from object")
+            .fetch_one(pool)
+            .await?;
+        Ok(size.unwrap_or_default())
+    }
 }
 
 /// path 的
@@ -367,7 +374,7 @@ impl ObjectModal {
                 .await?;
         Ok(count)
     }
-    /// 获取某个 bucket 下对象大小
+    /// 获取某个用户对象大小
     pub async fn size_by_user(username: &str, pool: &Pool<Postgres>) -> TonicResult<Decimal> {
         let (size,): (Option<Decimal>,) =
             sqlx::query_as("select sum(size) from object where username=$1")
