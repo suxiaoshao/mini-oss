@@ -5,10 +5,11 @@ use database::time::OffsetDateTime;
 use database::{Pool, Postgres};
 use errors::TonicResult;
 use proto::core::{
-    storage_server, CountChartItem, CountChartReply, GetBucketWithTimeRequest, SizeChartItem,
-    SizeChartReply,
+    storage_server, CountChartItem, CountChartReply, GetBucketWithTimeRequest, GetTimeRequest,
+    SizeChartItem, SizeChartReply,
 };
 use proto::{async_trait, Request, Response, Status};
+use validation::check_auth::check_user;
 
 use crate::utils::check::check_bucket;
 
@@ -38,14 +39,8 @@ impl storage_server::Storage for StorageGreeter {
         } = request.into_inner();
         // 判断权限
         check_bucket(auth, &bucket_name, pool).await?;
-        let storages = get_chart_storage(&bucket_name, start_time, end_time, pool).await?;
-        let storages = storages
-            .into_iter()
-            .map(|StorageModal { time, num, .. }| CountChartItem {
-                time: (time.unix_timestamp_nanos() / 1000000) as i64,
-                value: num,
-            })
-            .collect();
+        let storages = get_chart_storage_bucket(&bucket_name, start_time, end_time, pool).await?;
+        let storages = chart_to_count(storages);
         Ok(Response::new(CountChartReply { data: storages }))
     }
 
@@ -63,20 +58,48 @@ impl storage_server::Storage for StorageGreeter {
         } = request.into_inner();
         // 判断权限
         check_bucket(auth, &bucket_name, pool).await?;
-        let storages = get_chart_storage(&bucket_name, start_time, end_time, pool).await?;
-        let storages = storages
-            .into_iter()
-            .map(|StorageModal { time, size, .. }| SizeChartItem {
-                time: (time.unix_timestamp_nanos() / 1000000) as i64,
-                value: size.to_string(),
-            })
-            .collect();
+        let storages = get_chart_storage_bucket(&bucket_name, start_time, end_time, pool).await?;
+        let storages = chart_to_size(storages);
+        Ok(Response::new(SizeChartReply { data: storages }))
+    }
+
+    async fn get_count_chart_by_user(
+        &self,
+        request: Request<GetTimeRequest>,
+    ) -> Result<Response<CountChartReply>, Status> {
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
+        let pool = &self.pool;
+        let GetTimeRequest {
+            start_time,
+            end_time,
+        } = request.into_inner();
+        let username = check_user(auth).await?;
+        let storages = get_chart_storage_user(&username, start_time, end_time, pool).await?;
+        let storages = chart_to_count(storages);
+        Ok(Response::new(CountChartReply { data: storages }))
+    }
+
+    async fn get_size_chart_by_user(
+        &self,
+        request: Request<GetTimeRequest>,
+    ) -> Result<Response<SizeChartReply>, Status> {
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
+        let pool = &self.pool;
+        let GetTimeRequest {
+            start_time,
+            end_time,
+        } = request.into_inner();
+        let username = check_user(auth).await?;
+        let storages = get_chart_storage_user(&username, start_time, end_time, pool).await?;
+        let storages = chart_to_size(storages);
         Ok(Response::new(SizeChartReply { data: storages }))
     }
 }
 const SPLIT_FLAG: usize = 300;
 
-async fn get_chart_storage(
+async fn get_chart_storage_bucket(
     bucket_name: &str,
     start_time: i64,
     end_time: i64,
@@ -89,7 +112,25 @@ async fn get_chart_storage(
     let storages = if storages.len() <= SPLIT_FLAG {
         storages
     } else {
-        vec_filter_by_proportion(SPLIT_FLAG,storages)
+        vec_filter_by_proportion(SPLIT_FLAG, storages)
+    };
+    Ok(storages)
+}
+
+async fn get_chart_storage_user(
+    bucket_name: &str,
+    start_time: i64,
+    end_time: i64,
+    pool: &Pool<Postgres>,
+) -> TonicResult<Vec<StorageModal>> {
+    let start_time = OffsetDateTime::from_unix_timestamp_nanos(start_time as i128 * 1000000);
+    let end_time = OffsetDateTime::from_unix_timestamp_nanos(end_time as i128 * 1000000);
+    let storages =
+        StorageModal::find_all_by_time_user(bucket_name, &start_time, &end_time, pool).await?;
+    let storages = if storages.len() <= SPLIT_FLAG {
+        storages
+    } else {
+        vec_filter_by_proportion(SPLIT_FLAG, storages)
     };
     Ok(storages)
 }
@@ -105,6 +146,26 @@ fn vec_filter_by_proportion<T>(num: usize, data: Vec<T>) -> Vec<T> {
         }
     }
     s
+}
+
+fn chart_to_count(storages: Vec<StorageModal>) -> Vec<CountChartItem> {
+    storages
+        .into_iter()
+        .map(|StorageModal { time, num, .. }| CountChartItem {
+            time: (time.unix_timestamp_nanos() / 1000000) as i64,
+            value: num,
+        })
+        .collect()
+}
+
+fn chart_to_size(storages: Vec<StorageModal>) -> Vec<SizeChartItem> {
+    storages
+        .into_iter()
+        .map(|StorageModal { time, size, .. }| SizeChartItem {
+            time: (time.unix_timestamp_nanos() / 1000000) as i64,
+            value: size.to_string(),
+        })
+        .collect()
 }
 
 #[cfg(test)]

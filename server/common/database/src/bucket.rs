@@ -36,6 +36,8 @@ pub struct BucketModal {
     /// 用户名
     pub username: String,
 }
+
+/// self
 impl BucketModal {
     /// 创建
     pub async fn create(
@@ -99,6 +101,28 @@ impl BucketModal {
             .await?;
         Ok(())
     }
+    /// 判断读取访问权限
+    pub async fn read_open(bucket_name: &str, pool: &Pool<Postgres>) -> TonicResult<bool> {
+        let Self { access, .. } = Self::find_one(bucket_name, pool).await?;
+        Ok(match access {
+            BucketAccess::Open => true,
+            BucketAccess::ReadOpen => true,
+            BucketAccess::Private => false,
+        })
+    }
+    /// 判断写访问权限
+    pub async fn write_open(bucket_name: &str, pool: &Pool<Postgres>) -> TonicResult<bool> {
+        let Self { access, .. } = Self::find_one(bucket_name, pool).await?;
+        Ok(match access {
+            BucketAccess::Open => true,
+            BucketAccess::ReadOpen => false,
+            BucketAccess::Private => false,
+        })
+    }
+}
+
+/// user
+impl BucketModal {
     /// 删除某个用户下所有
     pub async fn delete_by_user(username: &str, pool: &Pool<Postgres>) -> TonicResult<()> {
         sqlx::query("delete from bucket where username = $1")
@@ -117,11 +141,11 @@ impl BucketModal {
         let users = sqlx::query_as(
             "select name,access,create_time,update_time,username from bucket where username = $1 offset $2 limit $3",
         )
-        .bind(username)
-        .bind(offset)
-        .bind(limit)
-        .fetch_all(pool)
-        .await?;
+            .bind(username)
+            .bind(offset)
+            .bind(limit)
+            .fetch_all(pool)
+            .await?;
         Ok(users)
     }
     /// 获取全部列表
@@ -138,30 +162,12 @@ impl BucketModal {
         Ok(users)
     }
     /// 获取总数
-    pub async fn count_by_name(username: &str, pool: &Pool<Postgres>) -> TonicResult<i64> {
+    pub async fn count_by_username(username: &str, pool: &Pool<Postgres>) -> TonicResult<i64> {
         let (count,): (i64,) = sqlx::query_as("select count(name) from bucket where username = $1")
             .bind(username)
             .fetch_one(pool)
             .await?;
         Ok(count)
-    }
-    /// 判断读取访问权限
-    pub async fn read_open(bucket_name: &str, pool: &Pool<Postgres>) -> TonicResult<bool> {
-        let Self { access, .. } = Self::find_one(bucket_name, pool).await?;
-        Ok(match access {
-            BucketAccess::Open => true,
-            BucketAccess::ReadOpen => true,
-            BucketAccess::Private => false,
-        })
-    }
-    /// 判断写访问权限
-    pub async fn write_open(bucket_name: &str, pool: &Pool<Postgres>) -> TonicResult<bool> {
-        let Self { access, .. } = Self::find_one(bucket_name, pool).await?;
-        Ok(match access {
-            BucketAccess::Open => true,
-            BucketAccess::ReadOpen => false,
-            BucketAccess::Private => false,
-        })
     }
 }
 

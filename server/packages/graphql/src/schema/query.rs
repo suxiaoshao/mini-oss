@@ -21,7 +21,7 @@ use crate::schema::object::object_info::ObjectInfo;
 use super::{
     bucket::bucket_info::{BucketInfo, BucketList},
     folder::folder_info::FolderInfo,
-    user_info::{UserInfo, UserList},
+    user::{UserInfo, UserList},
 };
 
 pub struct QueryRoot;

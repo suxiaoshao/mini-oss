@@ -8,7 +8,7 @@ use database::{
     storage::StorageModal,
 };
 use database::{Pool, Postgres};
-use proto::core::GetBucketRequest;
+use proto::core::{CountReply, GetBucketRequest};
 use proto::user::Empty;
 use proto::{
     async_trait,
@@ -141,7 +141,7 @@ impl Bucket for BucketGreeter {
         let username = check_user(auth).await?;
         let pool = &self.pool;
         let (count, data) = tokio::join!(
-            BucketModal::count_by_name(&username, pool),
+            BucketModal::count_by_username(&username, pool),
             BucketModal::find_many_by_user(*limit, *offset, &username, pool)
         );
         Ok(Response::new(GetBucketListReply {
@@ -162,5 +162,17 @@ impl Bucket for BucketGreeter {
         check_bucket(auth, &bucket_name, pool).await?;
         let bucket = BucketModal::find_one(&bucket_name, pool).await?;
         Ok(Response::new(bucket.into()))
+    }
+
+    async fn get_bucket_count(
+        &self,
+        request: Request<Empty>,
+    ) -> Result<Response<CountReply>, Status> {
+        // 获取 auth
+        let auth = request.extensions().get::<String>().cloned();
+        let pool = &self.pool;
+        let username = check_user(auth).await?;
+        let total = BucketModal::count_by_username(&username, pool).await?;
+        Ok(Response::new(CountReply { total }))
     }
 }

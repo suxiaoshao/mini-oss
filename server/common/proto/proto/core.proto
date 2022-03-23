@@ -16,6 +16,8 @@ service Bucket {
   rpc GetBucketList(user.GetListRequest) returns (GetBucketListReply){}
   // 获取某个 bucket 信息
   rpc GetBucket(GetBucketRequest) returns(BucketInfo){}
+  // 获取桶数量
+  rpc GetBucketCount(user.Empty) returns (CountReply){}
 }
 
 message GetBucketRequest{
@@ -319,12 +321,18 @@ service Request {
   rpc GetDownloadSizeByUser(GetTimeRequest) returns (SizeReply){}
   // 获取请求数量
   rpc GetCountByUser(GetTimeRequest) returns (CountReply){}
-  // 获取数量图表信息
+  // 获取 bucket 数量图表信息
   rpc GetCountDurationByBucket(GetBucketWithTimeRequest) returns (CountDurationReply){}
-  // 获取上传图表信息
+  // 获取 bucket 上传图表信息
   rpc GetUploadDurationByBucket(GetBucketWithTimeRequest) returns (SizeDurationReply){}
-  // 获取下载图表信息
+  // 获取 bucket 下载图表信息
   rpc GetDownloadDurationByBucket(GetBucketWithTimeRequest) returns (SizeDurationReply){}
+  // 获取用户数量图表信息
+  rpc GetCountDurationByUser(GetTimeRequest) returns (CountDurationReply){}
+  // 获取用户上传图表信息
+  rpc GetUploadDurationByUser(GetTimeRequest) returns (SizeDurationReply){}
+  // 获取用户下载图表信息
+  rpc GetDownloadDurationByUser(GetTimeRequest) returns (SizeDurationReply){}
 }
 
 message SizeDurationReply{
@@ -370,10 +378,14 @@ message GetTimeRequest{
 }
 
 service Storage {
-  // 获取数量图表信息
+  // 获取 bucket 数量图表信息
   rpc GetCountChartByBucket(GetBucketWithTimeRequest) returns (CountChartReply){}
-  // 获取大小图表信息
+  // 获取 bucket 大小图表信息
   rpc GetSizeChartByBucket(GetBucketWithTimeRequest) returns (SizeChartReply){}
+  // 获取用户数量图表信息
+  rpc GetCountChartByUser(GetTimeRequest) returns (CountChartReply){}
+  // 获取用户大小图表信息
+  rpc GetSizeChartByUser(GetTimeRequest) returns (SizeChartReply){}
 }
 
 message SizeChartReply{

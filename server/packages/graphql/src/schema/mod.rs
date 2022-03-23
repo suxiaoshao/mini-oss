@@ -8,6 +8,6 @@ mod folder;
 pub mod mutation;
 mod object;
 pub mod query;
-mod user_info;
+mod user;
 
 pub type RootSchema = Schema<QueryRoot, MutationRoot, EmptySubscription>;

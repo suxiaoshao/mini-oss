@@ -245,4 +245,21 @@ impl RequestModal {
             .await?;
         Ok(total)
     }
+    /// 获取某个时间间隔的所有数据
+    pub async fn find_all_by_time_user(
+        username: &str,
+        start_time: &OffsetDateTime,
+        end_time: &OffsetDateTime,
+        pool: &Pool<Postgres>,
+    ) -> TonicResult<Vec<Self>> {
+        let result = sqlx::query_as(
+            "select * from request where username = $1 and time >= $2 and time <= $3 order by time",
+        )
+        .bind(username)
+        .bind(start_time)
+        .bind(end_time)
+        .fetch_all(pool)
+        .await?;
+        Ok(result)
+    }
 }

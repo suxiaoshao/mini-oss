@@ -29,7 +29,7 @@ async fn storage_task() {
     match _storage_task().await {
         Ok(_) => {}
         Err(err) => {
-            println!("{:?}",err);
+            println!("{:?}", err);
         }
     }
 }

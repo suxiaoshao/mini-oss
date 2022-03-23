@@ -5,7 +5,7 @@ use crate::schema::folder::folder_info::FolderInfo;
 use crate::schema::folder::request::{CreateFolderRequest, UpdateFolderRequest};
 use crate::schema::object::object_info::ObjectInfo;
 use crate::schema::object::request::UpdateObjectRequest;
-use crate::schema::user_info::UserInfo;
+use crate::schema::user::UserInfo;
 use async_graphql::{Context, Object};
 use proto::core::{DeleteBucketRequest, DeleteFolderRequest, DeleteObjectRequest};
 use proto::middleware::client::{

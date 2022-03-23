@@ -3,19 +3,19 @@ use std::sync::Arc;
 use anyhow::Result;
 use database::PgPoolOptions;
 use proto::core::request_server::RequestServer;
+use proto::core::storage_server::StorageServer;
 use proto::middleware::server::{add_auth, interceptor};
 use proto::{
     core::{bucket_server::BucketServer, folder_server::FolderServer, object_server::ObjectServer},
     transport::Server,
 };
-use proto::core::storage_server::StorageServer;
 
 use crate::greeter::request::RequestGreeter;
+use crate::greeter::storage::StorageGreeter;
 use crate::{
     greeter::{bucket::BucketGreeter, folder::FolderGreeter, object::ObjectGreeter},
     utils::mongo::Mongo,
 };
-use crate::greeter::storage::StorageGreeter;
 
 mod greeter;
 mod utils;
