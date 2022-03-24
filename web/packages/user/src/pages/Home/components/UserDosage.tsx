@@ -1,5 +1,5 @@
-import InfoWithNumber from '@/components/Dosage/InfoWithNumber';
-import { Card, CardHeader, CardContent, Box, Divider, CardProps } from '@mui/material';
+import { Card, CardHeader, CardContent, Box, Divider, CardProps, Alert } from '@mui/material';
+import { InfoWithNumber } from 'common';
 import prettyBytes from 'pretty-bytes';
 
 export interface DosageProps extends CardProps {
@@ -22,6 +22,7 @@ export default function UserDosage({
 }: DosageProps): JSX.Element {
   return (
     <Card {...props}>
+      <Alert severity="success">存储桶数量、对象数量和存储量为当前数据, 其余项为时间范围内数据之和</Alert>
       <CardHeader title="用量概览" />
       <CardContent sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <Box sx={{ display: 'flex', flex: '1 1 0' }}>

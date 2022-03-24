@@ -6,3 +6,4 @@ export * from './time';
 export * from './ErrorPage';
 export * from './form';
 export * from './CustomEchart';
+export * from './Stat';

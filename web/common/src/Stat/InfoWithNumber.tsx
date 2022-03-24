@@ -6,7 +6,7 @@ export interface InfoWithNumberProps {
   value: ReactNode;
 }
 
-export default function InfoWithNumber({ name, value }: InfoWithNumberProps) {
+export function InfoWithNumber({ name, value }: InfoWithNumberProps) {
   return (
     <Box sx={{ flex: '1 1 0' }}>
       <Typography>{name}</Typography>

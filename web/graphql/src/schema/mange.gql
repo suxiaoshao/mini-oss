@@ -19,6 +19,41 @@ query userInfo($data: GetUserRequest!) {
     updateTime
   }
 }
+
+query manageDetail($startTime: Int!, $endTime: Int!) {
+  manageDetail {
+    objectSize
+    userCount
+    uploadSize(endTime: $endTime, startTime: $startTime)
+    downloadSize(startTime: $startTime, endTime: $endTime)
+    requestCount(endTime: $endTime, startTime: $startTime)
+
+    uploadSizeChart(endTime: $endTime, startTime: $startTime) {
+      startTime
+      endTime
+      value
+    }
+    downloadSizeChart(endTime: $endTime, startTime: $startTime) {
+      startTime
+      endTime
+      value
+    }
+    requestCountChart(endTime: $endTime, startTime: $startTime) {
+      startTime
+      endTime
+      value
+    }
+    objectCountChart(endTime: $endTime, startTime: $startTime) {
+      time
+      value
+    }
+    objectSizeChart(endTime: $endTime, startTime: $startTime) {
+      time
+      value
+    }
+  }
+}
+
 mutation userCreate($data: CreateUserRequest!) {
   manageUserCreate(data: $data) {
     name

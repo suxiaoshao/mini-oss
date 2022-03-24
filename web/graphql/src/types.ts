@@ -284,6 +284,76 @@ export type LoginRequest = {
   password: Scalars['String'];
 };
 
+export type ManageDetail = {
+  __typename?: 'ManageDetail';
+  /** 下载大小 */
+  downloadSize: Scalars['String'];
+  /** 下载大小 */
+  downloadSizeChart: Array<SizeDurationItem>;
+  /** 对象数量 */
+  objectCountChart: Array<CountChartItem>;
+  /**
+   * 统计信息
+   * 对象大小
+   */
+  objectSize: Scalars['String'];
+  /**
+   * 图表信息
+   * 对象大小
+   */
+  objectSizeChart: Array<SizeChartItem>;
+  /** 请求数量 */
+  requestCount: Scalars['Int'];
+  /** 请求数量 */
+  requestCountChart: Array<CountDurationItem>;
+  /** 上传大小 */
+  uploadSize: Scalars['String'];
+  /** 上传大小 */
+  uploadSizeChart: Array<SizeDurationItem>;
+  /** 用户数量 */
+  userCount: Scalars['Int'];
+};
+
+export type ManageDetailDownloadSizeArgs = {
+  endTime: Scalars['Int'];
+  startTime: Scalars['Int'];
+};
+
+export type ManageDetailDownloadSizeChartArgs = {
+  endTime: Scalars['Int'];
+  startTime: Scalars['Int'];
+};
+
+export type ManageDetailObjectCountChartArgs = {
+  endTime: Scalars['Int'];
+  startTime: Scalars['Int'];
+};
+
+export type ManageDetailObjectSizeChartArgs = {
+  endTime: Scalars['Int'];
+  startTime: Scalars['Int'];
+};
+
+export type ManageDetailRequestCountArgs = {
+  endTime: Scalars['Int'];
+  startTime: Scalars['Int'];
+};
+
+export type ManageDetailRequestCountChartArgs = {
+  endTime: Scalars['Int'];
+  startTime: Scalars['Int'];
+};
+
+export type ManageDetailUploadSizeArgs = {
+  endTime: Scalars['Int'];
+  startTime: Scalars['Int'];
+};
+
+export type ManageDetailUploadSizeChartArgs = {
+  endTime: Scalars['Int'];
+  startTime: Scalars['Int'];
+};
+
 export type MutationRoot = {
   __typename?: 'MutationRoot';
   /** 创建存储桶 */
@@ -408,6 +478,8 @@ export type QueryRoot = {
   folderInfo: FolderInfo;
   /** 文件夹列表 */
   folderList: FolderList;
+  /** 管理员信息 */
+  manageDetail: ManageDetail;
   /** 管理员登陆 */
   managerLogin: Scalars['String'];
   /** 获取对象信息 */
@@ -792,6 +864,28 @@ export type UserInfoQuery = {
     description?: string | null;
     createTime: number;
     updateTime: number;
+  };
+};
+
+export type ManageDetailQueryVariables = Exact<{
+  startTime: Scalars['Int'];
+  endTime: Scalars['Int'];
+}>;
+
+export type ManageDetailQuery = {
+  __typename?: 'QueryRoot';
+  manageDetail: {
+    __typename?: 'ManageDetail';
+    objectSize: string;
+    userCount: number;
+    uploadSize: string;
+    downloadSize: string;
+    requestCount: number;
+    uploadSizeChart: Array<{ __typename?: 'SizeDurationItem'; startTime: number; endTime: number; value: string }>;
+    downloadSizeChart: Array<{ __typename?: 'SizeDurationItem'; startTime: number; endTime: number; value: string }>;
+    requestCountChart: Array<{ __typename?: 'CountDurationItem'; startTime: number; endTime: number; value: number }>;
+    objectCountChart: Array<{ __typename?: 'CountChartItem'; time: number; value: number }>;
+    objectSizeChart: Array<{ __typename?: 'SizeChartItem'; time: number; value: string }>;
   };
 };
 
@@ -1489,6 +1583,73 @@ export function useUserInfoLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<U
 export type UserInfoQueryHookResult = ReturnType<typeof useUserInfoQuery>;
 export type UserInfoLazyQueryHookResult = ReturnType<typeof useUserInfoLazyQuery>;
 export type UserInfoQueryResult = Apollo.QueryResult<UserInfoQuery, UserInfoQueryVariables>;
+export const ManageDetailDocument = gql`
+  query manageDetail($startTime: Int!, $endTime: Int!) {
+    manageDetail {
+      objectSize
+      userCount
+      uploadSize(endTime: $endTime, startTime: $startTime)
+      downloadSize(startTime: $startTime, endTime: $endTime)
+      requestCount(endTime: $endTime, startTime: $startTime)
+      uploadSizeChart(endTime: $endTime, startTime: $startTime) {
+        startTime
+        endTime
+        value
+      }
+      downloadSizeChart(endTime: $endTime, startTime: $startTime) {
+        startTime
+        endTime
+        value
+      }
+      requestCountChart(endTime: $endTime, startTime: $startTime) {
+        startTime
+        endTime
+        value
+      }
+      objectCountChart(endTime: $endTime, startTime: $startTime) {
+        time
+        value
+      }
+      objectSizeChart(endTime: $endTime, startTime: $startTime) {
+        time
+        value
+      }
+    }
+  }
+`;
+
+/**
+ * __useManageDetailQuery__
+ *
+ * To run a query within a React component, call `useManageDetailQuery` and pass it any options that fit your needs.
+ * When your component renders, `useManageDetailQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useManageDetailQuery({
+ *   variables: {
+ *      startTime: // value for 'startTime'
+ *      endTime: // value for 'endTime'
+ *   },
+ * });
+ */
+export function useManageDetailQuery(
+  baseOptions: Apollo.QueryHookOptions<ManageDetailQuery, ManageDetailQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<ManageDetailQuery, ManageDetailQueryVariables>(ManageDetailDocument, options);
+}
+export function useManageDetailLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<ManageDetailQuery, ManageDetailQueryVariables>,
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<ManageDetailQuery, ManageDetailQueryVariables>(ManageDetailDocument, options);
+}
+export type ManageDetailQueryHookResult = ReturnType<typeof useManageDetailQuery>;
+export type ManageDetailLazyQueryHookResult = ReturnType<typeof useManageDetailLazyQuery>;
+export type ManageDetailQueryResult = Apollo.QueryResult<ManageDetailQuery, ManageDetailQueryVariables>;
 export const UserCreateDocument = gql`
   mutation userCreate($data: CreateUserRequest!) {
     manageUserCreate(data: $data) {

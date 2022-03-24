@@ -1,9 +1,7 @@
-import DurationSelect from '@/components/DurationSelect';
 import { AppBar, Box, Toolbar, Typography } from '@mui/material';
-import { dayjs } from 'common';
+import { Charts, dayjs, DurationSelect } from 'common';
 import { useUserStatQuery } from 'graphql';
 import { useState } from 'react';
-import BucketChart from '@/components/Charts';
 import UserDosage from './components/UserDosage';
 
 export default function Home(): JSX.Element {
@@ -25,7 +23,7 @@ export default function Home(): JSX.Element {
         {selfUserInfo && (
           <>
             <UserDosage sx={{ marginTop: (theme) => theme.spacing(2) }} {...selfUserInfo} />
-            <BucketChart {...selfUserInfo} />
+            <Charts {...selfUserInfo} />
           </>
         )}
       </Box>

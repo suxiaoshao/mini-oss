@@ -13,7 +13,8 @@
     "dayjs": "^1.11.0",
     "notistack": "^2.0.3",
     "react-table": "^7.7.0",
-    "yup": "^0.32.11"
+    "yup": "^0.32.11",
+    "graphql": "workspace:^0.0.0"
   },
   "devDependencies": {
     "@types/react-table": "^7.7.10"

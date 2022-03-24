@@ -20,5 +20,5 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["./src", "app"]
+  "include": ["./src", "app", "../../common/src/Stat/Charts.tsx"]
 }

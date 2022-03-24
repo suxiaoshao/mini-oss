@@ -14,9 +14,10 @@
   "license": "ISC",
   "dependencies": {
     "@apollo/client": "^3.5.10",
+    "@date-io/dayjs": "^2.13.1",
     "@emotion/react": "^11.8.2",
     "@emotion/styled": "^11.8.1",
-    "@fontsource/roboto": "^4.5.3",
+    "@fontsource/roboto": "^4.5.5",
     "@hookform/resolvers": "^2.8.8",
     "@mui/icons-material": "^5.5.1",
     "@mui/lab": "^5.0.0-alpha.74",

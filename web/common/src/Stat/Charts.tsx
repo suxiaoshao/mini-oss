@@ -1,15 +1,15 @@
 import { Box } from '@mui/material';
-import { CustomEchart } from 'common';
 import { EChartsOption } from 'echarts';
 import { BucketInfoQuery } from 'graphql';
 import prettyBytes from 'pretty-bytes';
+import { CustomEchart } from '../CustomEchart';
 
 export type ChartsProps = Pick<
   BucketInfoQuery['bucketInfo'],
   'objectCountChart' | 'objectSizeChart' | 'requestCountChart' | 'uploadSizeChart' | 'downloadSizeChart'
 >;
 
-export default function Charts({
+export function Charts({
   objectCountChart,
   objectSizeChart,
   requestCountChart,

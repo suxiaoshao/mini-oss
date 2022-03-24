@@ -1,8 +1,8 @@
 import { DateRangePicker } from '@mui/lab';
 import { ToggleButtonGroup, ToggleButton, Box, TextField } from '@mui/material';
-import { Dayjs, dayjs } from 'common';
 import React from 'react';
 import { useState, MouseEvent, useEffect, Dispatch, SetStateAction } from 'react';
+import { Dayjs, dayjs } from '../time';
 
 export interface DurationSelectProps {
   setStartTime: Dispatch<SetStateAction<number>>;
@@ -10,7 +10,7 @@ export interface DurationSelectProps {
 }
 
 type DurationLabel = 'today' | 'yesterday' | '7' | '30' | 'other';
-export default function DurationSelect({ setStartTime, setEndTime }: DurationSelectProps): JSX.Element {
+export function DurationSelect({ setStartTime, setEndTime }: DurationSelectProps): JSX.Element {
   const [label, setLabel] = useState<DurationLabel>('today');
   const [[startTime, endTime], setValue] = React.useState<[Dayjs, Dayjs]>([dayjs().startOf('day'), dayjs()]);
 

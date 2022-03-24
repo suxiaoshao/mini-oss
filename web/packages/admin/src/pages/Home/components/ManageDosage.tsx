@@ -4,15 +4,15 @@ import prettyBytes from 'pretty-bytes';
 
 export interface DosageProps extends CardProps {
   objectSize: string;
-  objectCount: number;
+  userCount: number;
   uploadSize: string;
   downloadSize: string;
   requestCount: number;
 }
 
-export default function BucketDosage({
+export default function ManageDosage({
   objectSize,
-  objectCount,
+  userCount,
   uploadSize,
   downloadSize,
   requestCount,
@@ -20,11 +20,11 @@ export default function BucketDosage({
 }: DosageProps): JSX.Element {
   return (
     <Card {...props}>
-      <Alert severity="success">对象数量和存储量为当前数据, 其余项为时间范围内数据之和</Alert>
+      <Alert severity="success">用户数量和存储量为当前数据, 其余项为时间范围内数据之和</Alert>
       <CardHeader title="用量概览" />
       <CardContent sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <Box sx={{ display: 'flex', flex: '1 1 0' }}>
-          <InfoWithNumber name="对象数量" value={objectCount} />
+          <InfoWithNumber name="用户数量" value={userCount} />
           <Divider orientation="vertical" flexItem sx={{ marginRight: (theme) => theme.spacing(2) }} />
         </Box>
         <Box sx={{ display: 'flex', flex: '1 1 0' }}>
