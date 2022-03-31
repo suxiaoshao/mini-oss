@@ -94,9 +94,9 @@ dependencies = [
 
 [[package]]
 name = "async-graphql"
-version = "3.0.36"
+version = "3.0.37"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "78e5de7666eb4c3e18e362890a2c1e06ba6e2fa53426574e252b5d52ee7f954a"
+checksum = "1fff26a58e85256388bc67a2c6373d9876978f11d912051e8a2b1caf6bb46ff6"
 dependencies = [
  "async-graphql-derive",
  "async-graphql-parser",
@@ -124,9 +124,9 @@ dependencies = [
 
 [[package]]
 name = "async-graphql-axum"
-version = "3.0.36"
+version = "3.0.37"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "20c275755056dd7f92ef3164a4ade44beb3d65868e127cf89852ad68d3e1df08"
+checksum = "f5b7a73269e8ff9a1f73f20a7eaa18a016273f09150d9b11d4b4daa0c799979e"
 dependencies = [
  "async-graphql",
  "async-trait",
@@ -142,9 +142,9 @@ dependencies = [
 
 [[package]]
 name = "async-graphql-derive"
-version = "3.0.36"
+version = "3.0.37"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "caa710ce371f4f3f301d60e5bcd7cec3f06c8ec8b3ef8ba55e986518a97254ce"
+checksum = "447958447d3ed56f4f01618b240cae4d47f04bffd81b576bf3942a06e573f017"
 dependencies = [
  "Inflector",
  "async-graphql-parser",
@@ -158,9 +158,9 @@ dependencies = [
 
 [[package]]
 name = "async-graphql-parser"
-version = "3.0.36"
+version = "3.0.37"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ac5aa058dbe2ed53700360fc77f112ed12a22ec3247fbdaee0e6b2afc3e8ba38"
+checksum = "9b6852c0e92b7fad08753d5fb23e6528db21c088d4423f85669c8ced7c5ec6e1"
 dependencies = [
  "async-graphql-value",
  "pest",
@@ -171,9 +171,9 @@ dependencies = [
 
 [[package]]
 name = "async-graphql-value"
-version = "3.0.36"
+version = "3.0.37"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f6fa83548a7b9fe164ad5a7526dc68c1a7bc2a4fdaf6eab1bc77d7701635df8e"
+checksum = "e094427865a6fe74867767a9d48423ee079bd660cb3013031ff74f815dc97690"
 dependencies = [
  "bytes",
  "indexmap",
@@ -584,7 +584,7 @@ dependencies = [
  "mongodb",
  "mongodb-gridfs",
  "proto",
- "time 0.3.7",
+ "time 0.3.9",
  "tokio",
  "validation",
 ]
@@ -1238,9 +1238,9 @@ checksum = "c4a1e36c821dbe04574f602848a19f742f4fb3c98d40449f11bcad18d6b17421"
 
 [[package]]
 name = "hyper"
-version = "0.14.17"
+version = "0.14.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "043f0e083e9901b6cc658a77d1eb86f4fc650bbb977a4337dd63192826aa85dd"
+checksum = "b26ae0a80afebe130861d90abf98e3814a4f28a4c6ffeb5ab8ebb2be311e0ef2"
 dependencies = [
  "bytes",
  "futures-channel",
@@ -1719,7 +1719,7 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror",
- "time 0.3.7",
+ "time 0.3.9",
  "tokio",
  "tonic",
  "tower",
@@ -2462,7 +2462,7 @@ dependencies = [
  "num-bigint 0.4.3",
  "num-traits",
  "thiserror",
- "time 0.3.7",
+ "time 0.3.9",
 ]
 
 [[package]]
@@ -2813,15 +2813,15 @@ dependencies = [
 
 [[package]]
 name = "time"
-version = "0.3.7"
+version = "0.3.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "004cbc98f30fa233c61a38bc77e96a9106e65c88f2d3bef182ae952027e5753d"
+checksum = "c2702e08a7a860f005826c6815dcac101b19b5eb330c27fe4a5928fec1d20ddd"
 dependencies = [
  "itoa 1.0.1",
  "libc",
  "num_threads",
  "quickcheck",
- "time-macros 0.2.3",
+ "time-macros 0.2.4",
 ]
 
 [[package]]
@@ -2836,9 +2836,9 @@ dependencies = [
 
 [[package]]
 name = "time-macros"
-version = "0.2.3"
+version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "25eb0ca3468fc0acc11828786797f6ef9aa1555e4a211a60d64cc8e4d1be47d6"
+checksum = "42657b1a6f4d817cda8e7a0ace261fe0cc946cf3a80314390b22cc61ae080792"
 
 [[package]]
 name = "time-macros-impl"

@@ -1,7 +1,7 @@
 schema: http://api.mini-oss.top:80
 documents:
-  - "./src/**/*.graphql"
-  - "./src/**/*.gql"
+  - './src/**/*.graphql'
+  - './src/**/*.gql'
 generates:
   ./src/types.ts:
     plugins:
@@ -11,4 +11,4 @@ generates:
     config:
       withHooks: true
       scalars:
-        Upload: "File"
+        Upload: 'File'
