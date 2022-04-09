@@ -3,8 +3,7 @@ use std::sync::Arc;
 use axum::body::Body;
 use axum::extract::Extension;
 use axum::routing::put;
-use axum::Router;
-use axum_extra::middleware;
+use axum::{middleware, Router};
 use database::PgPoolOptions;
 
 use crate::middleware::identity::identity;

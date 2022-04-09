@@ -66,11 +66,11 @@ export function DurationSelect({ setStartTime, setEndTime }: DurationSelectProps
           setLabel('other');
         }}
         renderInput={(startProps, endProps) => (
-          <React.Fragment>
+          <>
             <TextField {...startProps} />
             <Box sx={{ mx: 2 }}> 到 </Box>
             <TextField {...endProps} />
-          </React.Fragment>
+          </>
         )}
       />
     </Box>

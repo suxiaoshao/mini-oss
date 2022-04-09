@@ -434,7 +434,7 @@ pub enum ObjectAccess {
     PrivateObject = 2,
 }
 #[cfg(feature = "core_client")]
-#[doc = r" Generated client implementations."]
+/// Generated client implementations.
 pub mod bucket_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
     use tonic::codegen::*;
@@ -443,7 +443,7 @@ pub mod bucket_client {
         inner: tonic::client::Grpc<T>,
     }
     impl BucketClient<tonic::transport::Channel> {
-        #[doc = r" Attempt to create a new client by connecting to a given endpoint."]
+        /// Attempt to create a new client by connecting to a given endpoint.
         pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
         where
             D: std::convert::TryInto<tonic::transport::Endpoint>,
@@ -456,8 +456,8 @@ pub mod bucket_client {
     impl<T> BucketClient<T>
     where
         T: tonic::client::GrpcService<tonic::body::BoxBody>,
-        T::ResponseBody: Body + Send + 'static,
         T::Error: Into<StdError>,
+        T::ResponseBody: Default + Body<Data = Bytes> + Send + 'static,
         <T::ResponseBody as Body>::Error: Into<StdError> + Send,
     {
         pub fn new(inner: T) -> Self {
@@ -481,20 +481,22 @@ pub mod bucket_client {
         {
             BucketClient::new(InterceptedService::new(inner, interceptor))
         }
-        #[doc = r" Compress requests with `gzip`."]
-        #[doc = r""]
-        #[doc = r" This requires the server to support it otherwise it might respond with an"]
-        #[doc = r" error."]
+        /// Compress requests with `gzip`.
+        ///
+        /// This requires the server to support it otherwise it might respond with an
+        /// error.
+        #[must_use]
         pub fn send_gzip(mut self) -> Self {
             self.inner = self.inner.send_gzip();
             self
         }
-        #[doc = r" Enable decompressing responses with `gzip`."]
+        /// Enable decompressing responses with `gzip`.
+        #[must_use]
         pub fn accept_gzip(mut self) -> Self {
             self.inner = self.inner.accept_gzip();
             self
         }
-        #[doc = " 创建 Bucket"]
+        /// 创建 Bucket
         pub async fn create_bucket(
             &mut self,
             request: impl tonic::IntoRequest<super::CreateBucketRequest>,
@@ -509,7 +511,7 @@ pub mod bucket_client {
             let path = http::uri::PathAndQuery::from_static("/core.Bucket/CreateBucket");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 删除 Bucket"]
+        /// 删除 Bucket
         pub async fn delete_bucket(
             &mut self,
             request: impl tonic::IntoRequest<super::DeleteBucketRequest>,
@@ -524,7 +526,7 @@ pub mod bucket_client {
             let path = http::uri::PathAndQuery::from_static("/core.Bucket/DeleteBucket");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 删除 某一个用户下的Bucket"]
+        /// 删除 某一个用户下的Bucket
         pub async fn delete_buckets(
             &mut self,
             request: impl tonic::IntoRequest<super::DeleteBucketsRequest>,
@@ -539,7 +541,7 @@ pub mod bucket_client {
             let path = http::uri::PathAndQuery::from_static("/core.Bucket/DeleteBuckets");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 修改 Bucket"]
+        /// 修改 Bucket
         pub async fn update_bucket(
             &mut self,
             request: impl tonic::IntoRequest<super::UpdateBucketRequest>,
@@ -554,7 +556,7 @@ pub mod bucket_client {
             let path = http::uri::PathAndQuery::from_static("/core.Bucket/UpdateBucket");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取用户 bucket 列表"]
+        /// 获取用户 bucket 列表
         pub async fn get_bucket_list(
             &mut self,
             request: impl tonic::IntoRequest<super::super::user::GetListRequest>,
@@ -569,7 +571,7 @@ pub mod bucket_client {
             let path = http::uri::PathAndQuery::from_static("/core.Bucket/GetBucketList");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取某个 bucket 信息"]
+        /// 获取某个 bucket 信息
         pub async fn get_bucket(
             &mut self,
             request: impl tonic::IntoRequest<super::GetBucketRequest>,
@@ -584,7 +586,7 @@ pub mod bucket_client {
             let path = http::uri::PathAndQuery::from_static("/core.Bucket/GetBucket");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取桶数量"]
+        /// 获取桶数量
         pub async fn get_bucket_count(
             &mut self,
             request: impl tonic::IntoRequest<super::super::user::Empty>,
@@ -602,7 +604,7 @@ pub mod bucket_client {
     }
 }
 #[cfg(feature = "core_client")]
-#[doc = r" Generated client implementations."]
+/// Generated client implementations.
 pub mod folder_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
     use tonic::codegen::*;
@@ -611,7 +613,7 @@ pub mod folder_client {
         inner: tonic::client::Grpc<T>,
     }
     impl FolderClient<tonic::transport::Channel> {
-        #[doc = r" Attempt to create a new client by connecting to a given endpoint."]
+        /// Attempt to create a new client by connecting to a given endpoint.
         pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
         where
             D: std::convert::TryInto<tonic::transport::Endpoint>,
@@ -624,8 +626,8 @@ pub mod folder_client {
     impl<T> FolderClient<T>
     where
         T: tonic::client::GrpcService<tonic::body::BoxBody>,
-        T::ResponseBody: Body + Send + 'static,
         T::Error: Into<StdError>,
+        T::ResponseBody: Default + Body<Data = Bytes> + Send + 'static,
         <T::ResponseBody as Body>::Error: Into<StdError> + Send,
     {
         pub fn new(inner: T) -> Self {
@@ -649,20 +651,22 @@ pub mod folder_client {
         {
             FolderClient::new(InterceptedService::new(inner, interceptor))
         }
-        #[doc = r" Compress requests with `gzip`."]
-        #[doc = r""]
-        #[doc = r" This requires the server to support it otherwise it might respond with an"]
-        #[doc = r" error."]
+        /// Compress requests with `gzip`.
+        ///
+        /// This requires the server to support it otherwise it might respond with an
+        /// error.
+        #[must_use]
         pub fn send_gzip(mut self) -> Self {
             self.inner = self.inner.send_gzip();
             self
         }
-        #[doc = r" Enable decompressing responses with `gzip`."]
+        /// Enable decompressing responses with `gzip`.
+        #[must_use]
         pub fn accept_gzip(mut self) -> Self {
             self.inner = self.inner.accept_gzip();
             self
         }
-        #[doc = " 创建文件夹"]
+        /// 创建文件夹
         pub async fn create_folder(
             &mut self,
             request: impl tonic::IntoRequest<super::CreateFolderRequest>,
@@ -677,7 +681,7 @@ pub mod folder_client {
             let path = http::uri::PathAndQuery::from_static("/core.Folder/CreateFolder");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 删除文件夹"]
+        /// 删除文件夹
         pub async fn delete_folder(
             &mut self,
             request: impl tonic::IntoRequest<super::DeleteFolderRequest>,
@@ -692,7 +696,7 @@ pub mod folder_client {
             let path = http::uri::PathAndQuery::from_static("/core.Folder/DeleteFolder");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 修改文件夹"]
+        /// 修改文件夹
         pub async fn update_folder(
             &mut self,
             request: impl tonic::IntoRequest<super::UpdateFolderRequest>,
@@ -707,7 +711,7 @@ pub mod folder_client {
             let path = http::uri::PathAndQuery::from_static("/core.Folder/UpdateFolder");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取 path 列表"]
+        /// 获取 path 列表
         pub async fn get_folder_list(
             &mut self,
             request: impl tonic::IntoRequest<super::GetFolderListRequest>,
@@ -722,7 +726,7 @@ pub mod folder_client {
             let path = http::uri::PathAndQuery::from_static("/core.Folder/GetFolderList");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取 path 总数"]
+        /// 获取 path 总数
         pub async fn get_folder_count(
             &mut self,
             request: impl tonic::IntoRequest<super::GetFolderRequest>,
@@ -737,7 +741,7 @@ pub mod folder_client {
             let path = http::uri::PathAndQuery::from_static("/core.Folder/GetFolderCount");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取 path 信息"]
+        /// 获取 path 信息
         pub async fn get_folder(
             &mut self,
             request: impl tonic::IntoRequest<super::GetFolderRequest>,
@@ -752,7 +756,7 @@ pub mod folder_client {
             let path = http::uri::PathAndQuery::from_static("/core.Folder/GetFolder");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取 path 下所有 path 总数"]
+        /// 获取 path 下所有 path 总数
         pub async fn get_total_by_folder(
             &mut self,
             request: impl tonic::IntoRequest<super::GetFolderRequest>,
@@ -770,7 +774,7 @@ pub mod folder_client {
     }
 }
 #[cfg(feature = "core_client")]
-#[doc = r" Generated client implementations."]
+/// Generated client implementations.
 pub mod object_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
     use tonic::codegen::*;
@@ -779,7 +783,7 @@ pub mod object_client {
         inner: tonic::client::Grpc<T>,
     }
     impl ObjectClient<tonic::transport::Channel> {
-        #[doc = r" Attempt to create a new client by connecting to a given endpoint."]
+        /// Attempt to create a new client by connecting to a given endpoint.
         pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
         where
             D: std::convert::TryInto<tonic::transport::Endpoint>,
@@ -792,8 +796,8 @@ pub mod object_client {
     impl<T> ObjectClient<T>
     where
         T: tonic::client::GrpcService<tonic::body::BoxBody>,
-        T::ResponseBody: Body + Send + 'static,
         T::Error: Into<StdError>,
+        T::ResponseBody: Default + Body<Data = Bytes> + Send + 'static,
         <T::ResponseBody as Body>::Error: Into<StdError> + Send,
     {
         pub fn new(inner: T) -> Self {
@@ -817,20 +821,22 @@ pub mod object_client {
         {
             ObjectClient::new(InterceptedService::new(inner, interceptor))
         }
-        #[doc = r" Compress requests with `gzip`."]
-        #[doc = r""]
-        #[doc = r" This requires the server to support it otherwise it might respond with an"]
-        #[doc = r" error."]
+        /// Compress requests with `gzip`.
+        ///
+        /// This requires the server to support it otherwise it might respond with an
+        /// error.
+        #[must_use]
         pub fn send_gzip(mut self) -> Self {
             self.inner = self.inner.send_gzip();
             self
         }
-        #[doc = r" Enable decompressing responses with `gzip`."]
+        /// Enable decompressing responses with `gzip`.
+        #[must_use]
         pub fn accept_gzip(mut self) -> Self {
             self.inner = self.inner.accept_gzip();
             self
         }
-        #[doc = " 创建文件夹"]
+        /// 创建文件夹
         pub async fn create_object(
             &mut self,
             request: impl tonic::IntoRequest<super::CreateObjectRequest>,
@@ -845,7 +851,7 @@ pub mod object_client {
             let path = http::uri::PathAndQuery::from_static("/core.Object/CreateObject");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 删除文件夹"]
+        /// 删除文件夹
         pub async fn delete_object(
             &mut self,
             request: impl tonic::IntoRequest<super::DeleteObjectRequest>,
@@ -860,7 +866,7 @@ pub mod object_client {
             let path = http::uri::PathAndQuery::from_static("/core.Object/DeleteObject");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 修改文件夹"]
+        /// 修改文件夹
         pub async fn update_object(
             &mut self,
             request: impl tonic::IntoRequest<super::UpdateObjectRequest>,
@@ -875,7 +881,7 @@ pub mod object_client {
             let path = http::uri::PathAndQuery::from_static("/core.Object/UpdateObject");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取path列表"]
+        /// 获取path列表
         pub async fn get_object_list(
             &mut self,
             request: impl tonic::IntoRequest<super::GetFolderListRequest>,
@@ -890,7 +896,7 @@ pub mod object_client {
             let path = http::uri::PathAndQuery::from_static("/core.Object/GetObjectList");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取 object 总数"]
+        /// 获取 object 总数
         pub async fn get_object_count(
             &mut self,
             request: impl tonic::IntoRequest<super::GetFolderRequest>,
@@ -905,7 +911,7 @@ pub mod object_client {
             let path = http::uri::PathAndQuery::from_static("/core.Object/GetObjectCount");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取 object 信息"]
+        /// 获取 object 信息
         pub async fn get_object(
             &mut self,
             request: impl tonic::IntoRequest<super::GetObjectRequest>,
@@ -920,7 +926,7 @@ pub mod object_client {
             let path = http::uri::PathAndQuery::from_static("/core.Object/GetObject");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取文件内容"]
+        /// 获取文件内容
         pub async fn get_object_content(
             &mut self,
             request: impl tonic::IntoRequest<super::GetObjectRequest>,
@@ -935,7 +941,7 @@ pub mod object_client {
             let path = http::uri::PathAndQuery::from_static("/core.Object/GetObjectContent");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取 path 下所有 object 总数"]
+        /// 获取 path 下所有 object 总数
         pub async fn get_total_by_folder(
             &mut self,
             request: impl tonic::IntoRequest<super::GetFolderRequest>,
@@ -950,7 +956,7 @@ pub mod object_client {
             let path = http::uri::PathAndQuery::from_static("/core.Object/GetTotalByFolder");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取 path 下所有 object 大小"]
+        /// 获取 path 下所有 object 大小
         pub async fn get_size_by_folder(
             &mut self,
             request: impl tonic::IntoRequest<super::GetFolderRequest>,
@@ -965,7 +971,7 @@ pub mod object_client {
             let path = http::uri::PathAndQuery::from_static("/core.Object/GetSizeByFolder");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取 bucket 下所有 object 总数"]
+        /// 获取 bucket 下所有 object 总数
         pub async fn get_total_by_bucket(
             &mut self,
             request: impl tonic::IntoRequest<super::GetBucketRequest>,
@@ -980,7 +986,7 @@ pub mod object_client {
             let path = http::uri::PathAndQuery::from_static("/core.Object/GetTotalByBucket");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取 bucket 下所有 object 大小"]
+        /// 获取 bucket 下所有 object 大小
         pub async fn get_size_by_bucket(
             &mut self,
             request: impl tonic::IntoRequest<super::GetBucketRequest>,
@@ -995,7 +1001,7 @@ pub mod object_client {
             let path = http::uri::PathAndQuery::from_static("/core.Object/GetSizeByBucket");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取当前用户所有 object 总数"]
+        /// 获取当前用户所有 object 总数
         pub async fn get_total_by_user(
             &mut self,
             request: impl tonic::IntoRequest<super::super::user::Empty>,
@@ -1010,7 +1016,7 @@ pub mod object_client {
             let path = http::uri::PathAndQuery::from_static("/core.Object/GetTotalByUser");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取当前用户所有 object 大小"]
+        /// 获取当前用户所有 object 大小
         pub async fn get_size_by_user(
             &mut self,
             request: impl tonic::IntoRequest<super::super::user::Empty>,
@@ -1025,7 +1031,7 @@ pub mod object_client {
             let path = http::uri::PathAndQuery::from_static("/core.Object/GetSizeByUser");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取所有 object 大小"]
+        /// 获取所有 object 大小
         pub async fn get_size(
             &mut self,
             request: impl tonic::IntoRequest<super::super::user::Empty>,
@@ -1043,7 +1049,7 @@ pub mod object_client {
     }
 }
 #[cfg(feature = "core_client")]
-#[doc = r" Generated client implementations."]
+/// Generated client implementations.
 pub mod request_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
     use tonic::codegen::*;
@@ -1052,7 +1058,7 @@ pub mod request_client {
         inner: tonic::client::Grpc<T>,
     }
     impl RequestClient<tonic::transport::Channel> {
-        #[doc = r" Attempt to create a new client by connecting to a given endpoint."]
+        /// Attempt to create a new client by connecting to a given endpoint.
         pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
         where
             D: std::convert::TryInto<tonic::transport::Endpoint>,
@@ -1065,8 +1071,8 @@ pub mod request_client {
     impl<T> RequestClient<T>
     where
         T: tonic::client::GrpcService<tonic::body::BoxBody>,
-        T::ResponseBody: Body + Send + 'static,
         T::Error: Into<StdError>,
+        T::ResponseBody: Default + Body<Data = Bytes> + Send + 'static,
         <T::ResponseBody as Body>::Error: Into<StdError> + Send,
     {
         pub fn new(inner: T) -> Self {
@@ -1090,20 +1096,22 @@ pub mod request_client {
         {
             RequestClient::new(InterceptedService::new(inner, interceptor))
         }
-        #[doc = r" Compress requests with `gzip`."]
-        #[doc = r""]
-        #[doc = r" This requires the server to support it otherwise it might respond with an"]
-        #[doc = r" error."]
+        /// Compress requests with `gzip`.
+        ///
+        /// This requires the server to support it otherwise it might respond with an
+        /// error.
+        #[must_use]
         pub fn send_gzip(mut self) -> Self {
             self.inner = self.inner.send_gzip();
             self
         }
-        #[doc = r" Enable decompressing responses with `gzip`."]
+        /// Enable decompressing responses with `gzip`.
+        #[must_use]
         pub fn accept_gzip(mut self) -> Self {
             self.inner = self.inner.accept_gzip();
             self
         }
-        #[doc = " 获取上传数据大小"]
+        /// 获取上传数据大小
         pub async fn get_upload_size_by_bucket(
             &mut self,
             request: impl tonic::IntoRequest<super::GetBucketWithTimeRequest>,
@@ -1118,7 +1126,7 @@ pub mod request_client {
             let path = http::uri::PathAndQuery::from_static("/core.Request/GetUploadSizeByBucket");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取下载数据大小"]
+        /// 获取下载数据大小
         pub async fn get_download_size_by_bucket(
             &mut self,
             request: impl tonic::IntoRequest<super::GetBucketWithTimeRequest>,
@@ -1134,7 +1142,7 @@ pub mod request_client {
                 http::uri::PathAndQuery::from_static("/core.Request/GetDownloadSizeByBucket");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取请求数量"]
+        /// 获取请求数量
         pub async fn get_count_by_bucket(
             &mut self,
             request: impl tonic::IntoRequest<super::GetBucketWithTimeRequest>,
@@ -1149,7 +1157,7 @@ pub mod request_client {
             let path = http::uri::PathAndQuery::from_static("/core.Request/GetCountByBucket");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取上传数据大小"]
+        /// 获取上传数据大小
         pub async fn get_upload_size_by_user(
             &mut self,
             request: impl tonic::IntoRequest<super::GetTimeRequest>,
@@ -1164,7 +1172,7 @@ pub mod request_client {
             let path = http::uri::PathAndQuery::from_static("/core.Request/GetUploadSizeByUser");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取下载数据大小"]
+        /// 获取下载数据大小
         pub async fn get_download_size_by_user(
             &mut self,
             request: impl tonic::IntoRequest<super::GetTimeRequest>,
@@ -1179,7 +1187,7 @@ pub mod request_client {
             let path = http::uri::PathAndQuery::from_static("/core.Request/GetDownloadSizeByUser");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取请求数量"]
+        /// 获取请求数量
         pub async fn get_count_by_user(
             &mut self,
             request: impl tonic::IntoRequest<super::GetTimeRequest>,
@@ -1194,7 +1202,7 @@ pub mod request_client {
             let path = http::uri::PathAndQuery::from_static("/core.Request/GetCountByUser");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取上传数据大小"]
+        /// 获取上传数据大小
         pub async fn get_upload_size(
             &mut self,
             request: impl tonic::IntoRequest<super::GetTimeRequest>,
@@ -1209,7 +1217,7 @@ pub mod request_client {
             let path = http::uri::PathAndQuery::from_static("/core.Request/GetUploadSize");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取下载数据大小"]
+        /// 获取下载数据大小
         pub async fn get_download_size(
             &mut self,
             request: impl tonic::IntoRequest<super::GetTimeRequest>,
@@ -1224,7 +1232,7 @@ pub mod request_client {
             let path = http::uri::PathAndQuery::from_static("/core.Request/GetDownloadSize");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取请求数量"]
+        /// 获取请求数量
         pub async fn get_count(
             &mut self,
             request: impl tonic::IntoRequest<super::GetTimeRequest>,
@@ -1239,7 +1247,7 @@ pub mod request_client {
             let path = http::uri::PathAndQuery::from_static("/core.Request/GetCount");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取 bucket 数量图表信息"]
+        /// 获取 bucket 数量图表信息
         pub async fn get_count_duration_by_bucket(
             &mut self,
             request: impl tonic::IntoRequest<super::GetBucketWithTimeRequest>,
@@ -1255,7 +1263,7 @@ pub mod request_client {
                 http::uri::PathAndQuery::from_static("/core.Request/GetCountDurationByBucket");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取 bucket 上传图表信息"]
+        /// 获取 bucket 上传图表信息
         pub async fn get_upload_duration_by_bucket(
             &mut self,
             request: impl tonic::IntoRequest<super::GetBucketWithTimeRequest>,
@@ -1271,7 +1279,7 @@ pub mod request_client {
                 http::uri::PathAndQuery::from_static("/core.Request/GetUploadDurationByBucket");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取 bucket 下载图表信息"]
+        /// 获取 bucket 下载图表信息
         pub async fn get_download_duration_by_bucket(
             &mut self,
             request: impl tonic::IntoRequest<super::GetBucketWithTimeRequest>,
@@ -1287,7 +1295,7 @@ pub mod request_client {
                 http::uri::PathAndQuery::from_static("/core.Request/GetDownloadDurationByBucket");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取用户数量图表信息"]
+        /// 获取用户数量图表信息
         pub async fn get_count_duration_by_user(
             &mut self,
             request: impl tonic::IntoRequest<super::GetTimeRequest>,
@@ -1302,7 +1310,7 @@ pub mod request_client {
             let path = http::uri::PathAndQuery::from_static("/core.Request/GetCountDurationByUser");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取用户上传图表信息"]
+        /// 获取用户上传图表信息
         pub async fn get_upload_duration_by_user(
             &mut self,
             request: impl tonic::IntoRequest<super::GetTimeRequest>,
@@ -1318,7 +1326,7 @@ pub mod request_client {
                 http::uri::PathAndQuery::from_static("/core.Request/GetUploadDurationByUser");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取用户下载图表信息"]
+        /// 获取用户下载图表信息
         pub async fn get_download_duration_by_user(
             &mut self,
             request: impl tonic::IntoRequest<super::GetTimeRequest>,
@@ -1334,7 +1342,7 @@ pub mod request_client {
                 http::uri::PathAndQuery::from_static("/core.Request/GetDownloadDurationByUser");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取数量图表信息"]
+        /// 获取数量图表信息
         pub async fn get_count_duration(
             &mut self,
             request: impl tonic::IntoRequest<super::GetTimeRequest>,
@@ -1349,7 +1357,7 @@ pub mod request_client {
             let path = http::uri::PathAndQuery::from_static("/core.Request/GetCountDuration");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取上传图表信息"]
+        /// 获取上传图表信息
         pub async fn get_upload_duration(
             &mut self,
             request: impl tonic::IntoRequest<super::GetTimeRequest>,
@@ -1364,7 +1372,7 @@ pub mod request_client {
             let path = http::uri::PathAndQuery::from_static("/core.Request/GetUploadDuration");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取下载图表信息"]
+        /// 获取下载图表信息
         pub async fn get_download_duration(
             &mut self,
             request: impl tonic::IntoRequest<super::GetTimeRequest>,
@@ -1382,7 +1390,7 @@ pub mod request_client {
     }
 }
 #[cfg(feature = "core_client")]
-#[doc = r" Generated client implementations."]
+/// Generated client implementations.
 pub mod storage_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
     use tonic::codegen::*;
@@ -1391,7 +1399,7 @@ pub mod storage_client {
         inner: tonic::client::Grpc<T>,
     }
     impl StorageClient<tonic::transport::Channel> {
-        #[doc = r" Attempt to create a new client by connecting to a given endpoint."]
+        /// Attempt to create a new client by connecting to a given endpoint.
         pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
         where
             D: std::convert::TryInto<tonic::transport::Endpoint>,
@@ -1404,8 +1412,8 @@ pub mod storage_client {
     impl<T> StorageClient<T>
     where
         T: tonic::client::GrpcService<tonic::body::BoxBody>,
-        T::ResponseBody: Body + Send + 'static,
         T::Error: Into<StdError>,
+        T::ResponseBody: Default + Body<Data = Bytes> + Send + 'static,
         <T::ResponseBody as Body>::Error: Into<StdError> + Send,
     {
         pub fn new(inner: T) -> Self {
@@ -1429,20 +1437,22 @@ pub mod storage_client {
         {
             StorageClient::new(InterceptedService::new(inner, interceptor))
         }
-        #[doc = r" Compress requests with `gzip`."]
-        #[doc = r""]
-        #[doc = r" This requires the server to support it otherwise it might respond with an"]
-        #[doc = r" error."]
+        /// Compress requests with `gzip`.
+        ///
+        /// This requires the server to support it otherwise it might respond with an
+        /// error.
+        #[must_use]
         pub fn send_gzip(mut self) -> Self {
             self.inner = self.inner.send_gzip();
             self
         }
-        #[doc = r" Enable decompressing responses with `gzip`."]
+        /// Enable decompressing responses with `gzip`.
+        #[must_use]
         pub fn accept_gzip(mut self) -> Self {
             self.inner = self.inner.accept_gzip();
             self
         }
-        #[doc = " 获取 bucket 数量图表信息"]
+        /// 获取 bucket 数量图表信息
         pub async fn get_count_chart_by_bucket(
             &mut self,
             request: impl tonic::IntoRequest<super::GetBucketWithTimeRequest>,
@@ -1457,7 +1467,7 @@ pub mod storage_client {
             let path = http::uri::PathAndQuery::from_static("/core.Storage/GetCountChartByBucket");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取 bucket 大小图表信息"]
+        /// 获取 bucket 大小图表信息
         pub async fn get_size_chart_by_bucket(
             &mut self,
             request: impl tonic::IntoRequest<super::GetBucketWithTimeRequest>,
@@ -1472,7 +1482,7 @@ pub mod storage_client {
             let path = http::uri::PathAndQuery::from_static("/core.Storage/GetSizeChartByBucket");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取用户数量图表信息"]
+        /// 获取用户数量图表信息
         pub async fn get_count_chart_by_user(
             &mut self,
             request: impl tonic::IntoRequest<super::GetTimeRequest>,
@@ -1487,7 +1497,7 @@ pub mod storage_client {
             let path = http::uri::PathAndQuery::from_static("/core.Storage/GetCountChartByUser");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取用户大小图表信息"]
+        /// 获取用户大小图表信息
         pub async fn get_size_chart_by_user(
             &mut self,
             request: impl tonic::IntoRequest<super::GetTimeRequest>,
@@ -1502,7 +1512,7 @@ pub mod storage_client {
             let path = http::uri::PathAndQuery::from_static("/core.Storage/GetSizeChartByUser");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取数量图表信息"]
+        /// 获取数量图表信息
         pub async fn get_count_chart(
             &mut self,
             request: impl tonic::IntoRequest<super::GetTimeRequest>,
@@ -1517,7 +1527,7 @@ pub mod storage_client {
             let path = http::uri::PathAndQuery::from_static("/core.Storage/GetCountChart");
             self.inner.unary(request.into_request(), path, codec).await
         }
-        #[doc = " 获取大小图表信息"]
+        /// 获取大小图表信息
         pub async fn get_size_chart(
             &mut self,
             request: impl tonic::IntoRequest<super::GetTimeRequest>,
@@ -1535,44 +1545,44 @@ pub mod storage_client {
     }
 }
 #[cfg(feature = "core_server")]
-#[doc = r" Generated server implementations."]
+/// Generated server implementations.
 pub mod bucket_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
     use tonic::codegen::*;
-    #[doc = "Generated trait containing gRPC methods that should be implemented for use with BucketServer."]
+    ///Generated trait containing gRPC methods that should be implemented for use with BucketServer.
     #[async_trait]
     pub trait Bucket: Send + Sync + 'static {
-        #[doc = " 创建 Bucket"]
+        /// 创建 Bucket
         async fn create_bucket(
             &self,
             request: tonic::Request<super::CreateBucketRequest>,
         ) -> Result<tonic::Response<super::BucketInfo>, tonic::Status>;
-        #[doc = " 删除 Bucket"]
+        /// 删除 Bucket
         async fn delete_bucket(
             &self,
             request: tonic::Request<super::DeleteBucketRequest>,
         ) -> Result<tonic::Response<super::super::user::Empty>, tonic::Status>;
-        #[doc = " 删除 某一个用户下的Bucket"]
+        /// 删除 某一个用户下的Bucket
         async fn delete_buckets(
             &self,
             request: tonic::Request<super::DeleteBucketsRequest>,
         ) -> Result<tonic::Response<super::super::user::Empty>, tonic::Status>;
-        #[doc = " 修改 Bucket"]
+        /// 修改 Bucket
         async fn update_bucket(
             &self,
             request: tonic::Request<super::UpdateBucketRequest>,
         ) -> Result<tonic::Response<super::BucketInfo>, tonic::Status>;
-        #[doc = " 获取用户 bucket 列表"]
+        /// 获取用户 bucket 列表
         async fn get_bucket_list(
             &self,
             request: tonic::Request<super::super::user::GetListRequest>,
         ) -> Result<tonic::Response<super::GetBucketListReply>, tonic::Status>;
-        #[doc = " 获取某个 bucket 信息"]
+        /// 获取某个 bucket 信息
         async fn get_bucket(
             &self,
             request: tonic::Request<super::GetBucketRequest>,
         ) -> Result<tonic::Response<super::BucketInfo>, tonic::Status>;
-        #[doc = " 获取桶数量"]
+        /// 获取桶数量
         async fn get_bucket_count(
             &self,
             request: tonic::Request<super::super::user::Empty>,
@@ -1587,7 +1597,9 @@ pub mod bucket_server {
     struct _Inner<T>(Arc<T>);
     impl<T: Bucket> BucketServer<T> {
         pub fn new(inner: T) -> Self {
-            let inner = Arc::new(inner);
+            Self::from_arc(Arc::new(inner))
+        }
+        pub fn from_arc(inner: Arc<T>) -> Self {
             let inner = _Inner(inner);
             Self {
                 inner,
@@ -1609,7 +1621,7 @@ pub mod bucket_server {
         B::Error: Into<StdError> + Send + 'static,
     {
         type Response = http::Response<tonic::body::BoxBody>;
-        type Error = Never;
+        type Error = std::convert::Infallible;
         type Future = BoxFuture<Self::Response, Self::Error>;
         fn poll_ready(&mut self, _cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
             Poll::Ready(Ok(()))
@@ -1872,44 +1884,44 @@ pub mod bucket_server {
     }
 }
 #[cfg(feature = "core_server")]
-#[doc = r" Generated server implementations."]
+/// Generated server implementations.
 pub mod folder_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
     use tonic::codegen::*;
-    #[doc = "Generated trait containing gRPC methods that should be implemented for use with FolderServer."]
+    ///Generated trait containing gRPC methods that should be implemented for use with FolderServer.
     #[async_trait]
     pub trait Folder: Send + Sync + 'static {
-        #[doc = " 创建文件夹"]
+        /// 创建文件夹
         async fn create_folder(
             &self,
             request: tonic::Request<super::CreateFolderRequest>,
         ) -> Result<tonic::Response<super::FolderInfo>, tonic::Status>;
-        #[doc = " 删除文件夹"]
+        /// 删除文件夹
         async fn delete_folder(
             &self,
             request: tonic::Request<super::DeleteFolderRequest>,
         ) -> Result<tonic::Response<super::super::user::Empty>, tonic::Status>;
-        #[doc = " 修改文件夹"]
+        /// 修改文件夹
         async fn update_folder(
             &self,
             request: tonic::Request<super::UpdateFolderRequest>,
         ) -> Result<tonic::Response<super::FolderInfo>, tonic::Status>;
-        #[doc = " 获取 path 列表"]
+        /// 获取 path 列表
         async fn get_folder_list(
             &self,
             request: tonic::Request<super::GetFolderListRequest>,
         ) -> Result<tonic::Response<super::GetFolderListReply>, tonic::Status>;
-        #[doc = " 获取 path 总数"]
+        /// 获取 path 总数
         async fn get_folder_count(
             &self,
             request: tonic::Request<super::GetFolderRequest>,
         ) -> Result<tonic::Response<super::super::user::CountReply>, tonic::Status>;
-        #[doc = " 获取 path 信息"]
+        /// 获取 path 信息
         async fn get_folder(
             &self,
             request: tonic::Request<super::GetFolderRequest>,
         ) -> Result<tonic::Response<super::FolderInfo>, tonic::Status>;
-        #[doc = " 获取 path 下所有 path 总数"]
+        /// 获取 path 下所有 path 总数
         async fn get_total_by_folder(
             &self,
             request: tonic::Request<super::GetFolderRequest>,
@@ -1924,7 +1936,9 @@ pub mod folder_server {
     struct _Inner<T>(Arc<T>);
     impl<T: Folder> FolderServer<T> {
         pub fn new(inner: T) -> Self {
-            let inner = Arc::new(inner);
+            Self::from_arc(Arc::new(inner))
+        }
+        pub fn from_arc(inner: Arc<T>) -> Self {
             let inner = _Inner(inner);
             Self {
                 inner,
@@ -1946,7 +1960,7 @@ pub mod folder_server {
         B::Error: Into<StdError> + Send + 'static,
     {
         type Response = http::Response<tonic::body::BoxBody>;
-        type Error = Never;
+        type Error = std::convert::Infallible;
         type Future = BoxFuture<Self::Response, Self::Error>;
         fn poll_ready(&mut self, _cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
             Poll::Ready(Ok(()))
@@ -2207,79 +2221,79 @@ pub mod folder_server {
     }
 }
 #[cfg(feature = "core_server")]
-#[doc = r" Generated server implementations."]
+/// Generated server implementations.
 pub mod object_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
     use tonic::codegen::*;
-    #[doc = "Generated trait containing gRPC methods that should be implemented for use with ObjectServer."]
+    ///Generated trait containing gRPC methods that should be implemented for use with ObjectServer.
     #[async_trait]
     pub trait Object: Send + Sync + 'static {
-        #[doc = " 创建文件夹"]
+        /// 创建文件夹
         async fn create_object(
             &self,
             request: tonic::Request<super::CreateObjectRequest>,
         ) -> Result<tonic::Response<super::super::user::Empty>, tonic::Status>;
-        #[doc = " 删除文件夹"]
+        /// 删除文件夹
         async fn delete_object(
             &self,
             request: tonic::Request<super::DeleteObjectRequest>,
         ) -> Result<tonic::Response<super::super::user::Empty>, tonic::Status>;
-        #[doc = " 修改文件夹"]
+        /// 修改文件夹
         async fn update_object(
             &self,
             request: tonic::Request<super::UpdateObjectRequest>,
         ) -> Result<tonic::Response<super::ObjectInfo>, tonic::Status>;
-        #[doc = " 获取path列表"]
+        /// 获取path列表
         async fn get_object_list(
             &self,
             request: tonic::Request<super::GetFolderListRequest>,
         ) -> Result<tonic::Response<super::GetObjectListReply>, tonic::Status>;
-        #[doc = " 获取 object 总数"]
+        /// 获取 object 总数
         async fn get_object_count(
             &self,
             request: tonic::Request<super::GetFolderRequest>,
         ) -> Result<tonic::Response<super::super::user::CountReply>, tonic::Status>;
-        #[doc = " 获取 object 信息"]
+        /// 获取 object 信息
         async fn get_object(
             &self,
             request: tonic::Request<super::GetObjectRequest>,
         ) -> Result<tonic::Response<super::ObjectInfo>, tonic::Status>;
-        #[doc = " 获取文件内容"]
+        /// 获取文件内容
         async fn get_object_content(
             &self,
             request: tonic::Request<super::GetObjectRequest>,
         ) -> Result<tonic::Response<super::GetObjectContentReply>, tonic::Status>;
-        #[doc = " 获取 path 下所有 object 总数"]
+        /// 获取 path 下所有 object 总数
         async fn get_total_by_folder(
             &self,
             request: tonic::Request<super::GetFolderRequest>,
         ) -> Result<tonic::Response<super::super::user::CountReply>, tonic::Status>;
-        #[doc = " 获取 path 下所有 object 大小"]
+        /// 获取 path 下所有 object 大小
         async fn get_size_by_folder(
             &self,
             request: tonic::Request<super::GetFolderRequest>,
         ) -> Result<tonic::Response<super::SizeReply>, tonic::Status>;
-        #[doc = " 获取 bucket 下所有 object 总数"]
+        /// 获取 bucket 下所有 object 总数
         async fn get_total_by_bucket(
             &self,
             request: tonic::Request<super::GetBucketRequest>,
         ) -> Result<tonic::Response<super::super::user::CountReply>, tonic::Status>;
-        #[doc = " 获取 bucket 下所有 object 大小"]
+        /// 获取 bucket 下所有 object 大小
         async fn get_size_by_bucket(
             &self,
             request: tonic::Request<super::GetBucketRequest>,
         ) -> Result<tonic::Response<super::SizeReply>, tonic::Status>;
-        #[doc = " 获取当前用户所有 object 总数"]
+        /// 获取当前用户所有 object 总数
         async fn get_total_by_user(
             &self,
             request: tonic::Request<super::super::user::Empty>,
         ) -> Result<tonic::Response<super::super::user::CountReply>, tonic::Status>;
-        #[doc = " 获取当前用户所有 object 大小"]
+        /// 获取当前用户所有 object 大小
         async fn get_size_by_user(
             &self,
             request: tonic::Request<super::super::user::Empty>,
         ) -> Result<tonic::Response<super::SizeReply>, tonic::Status>;
-        #[doc = " 获取所有 object 大小"]
+        /// 获取所有 object 大小
         async fn get_size(
             &self,
             request: tonic::Request<super::super::user::Empty>,
@@ -2294,7 +2308,9 @@ pub mod object_server {
     struct _Inner<T>(Arc<T>);
     impl<T: Object> ObjectServer<T> {
         pub fn new(inner: T) -> Self {
-            let inner = Arc::new(inner);
+            Self::from_arc(Arc::new(inner))
+        }
+        pub fn from_arc(inner: Arc<T>) -> Self {
             let inner = _Inner(inner);
             Self {
                 inner,
@@ -2316,7 +2332,7 @@ pub mod object_server {
         B::Error: Into<StdError> + Send + 'static,
     {
         type Response = http::Response<tonic::body::BoxBody>;
-        type Error = Never;
+        type Error = std::convert::Infallible;
         type Future = BoxFuture<Self::Response, Self::Error>;
         fn poll_ready(&mut self, _cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
             Poll::Ready(Ok(()))
@@ -2794,99 +2810,99 @@ pub mod object_server {
     }
 }
 #[cfg(feature = "core_server")]
-#[doc = r" Generated server implementations."]
+/// Generated server implementations.
 pub mod request_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
     use tonic::codegen::*;
-    #[doc = "Generated trait containing gRPC methods that should be implemented for use with RequestServer."]
+    ///Generated trait containing gRPC methods that should be implemented for use with RequestServer.
     #[async_trait]
     pub trait Request: Send + Sync + 'static {
-        #[doc = " 获取上传数据大小"]
+        /// 获取上传数据大小
         async fn get_upload_size_by_bucket(
             &self,
             request: tonic::Request<super::GetBucketWithTimeRequest>,
         ) -> Result<tonic::Response<super::SizeReply>, tonic::Status>;
-        #[doc = " 获取下载数据大小"]
+        /// 获取下载数据大小
         async fn get_download_size_by_bucket(
             &self,
             request: tonic::Request<super::GetBucketWithTimeRequest>,
         ) -> Result<tonic::Response<super::SizeReply>, tonic::Status>;
-        #[doc = " 获取请求数量"]
+        /// 获取请求数量
         async fn get_count_by_bucket(
             &self,
             request: tonic::Request<super::GetBucketWithTimeRequest>,
         ) -> Result<tonic::Response<super::super::user::CountReply>, tonic::Status>;
-        #[doc = " 获取上传数据大小"]
+        /// 获取上传数据大小
         async fn get_upload_size_by_user(
             &self,
             request: tonic::Request<super::GetTimeRequest>,
         ) -> Result<tonic::Response<super::SizeReply>, tonic::Status>;
-        #[doc = " 获取下载数据大小"]
+        /// 获取下载数据大小
         async fn get_download_size_by_user(
             &self,
             request: tonic::Request<super::GetTimeRequest>,
         ) -> Result<tonic::Response<super::SizeReply>, tonic::Status>;
-        #[doc = " 获取请求数量"]
+        /// 获取请求数量
         async fn get_count_by_user(
             &self,
             request: tonic::Request<super::GetTimeRequest>,
         ) -> Result<tonic::Response<super::super::user::CountReply>, tonic::Status>;
-        #[doc = " 获取上传数据大小"]
+        /// 获取上传数据大小
         async fn get_upload_size(
             &self,
             request: tonic::Request<super::GetTimeRequest>,
         ) -> Result<tonic::Response<super::SizeReply>, tonic::Status>;
-        #[doc = " 获取下载数据大小"]
+        /// 获取下载数据大小
         async fn get_download_size(
             &self,
             request: tonic::Request<super::GetTimeRequest>,
         ) -> Result<tonic::Response<super::SizeReply>, tonic::Status>;
-        #[doc = " 获取请求数量"]
+        /// 获取请求数量
         async fn get_count(
             &self,
             request: tonic::Request<super::GetTimeRequest>,
         ) -> Result<tonic::Response<super::super::user::CountReply>, tonic::Status>;
-        #[doc = " 获取 bucket 数量图表信息"]
+        /// 获取 bucket 数量图表信息
         async fn get_count_duration_by_bucket(
             &self,
             request: tonic::Request<super::GetBucketWithTimeRequest>,
         ) -> Result<tonic::Response<super::CountDurationReply>, tonic::Status>;
-        #[doc = " 获取 bucket 上传图表信息"]
+        /// 获取 bucket 上传图表信息
         async fn get_upload_duration_by_bucket(
             &self,
             request: tonic::Request<super::GetBucketWithTimeRequest>,
         ) -> Result<tonic::Response<super::SizeDurationReply>, tonic::Status>;
-        #[doc = " 获取 bucket 下载图表信息"]
+        /// 获取 bucket 下载图表信息
         async fn get_download_duration_by_bucket(
             &self,
             request: tonic::Request<super::GetBucketWithTimeRequest>,
         ) -> Result<tonic::Response<super::SizeDurationReply>, tonic::Status>;
-        #[doc = " 获取用户数量图表信息"]
+        /// 获取用户数量图表信息
         async fn get_count_duration_by_user(
             &self,
             request: tonic::Request<super::GetTimeRequest>,
         ) -> Result<tonic::Response<super::CountDurationReply>, tonic::Status>;
-        #[doc = " 获取用户上传图表信息"]
+        /// 获取用户上传图表信息
         async fn get_upload_duration_by_user(
             &self,
             request: tonic::Request<super::GetTimeRequest>,
         ) -> Result<tonic::Response<super::SizeDurationReply>, tonic::Status>;
-        #[doc = " 获取用户下载图表信息"]
+        /// 获取用户下载图表信息
         async fn get_download_duration_by_user(
             &self,
             request: tonic::Request<super::GetTimeRequest>,
         ) -> Result<tonic::Response<super::SizeDurationReply>, tonic::Status>;
-        #[doc = " 获取数量图表信息"]
+        /// 获取数量图表信息
         async fn get_count_duration(
             &self,
             request: tonic::Request<super::GetTimeRequest>,
         ) -> Result<tonic::Response<super::CountDurationReply>, tonic::Status>;
-        #[doc = " 获取上传图表信息"]
+        /// 获取上传图表信息
         async fn get_upload_duration(
             &self,
             request: tonic::Request<super::GetTimeRequest>,
         ) -> Result<tonic::Response<super::SizeDurationReply>, tonic::Status>;
-        #[doc = " 获取下载图表信息"]
+        /// 获取下载图表信息
         async fn get_download_duration(
             &self,
             request: tonic::Request<super::GetTimeRequest>,
@@ -2901,7 +2917,9 @@ pub mod request_server {
     struct _Inner<T>(Arc<T>);
     impl<T: Request> RequestServer<T> {
         pub fn new(inner: T) -> Self {
-            let inner = Arc::new(inner);
+            Self::from_arc(Arc::new(inner))
+        }
+        pub fn from_arc(inner: Arc<T>) -> Self {
             let inner = _Inner(inner);
             Self {
                 inner,
@@ -2923,7 +2941,7 @@ pub mod request_server {
         B::Error: Into<StdError> + Send + 'static,
     {
         type Response = http::Response<tonic::body::BoxBody>;
-        type Error = Never;
+        type Error = std::convert::Infallible;
         type Future = BoxFuture<Self::Response, Self::Error>;
         fn poll_ready(&mut self, _cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
             Poll::Ready(Ok(()))
@@ -3558,39 +3576,39 @@ pub mod request_server {
     }
 }
 #[cfg(feature = "core_server")]
-#[doc = r" Generated server implementations."]
+/// Generated server implementations.
 pub mod storage_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
     use tonic::codegen::*;
-    #[doc = "Generated trait containing gRPC methods that should be implemented for use with StorageServer."]
+    ///Generated trait containing gRPC methods that should be implemented for use with StorageServer.
     #[async_trait]
     pub trait Storage: Send + Sync + 'static {
-        #[doc = " 获取 bucket 数量图表信息"]
+        /// 获取 bucket 数量图表信息
         async fn get_count_chart_by_bucket(
             &self,
             request: tonic::Request<super::GetBucketWithTimeRequest>,
         ) -> Result<tonic::Response<super::CountChartReply>, tonic::Status>;
-        #[doc = " 获取 bucket 大小图表信息"]
+        /// 获取 bucket 大小图表信息
         async fn get_size_chart_by_bucket(
             &self,
             request: tonic::Request<super::GetBucketWithTimeRequest>,
         ) -> Result<tonic::Response<super::SizeChartReply>, tonic::Status>;
-        #[doc = " 获取用户数量图表信息"]
+        /// 获取用户数量图表信息
         async fn get_count_chart_by_user(
             &self,
             request: tonic::Request<super::GetTimeRequest>,
         ) -> Result<tonic::Response<super::CountChartReply>, tonic::Status>;
-        #[doc = " 获取用户大小图表信息"]
+        /// 获取用户大小图表信息
         async fn get_size_chart_by_user(
             &self,
             request: tonic::Request<super::GetTimeRequest>,
         ) -> Result<tonic::Response<super::SizeChartReply>, tonic::Status>;
-        #[doc = " 获取数量图表信息"]
+        /// 获取数量图表信息
         async fn get_count_chart(
             &self,
             request: tonic::Request<super::GetTimeRequest>,
         ) -> Result<tonic::Response<super::CountChartReply>, tonic::Status>;
-        #[doc = " 获取大小图表信息"]
+        /// 获取大小图表信息
         async fn get_size_chart(
             &self,
             request: tonic::Request<super::GetTimeRequest>,
@@ -3605,7 +3623,9 @@ pub mod storage_server {
     struct _Inner<T>(Arc<T>);
     impl<T: Storage> StorageServer<T> {
         pub fn new(inner: T) -> Self {
-            let inner = Arc::new(inner);
+            Self::from_arc(Arc::new(inner))
+        }
+        pub fn from_arc(inner: Arc<T>) -> Self {
             let inner = _Inner(inner);
             Self {
                 inner,
@@ -3627,7 +3647,7 @@ pub mod storage_server {
         B::Error: Into<StdError> + Send + 'static,
     {
         type Response = http::Response<tonic::body::BoxBody>;
-        type Error = Never;
+        type Error = std::convert::Infallible;
         type Future = BoxFuture<Self::Response, Self::Error>;
         fn poll_ready(&mut self, _cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
             Poll::Ready(Ok(()))

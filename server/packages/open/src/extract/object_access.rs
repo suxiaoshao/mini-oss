@@ -17,7 +17,7 @@ where
     async fn from_request(req: &mut RequestParts<B>) -> Result<Self, Self::Rejection> {
         let access = match req
             .headers()
-            .and_then(|h| h.get("object-access"))
+            .get("object-access")
             .and_then(|x| x.to_str().ok())
         {
             None => proto::core::ObjectAccess::InheritanceObject,
