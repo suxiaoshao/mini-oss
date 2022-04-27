@@ -41,7 +41,7 @@ export default function UpdateBucketAction({ refetch, menuClose, access, name }:
       <MenuItem onClick={() => setOpen(true)}>修改</MenuItem>
       <Dialog open={open} onClose={handleClose}>
         <Box sx={{ width: 500 }} onSubmit={handleSubmit(onSubmit)} component="form">
-          <DialogTitle>修改用户信息</DialogTitle>
+          <DialogTitle>修改存储桶信息</DialogTitle>
           <DialogContent>
             <Controller
               name="access"

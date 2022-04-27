@@ -22,7 +22,6 @@ pub(crate) async fn upload_object(
     let PathWithName { path, filename } = path;
     let access = access.0 as i32;
     let mut client = object_client(auth.clone()).await?;
-    println!("{path}");
     let request = Request::new(CreateObjectRequest {
         access,
         bucket_name: bucket_name.clone(),
