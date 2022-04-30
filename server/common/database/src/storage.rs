@@ -25,10 +25,11 @@ impl StorageModal {
         size: &Decimal,
         num: i64,
         username: &str,
+        time: SystemTime,
         pool: &Pool<Postgres>,
     ) -> TonicResult<Self> {
         // 获取现在时间
-        let time = OffsetDateTime::from(SystemTime::now());
+        let time = OffsetDateTime::from(time);
         sqlx::query(
             r#"insert into storage
                             ( bucket_name,size,num,time,username)
@@ -73,6 +74,16 @@ impl StorageModal {
     }
 }
 
+#[derive(FromRow, Debug)]
+pub struct StorageData {
+    /// 创建时间
+    pub time: OffsetDateTime,
+    /// 对象大小
+    pub size: Decimal,
+    /// 对象数量
+    pub num: i64,
+}
+
 /// bucket time
 impl StorageModal {
     /// 获取某个时间间隔的所有数据
@@ -81,15 +92,17 @@ impl StorageModal {
         start_time: &OffsetDateTime,
         end_time: &OffsetDateTime,
         pool: &Pool<Postgres>,
-    ) -> TonicResult<Vec<Self>> {
+    ) -> TonicResult<Vec<StorageData>> {
         let result = sqlx::query_as(
-            "select * from storage where bucket_name = $1 and time >= $2 and time <= $3 order by time",
+            r#"select time,sum(size) as size,sum(num) as num from storage
+                    where bucket_name = $1 and time >= $2 and time <= $3
+                    group by time order by time"#,
         )
-            .bind(bucket_name)
-            .bind(start_time)
-            .bind(end_time)
-            .fetch_all(pool)
-            .await?;
+        .bind(bucket_name)
+        .bind(start_time)
+        .bind(end_time)
+        .fetch_all(pool)
+        .await?;
         Ok(result)
     }
 }
@@ -102,9 +115,10 @@ impl StorageModal {
         start_time: &OffsetDateTime,
         end_time: &OffsetDateTime,
         pool: &Pool<Postgres>,
-    ) -> TonicResult<Vec<Self>> {
+    ) -> TonicResult<Vec<StorageData>> {
         let result = sqlx::query_as(
-            "select * from storage where username = $1 and time >= $2 and time <= $3 order by time",
+            r#"select time,sum(size) as size,sum(num) as num from storage
+                        where username = $1 and time >= $2 and time <= $3 group by time order by time"#,
         )
         .bind(username)
         .bind(start_time)
@@ -122,13 +136,15 @@ impl StorageModal {
         start_time: &OffsetDateTime,
         end_time: &OffsetDateTime,
         pool: &Pool<Postgres>,
-    ) -> TonicResult<Vec<Self>> {
-        let result =
-            sqlx::query_as("select * from storage where time >= $1 and time <= $2 order by time")
-                .bind(start_time)
-                .bind(end_time)
-                .fetch_all(pool)
-                .await?;
+    ) -> TonicResult<Vec<StorageData>> {
+        let result = sqlx::query_as(
+            r#"select time,sum(size) as size,sum(num) as num from storage
+                    where time >= $1 and time <= $2 group by time order by time"#,
+        )
+        .bind(start_time)
+        .bind(end_time)
+        .fetch_all(pool)
+        .await?;
         Ok(result)
     }
 }

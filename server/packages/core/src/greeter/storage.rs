@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use database::storage::StorageModal;
+use database::storage::{StorageData, StorageModal};
 use database::time::OffsetDateTime;
 use database::{Pool, Postgres};
 use errors::TonicResult;
@@ -131,13 +131,14 @@ impl storage_server::Storage for StorageGreeter {
         Ok(Response::new(SizeChartReply { data: storages }))
     }
 }
+
 const SPLIT_FLAG: usize = 300;
 
 async fn get_chart_storage(
     start_time: i64,
     end_time: i64,
     pool: &Pool<Postgres>,
-) -> TonicResult<Vec<StorageModal>> {
+) -> TonicResult<Vec<StorageData>> {
     let start_time = OffsetDateTime::from_unix_timestamp_nanos(start_time as i128 * 1000000);
     let end_time = OffsetDateTime::from_unix_timestamp_nanos(end_time as i128 * 1000000);
     let storages = StorageModal::find_all(&start_time, &end_time, pool).await?;
@@ -154,7 +155,7 @@ async fn get_chart_storage_bucket(
     start_time: i64,
     end_time: i64,
     pool: &Pool<Postgres>,
-) -> TonicResult<Vec<StorageModal>> {
+) -> TonicResult<Vec<StorageData>> {
     let start_time = OffsetDateTime::from_unix_timestamp_nanos(start_time as i128 * 1000000);
     let end_time = OffsetDateTime::from_unix_timestamp_nanos(end_time as i128 * 1000000);
     let storages =
@@ -172,7 +173,7 @@ async fn get_chart_storage_user(
     start_time: i64,
     end_time: i64,
     pool: &Pool<Postgres>,
-) -> TonicResult<Vec<StorageModal>> {
+) -> TonicResult<Vec<StorageData>> {
     let start_time = OffsetDateTime::from_unix_timestamp_nanos(start_time as i128 * 1000000);
     let end_time = OffsetDateTime::from_unix_timestamp_nanos(end_time as i128 * 1000000);
     let storages =
@@ -198,20 +199,20 @@ fn vec_filter_by_proportion<T>(num: usize, data: Vec<T>) -> Vec<T> {
     s
 }
 
-fn chart_to_count(storages: Vec<StorageModal>) -> Vec<CountChartItem> {
+fn chart_to_count(storages: Vec<StorageData>) -> Vec<CountChartItem> {
     storages
         .into_iter()
-        .map(|StorageModal { time, num, .. }| CountChartItem {
+        .map(|StorageData { time, num, .. }| CountChartItem {
             time: (time.unix_timestamp_nanos() / 1000000) as i64,
             value: num,
         })
         .collect()
 }
 
-fn chart_to_size(storages: Vec<StorageModal>) -> Vec<SizeChartItem> {
+fn chart_to_size(storages: Vec<StorageData>) -> Vec<SizeChartItem> {
     storages
         .into_iter()
-        .map(|StorageModal { time, size, .. }| SizeChartItem {
+        .map(|StorageData { time, size, .. }| SizeChartItem {
             time: (time.unix_timestamp_nanos() / 1000000) as i64,
             value: size.to_string(),
         })
@@ -225,10 +226,10 @@ mod test {
     #[test]
     fn test_vec_filter() {
         let mut s = vec![];
-        for i in 0..100 {
+        for i in 0..1000 {
             s.push(i)
         }
-        let s = vec_filter_by_proportion(30, s);
+        let s = vec_filter_by_proportion(300, s);
         println!("{:?}", s);
     }
 }

@@ -1,4 +1,4 @@
-use std::thread::park;
+use std::{thread::park, time::SystemTime};
 
 use anyhow::Result;
 use delay_timer::prelude::*;
@@ -41,11 +41,12 @@ async fn _storage_task() -> Result<()> {
         .connect(&std::env::var("postgres")?)
         .await?;
     let storage_data = ObjectModal::size_count_by_bucket(&pool).await?;
+    let time = SystemTime::now();
 
     let future_task = storage_data
         .iter()
         .map(|(size, num, bucket, username)| {
-            StorageModal::create(bucket, size, *num, username, &pool)
+            StorageModal::create(bucket, size, *num, username, time, &pool)
         })
         .collect::<Vec<_>>();
     futures::future::try_join_all(future_task).await?;
