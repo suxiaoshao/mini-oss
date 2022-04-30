@@ -172,14 +172,3 @@ impl From<TonicError> for Status {
         }
     }
 }
-
-#[cfg(test)]
-mod test {
-    use crate::TonicError;
-
-    #[test]
-    fn test() {
-        let e = TonicError::FolderNotFound("/%E6%AF%95%E8%AE%BE/".into());
-        println!("{}", e);
-    }
-}

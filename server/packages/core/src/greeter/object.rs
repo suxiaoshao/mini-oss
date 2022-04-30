@@ -355,24 +355,3 @@ async fn create_object(
 pub fn file_hash(source: &[u8]) -> String {
     blake3::hash(source).to_string()
 }
-#[cfg(test)]
-mod test {
-    use anyhow::Result;
-
-    use proto::core::object_client::ObjectClient;
-    use proto::core::CreateObjectRequest;
-
-    #[tokio::test]
-    async fn test() -> Result<()> {
-        let mut client = ObjectClient::connect("http://localhost:3000").await?;
-        let request = CreateObjectRequest {
-            path: "/%E6%AF%95%E8%AE%BE/".to_string(),
-            bucket_name: "as-sushao".to_string(),
-            content: vec![],
-            filename: "sushao.txt".to_string(),
-            access: 0,
-        };
-        client.create_object(request).await?.into_inner();
-        Ok(())
-    }
-}

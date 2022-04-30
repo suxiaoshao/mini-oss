@@ -30,17 +30,23 @@ mod test {
 
     #[test]
     fn test_validate_name() {
-        let input = "abc";
-        assert!(validate_name(input).is_err());
-        let input = "abcdeabcdeabcdeabcdeabcdec";
-        assert!(validate_name(input).is_err());
-        let input = "2asad";
-        assert!(validate_name(input).is_err());
-        let input = "_hjkvb";
-        assert!(validate_name(input).is_err());
-        let input = "asd*g";
-        assert!(validate_name(input).is_err());
         let input = "asGk22_";
         assert!(validate_name(input).is_ok());
+
+        // 字符小于4
+        let input = "abc";
+        assert!(validate_name(input).is_err());
+        // 字符大于25
+        let input = "abcdeabcdeabcdeabcdeabcdec";
+        assert!(validate_name(input).is_err());
+        // 数字开头
+        let input = "2asad";
+        assert!(validate_name(input).is_err());
+        // 下划线开头
+        let input = "_hjkvb";
+        assert!(validate_name(input).is_err());
+        // 包含字母数字和_之外的字符
+        let input = "asd*g";
+        assert!(validate_name(input).is_err());
     }
 }

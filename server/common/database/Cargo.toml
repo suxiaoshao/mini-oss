@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-sqlx = { version = "0.5.11", features = ["runtime-tokio-rustls", "postgres", "time", "decimal"] }
+sqlx = { version = "0.5.13", features = ["runtime-tokio-rustls", "postgres", "time", "decimal"] }
 errors = { path = "../errors" }
 serde_json = { version = "1.0.79", optional = true }
 proto = { path = "../proto" }
@@ -18,5 +18,5 @@ core = ["serde_json", "futures", "async-recursion", "proto/core", "errors/json",
 user = ["proto/user"]
 
 [dev-dependencies]
-tokio = { version = "1.17.0", features = ["macros", "rt-multi-thread"] }
-anyhow = "1.0.56"
+tokio = { version = "1.18.0", features = ["macros", "rt-multi-thread"] }
+anyhow = "1.0.57"

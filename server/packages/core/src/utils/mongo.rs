@@ -64,31 +64,3 @@ impl Mongo {
         Ok(content)
     }
 }
-
-#[cfg(test)]
-mod test {
-    use errors::TonicResult;
-    use mongodb_gridfs::options::GridFSBucketOptions;
-
-    #[tokio::test]
-    async fn test_write() -> TonicResult<()> {
-        use mongodb::{options::ClientOptions, Client};
-
-        // Parse a connection string into an options struct.
-        let client_options =
-            ClientOptions::parse("mongodb://sushao:sushao@localhost:27017").await?;
-
-        // Get a handle to the deployment.
-        let client = Client::with_options(client_options)?;
-        let db = client.database("testss");
-
-        use mongodb_gridfs::GridFSBucket;
-        let mut bucket = GridFSBucket::new(db.clone(), Some(GridFSBucketOptions::default()));
-        let id = bucket
-            .upload_from_stream("sushao/test.txt", "stream your data here".as_bytes(), None)
-            .await?;
-        println!("{id}");
-        bucket.drop().await?;
-        Ok(())
-    }
-}

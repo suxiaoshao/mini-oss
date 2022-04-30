@@ -31,19 +31,28 @@ mod test {
 
     #[test]
     fn test_validate_password() {
+        let input = "asGk22_Q";
+        assert!(validate_password(input).is_ok());
+        let input = "asGk22Qa";
+        assert!(validate_password(input).is_ok());
+
+        // 字符小于8
         let input = "abc";
         assert!(validate_password(input).is_err());
+        // 字符大于25
         let input = "abcdeabcdeabcdeabcdeabcdec";
         assert!(validate_password(input).is_err());
+        // 包括字母,数字,键盘上存在的特殊字符之外的字符
         let input = "2a中sadsd";
         assert!(validate_password(input).is_err());
+        // 只含有字母,数字,特殊字符之一
         let input = "12345678";
+        // 只含有字母,数字,特殊字符之一
         assert!(validate_password(input).is_err());
         let input = "qwertyui";
+        // 只含有字母,数字,特殊字符之一
         assert!(validate_password(input).is_err());
         let input = "!@#$%^&*";
         assert!(validate_password(input).is_err());
-        let input = "asGk22_Q";
-        assert!(validate_password(input).is_ok());
     }
 }

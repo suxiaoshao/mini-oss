@@ -32,22 +32,3 @@ pub(crate) async fn upload_object(
     client.create_object(request).await?;
     Ok(OpenResponse { data: true })
 }
-
-#[cfg(test)]
-mod test {
-    use anyhow::Result;
-    use proto::{core::CreateObjectRequest, middleware::client::object_client, Request};
-    #[tokio::test]
-    async fn test() -> Result<()> {
-        let mut client = object_client(None).await?;
-        let request = Request::new(CreateObjectRequest {
-            access: 0,
-            bucket_name: "as-sushao".to_string(),
-            path: "/%E6%AF%95%E8%AE%BE/".to_string(),
-            content: vec![],
-            filename: "test.txt".to_string(),
-        });
-        client.create_object(request).await?;
-        Ok(())
-    }
-}

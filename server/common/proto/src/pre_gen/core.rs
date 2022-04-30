@@ -412,7 +412,7 @@ pub mod bucket_client {
     where
         T: tonic::client::GrpcService<tonic::body::BoxBody>,
         T::Error: Into<StdError>,
-        T::ResponseBody: Default + Body<Data = Bytes> + Send + 'static,
+        T::ResponseBody: Body<Data = Bytes> + Send + 'static,
         <T::ResponseBody as Body>::Error: Into<StdError> + Send,
     {
         pub fn new(inner: T) -> Self {
@@ -425,6 +425,7 @@ pub mod bucket_client {
         ) -> BucketClient<InterceptedService<T, F>>
         where
             F: tonic::service::Interceptor,
+            T::ResponseBody: Default,
             T: tonic::codegen::Service<
                 http::Request<tonic::body::BoxBody>,
                 Response = http::Response<
@@ -609,7 +610,7 @@ pub mod folder_client {
     where
         T: tonic::client::GrpcService<tonic::body::BoxBody>,
         T::Error: Into<StdError>,
-        T::ResponseBody: Default + Body<Data = Bytes> + Send + 'static,
+        T::ResponseBody: Body<Data = Bytes> + Send + 'static,
         <T::ResponseBody as Body>::Error: Into<StdError> + Send,
     {
         pub fn new(inner: T) -> Self {
@@ -622,6 +623,7 @@ pub mod folder_client {
         ) -> FolderClient<InterceptedService<T, F>>
         where
             F: tonic::service::Interceptor,
+            T::ResponseBody: Default,
             T: tonic::codegen::Service<
                 http::Request<tonic::body::BoxBody>,
                 Response = http::Response<
@@ -806,7 +808,7 @@ pub mod object_client {
     where
         T: tonic::client::GrpcService<tonic::body::BoxBody>,
         T::Error: Into<StdError>,
-        T::ResponseBody: Default + Body<Data = Bytes> + Send + 'static,
+        T::ResponseBody: Body<Data = Bytes> + Send + 'static,
         <T::ResponseBody as Body>::Error: Into<StdError> + Send,
     {
         pub fn new(inner: T) -> Self {
@@ -819,6 +821,7 @@ pub mod object_client {
         ) -> ObjectClient<InterceptedService<T, F>>
         where
             F: tonic::service::Interceptor,
+            T::ResponseBody: Default,
             T: tonic::codegen::Service<
                 http::Request<tonic::body::BoxBody>,
                 Response = http::Response<
@@ -1141,7 +1144,7 @@ pub mod request_client {
     where
         T: tonic::client::GrpcService<tonic::body::BoxBody>,
         T::Error: Into<StdError>,
-        T::ResponseBody: Default + Body<Data = Bytes> + Send + 'static,
+        T::ResponseBody: Body<Data = Bytes> + Send + 'static,
         <T::ResponseBody as Body>::Error: Into<StdError> + Send,
     {
         pub fn new(inner: T) -> Self {
@@ -1154,6 +1157,7 @@ pub mod request_client {
         ) -> RequestClient<InterceptedService<T, F>>
         where
             F: tonic::service::Interceptor,
+            T::ResponseBody: Default,
             T: tonic::codegen::Service<
                 http::Request<tonic::body::BoxBody>,
                 Response = http::Response<
@@ -1564,7 +1568,7 @@ pub mod storage_client {
     where
         T: tonic::client::GrpcService<tonic::body::BoxBody>,
         T::Error: Into<StdError>,
-        T::ResponseBody: Default + Body<Data = Bytes> + Send + 'static,
+        T::ResponseBody: Body<Data = Bytes> + Send + 'static,
         <T::ResponseBody as Body>::Error: Into<StdError> + Send,
     {
         pub fn new(inner: T) -> Self {
@@ -1577,6 +1581,7 @@ pub mod storage_client {
         ) -> StorageClient<InterceptedService<T, F>>
         where
             F: tonic::service::Interceptor,
+            T::ResponseBody: Default,
             T: tonic::codegen::Service<
                 http::Request<tonic::body::BoxBody>,
                 Response = http::Response<

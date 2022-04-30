@@ -6,16 +6,16 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-tokio = { version = "1.17.0", features = ["macros", "rt-multi-thread"] }
-axum = { version = "0.5.1", features = ["headers", "json"] }
+tokio = { version = "1.18.0", features = ["macros", "rt-multi-thread"] }
+axum = { version = "0.5.4", features = ["headers", "json"] }
 
 # 中间件
-tower-http = { version = "0.2.5", features = ["cors"] }
+tower-http = { version = "0.3.2", features = ["cors"] }
 tower = "0.4.12"
 hyper = "0.14.18"
 bytes = "1.1.0"
 http-body = "0.4.4"
-pin-project-lite = "0.2.8"
+pin-project-lite = "0.2.9"
 
 # axum route
 nom = "7.1.1"
@@ -32,10 +32,10 @@ proto = { path = "../../common/proto", features = ["core_client", "user"] }
 futures = "0.3.21"
 
 # request
-bson = "2.1.0"
+bson = "2.2.0"
 database = { path = "../../common/database", features = ["core"]}
 errors = { path = "../../common/errors" }
 
 # 错误
-anyhow = "1.0.56"
+anyhow = "1.0.57"
 thiserror = "1.0.30"

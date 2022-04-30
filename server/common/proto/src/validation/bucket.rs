@@ -22,19 +22,32 @@ mod test {
     use super::validate_bucket;
 
     #[test]
-    fn test_validate_password() {
-        let input = "abc";
+    fn test_validate_bucket() {
+        let input = "ab-1c";
         assert!(validate_bucket(input).is_ok());
         let input = "abcdeabcdeabcdeabcdeabcdec";
         assert!(validate_bucket(input).is_ok());
-        let input = "2a中sadsd";
-        assert!(validate_bucket(input).is_err());
         let input = "12345678";
         assert!(validate_bucket(input).is_ok());
         let input = "qwertyui";
         assert!(validate_bucket(input).is_ok());
+
+        // 字符大于60
+        let input = "abcdeabcdeabcdeabcdeabcdecabcdeabcdeabcdeabcdeabcdecabcdeabcd";
+        assert!(validate_bucket(input).is_err());
+
+        // 字符小于1
+        let input = "";
+        assert!(validate_bucket(input).is_err());
+
+        // 有小写字母、数字和 - 之外的字符
+        let input = "2a中sadsd";
+        assert!(validate_bucket(input).is_err());
+
+        // 有小写字母、数字和 - 之外的字符
         let input = "!@#$/%^&*";
         assert!(validate_bucket(input).is_err());
+        // 有小写字母、数字和 - 之外的字符
         let input = "asGk22_Q";
         assert!(validate_bucket(input).is_err());
     }

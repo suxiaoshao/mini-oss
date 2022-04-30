@@ -56,16 +56,18 @@ mod test {
     use crate::middleware::identity::parse_bucket_name;
 
     #[test]
-    fn test() {
+    fn test_parse_bucket_name() -> anyhow::Result<()> {
+        let input = "as-sdasf.open.mini-oss.top";
+        assert_eq!(parse_bucket_name(input)?.1, "as-sdasf".to_string());
+        let input = "sdasf.open.mini-oss.sushao.me";
+        assert_eq!(parse_bucket_name(input)?.1, "sdasf".to_string());
+        let input = "sdasf.open.mini-oss.sushao.top";
+        assert_eq!(parse_bucket_name(input)?.1, "sdasf".to_string());
+
         let input = "sdasf";
         assert!(parse_bucket_name(input).is_err());
         let input = ".sdasf.open.mini-oss.top";
         assert!(parse_bucket_name(input).is_err());
-        let input = "as-sdasf.open.mini-oss.top";
-        assert!(parse_bucket_name(input).is_ok());
-        let input = "sdasf.open.mini-oss.sushao.me";
-        assert!(parse_bucket_name(input).is_ok());
-        let input = "sdasf.open.mini-oss.sushao.top";
-        assert!(parse_bucket_name(input).is_ok());
+        Ok(())
     }
 }

@@ -266,21 +266,3 @@ impl From<FolderModal> for FolderInfo {
         }
     }
 }
-#[cfg(test)]
-mod test {
-    use anyhow::Result;
-    use sqlx::postgres::PgPoolOptions;
-
-    use super::FolderModal;
-
-    #[tokio::test]
-    async fn test() -> Result<()> {
-        // 获取数据库连接池=]
-        let pool = PgPoolOptions::new()
-            .max_connections(5)
-            .connect(&std::env::var("postgres")?)
-            .await?;
-        FolderModal::exist("/毕设/", "as-sushao", &pool).await?;
-        Ok(())
-    }
-}

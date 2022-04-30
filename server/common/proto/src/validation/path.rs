@@ -12,7 +12,7 @@ mod test {
     use super::validate_path;
 
     #[test]
-    fn test_validate_password() {
+    fn test_validate_path() {
         let input = "/abc";
         assert!(validate_path(input).is_ok());
         let input = "/";

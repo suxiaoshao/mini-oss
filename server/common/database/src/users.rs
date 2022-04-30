@@ -133,22 +133,3 @@ impl From<UserModal> for UserInfo {
         }
     }
 }
-#[cfg(test)]
-mod test {
-    use anyhow::Result;
-    use sqlx::postgres::PgPoolOptions;
-
-    use super::UserModal;
-
-    #[tokio::test]
-    async fn test() -> Result<()> {
-        let pool = PgPoolOptions::new()
-            .max_connections(5)
-            .connect("postgres://sushao:sushao@localhost:5432/mini_oss")
-            .await?;
-        let a = UserModal::find_many(10, 0, &pool).await?;
-        let count = UserModal::count(&pool).await?;
-        println!("{a:?} {count}");
-        Ok(())
-    }
-}

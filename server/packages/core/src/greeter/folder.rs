@@ -177,22 +177,3 @@ impl Folder for FolderGreeter {
         Ok(Response::new(CountReply { total }))
     }
 }
-
-#[cfg(test)]
-mod test {
-    use anyhow::Result;
-    use proto::core::folder_client::FolderClient;
-    use proto::core::DeleteFolderRequest;
-    use proto::Request;
-
-    #[tokio::test]
-    async fn test() -> Result<()> {
-        let mut client = FolderClient::connect("http://localhost:80").await?;
-        let request = Request::new(DeleteFolderRequest {
-            path: "/ss".to_string(),
-            bucket_name: "as-sushao".to_string(),
-        });
-        client.delete_folder(request).await?;
-        Ok(())
-    }
-}

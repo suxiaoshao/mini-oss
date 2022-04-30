@@ -27,28 +27,38 @@ pub fn validate_folder(input: &str) -> Result<(), ValidationError> {
 #[cfg(test)]
 mod test {
     use super::validate_folder;
-
     #[test]
-    fn test_validate_password() {
-        let input = "abc";
+    fn test_validate_folder() {
+        let input = " abc";
         assert!(validate_folder(input).is_ok());
-        let input = "abcdeabcdeabcdeabcdeabcdec";
+        let input = "2a中sadsd ";
         assert!(validate_folder(input).is_ok());
-        let input = "2a中sadsd";
+        let input = "1234 5678";
         assert!(validate_folder(input).is_ok());
-        let input = "12345678";
-        assert!(validate_folder(input).is_ok());
-        let input = "qwertyui";
-        assert!(validate_folder(input).is_ok());
-        let input = "!@#$/%^&*";
-        assert!(validate_folder(input).is_err());
         let input = "asGk22_Q";
         assert!(validate_folder(input).is_ok());
+
+        // 不能含有/和换行符等特殊字符
+        let input = "!@#$/%^&*";
+        assert!(validate_folder(input).is_err());
+        // 不能为.
         let input = ".";
+        // 不能为..
         assert!(validate_folder(input).is_err());
         let input = "..";
         assert!(validate_folder(input).is_err());
+        // 不能为空
         let input = "   ";
         assert!(validate_folder(input).is_err());
+        // 字符小于1
+        let input = "";
+        assert!(validate_folder(input).is_err());
+        // 字符大于255
+        let input = "abcdeabcdeabcdeabcdeabcdecabcdeab";
+        let input = format!(
+            "{}{}{}{}{}{}{}{}",
+            input, input, input, input, input, input, input, input
+        );
+        assert!(validate_folder(input.as_str()).is_err());
     }
 }

@@ -58,7 +58,7 @@ mod test {
     use crate::{errors::OpenError, extract::path_with_name::PathWithName};
 
     #[test]
-    fn test() {
+    fn test_path_with_name() {
         let path = "/".parse::<PathWithName>();
         assert_eq!(path, Err(OpenError::NotObjectPath("/".to_string())));
         let path = "/test/".parse::<PathWithName>();
