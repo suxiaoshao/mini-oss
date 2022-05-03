@@ -94,7 +94,7 @@ impl StorageModal {
         pool: &Pool<Postgres>,
     ) -> TonicResult<Vec<StorageData>> {
         let result = sqlx::query_as(
-            r#"select time,sum(size) as size,sum(num) as num from storage
+            r#"select time,sum(size) as size,sum(num)::bigint as num from storage
                     where bucket_name = $1 and time >= $2 and time <= $3
                     group by time order by time"#,
         )
@@ -117,7 +117,7 @@ impl StorageModal {
         pool: &Pool<Postgres>,
     ) -> TonicResult<Vec<StorageData>> {
         let result = sqlx::query_as(
-            r#"select time,sum(size) as size,sum(num) as num from storage
+            r#"select time,sum(size) as size,sum(num)::bigint as num from storage
                         where username = $1 and time >= $2 and time <= $3 group by time order by time"#,
         )
         .bind(username)
@@ -138,7 +138,7 @@ impl StorageModal {
         pool: &Pool<Postgres>,
     ) -> TonicResult<Vec<StorageData>> {
         let result = sqlx::query_as(
-            r#"select time,sum(size) as size,sum(num) as num from storage
+            r#"select time,sum(size) as size,sum(num)::bigint as num from storage
                     where time >= $1 and time <= $2 group by time order by time"#,
         )
         .bind(start_time)
