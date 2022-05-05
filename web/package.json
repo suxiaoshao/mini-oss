@@ -7,8 +7,8 @@
     "lint": "pnpm run format && pnpm run eslint && pnpm run tslint",
     "format": "prettier --config ./.prettierrc.js --write ./packages graphql common",
     "eslint": "eslint --config ./.eslintrc.js --ext .jsx --ext .js --ext .ts --ext .tsx ./packages graphql common",
-    "tslint": "tsc --build tsconfig.json && pnpm --filter {packages} run tslint",
-    "build": "pnpm --filter {packages} run build"
+    "tslint": "tsc --build tsconfig.json && pnpm --filter './packages/*' run tslint",
+    "build": "pnpm --filter './packages/*' run build"
   },
   "author": "suxiaoshao",
   "license": "ISC",
