@@ -40,7 +40,7 @@ instance.interceptors.response.use(
   (responseError: AxiosError) => {
     if (responseError.response) {
       console.log(responseError.response.data);
-      enqueueSnackbar(responseError.response.data.message);
+      enqueueSnackbar((responseError.response.data as { message: string })?.message);
     } else {
       enqueueSnackbar(`网络错误:${responseError.message}`);
     }
